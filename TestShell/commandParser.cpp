@@ -5,7 +5,7 @@ using namespace std;
 
 class CommandParser {
 public:
-    bool ParseCommend(string cmd) {
+    bool ParseCommand(string cmd) {
         if (IsVaildCommand(cmd) == false)
             return false;
 
