@@ -19,5 +19,13 @@ bool Nand::read(int lba, int &out)
 }
 bool Nand::write(int lba, int data)
 {
-	return 0;
+	if (lba < 0 || lba > 99)
+	{
+#ifdef _DEBUG
+		throw(std::exception("INVALID PARAMETER"));
+#else
+		return false;
+#endif
+	}
+	return true;
 }
