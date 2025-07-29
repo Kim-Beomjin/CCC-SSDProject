@@ -23,7 +23,7 @@ bool Nand::Write(const int lba, const int writeData)
 
 bool Nand::_IsValidParameter(const int lba)
 {
-	if (lba < LBA_START_ADDR || lba > LBA_END_ADDR)
+	if (lba < LBA_START_ADDR || lba >= LBA_END_ADDR)
 	{
 #ifdef _DEBUG
 		throw(std::exception("INVALID PARAMETER"));
