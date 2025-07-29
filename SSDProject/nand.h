@@ -4,6 +4,10 @@ class Nand
 {
 public:
 	Nand() {}
-	bool read(int lba, int &out);
-	bool write(int lba, int data);
+	bool Read(const int lba, int &out);
+	bool Write(const int lba, const int data);
+private:
+	bool _IsValidParameter(const int lba);
+	const int LBA_START_ADDR = 0;
+	const int LBA_END_ADDR = 100;
 };
