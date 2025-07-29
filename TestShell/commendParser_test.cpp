@@ -1,3 +1,4 @@
+#ifdef _DEBUG
 #include <string>
 #include "gmock/gmock.h"
 #include "commandParser.cpp"
@@ -34,3 +35,4 @@ TEST_F(CommandParserFixture, fullreadCommand) {
 
     EXPECT_EQ(true, ret);
 }
+#endif
