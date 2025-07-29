@@ -130,7 +130,10 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="requestsender.cpp" />
     <ClCompile Include="requestsender_test.cpp">
+    <ClCompile Include="commandParser.cpp" />
+    <ClCompile Include="commendParser_test.cpp" />
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"> %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'"> %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
