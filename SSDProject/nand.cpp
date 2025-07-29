@@ -3,23 +3,27 @@
 #endif
 #include "nand.h"
 
-bool Nand::read(int lba, int &out)
+bool Nand::Read(const int lba, int &readData)
 {
-	if (lba < 0 || lba > 99)
+	if (!_IsValidParameter(lba))
 	{
-#ifdef _DEBUG
-		throw(std::exception("INVALID PARAMETER"));
-#else
 		return false;
-#endif
 	}
-
 	return true;
-	
 }
-bool Nand::write(int lba, int data)
+
+bool Nand::Write(const int lba, const int writeData)
 {
-	if (lba < 0 || lba > 99)
+	if (!_IsValidParameter(lba))
+	{
+		return false;
+	}
+	return true;
+}
+
+bool Nand::_IsValidParameter(const int lba)
+{
+	if (lba < LBA_START_ADDR || lba > LBA_END_ADDR)
 	{
 #ifdef _DEBUG
 		throw(std::exception("INVALID PARAMETER"));
