@@ -5,7 +5,7 @@
 
 bool Nand::Read(const int lba, int &readData)
 {
-	if (!_IsValidParameter(lba))
+	if (_IsValidParameter(lba) == false)
 	{
 		return false;
 	}
@@ -14,7 +14,7 @@ bool Nand::Read(const int lba, int &readData)
 
 bool Nand::Write(const int lba, const int writeData)
 {
-	if (!_IsValidParameter(lba))
+	if (_IsValidParameter(lba) == false)
 	{
 		return false;
 	}
