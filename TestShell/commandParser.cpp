@@ -6,13 +6,13 @@ using namespace std;
 class CommandParser {
 public:
     bool ParseCommend(string cmd) {
-        if (IsVaildCommend(cmd) == false)
+        if (IsVaildCommand(cmd) == false)
             return false;
 
         return true;
     }
 private:
-    bool IsVaildCommend(string cmd) {
+    bool IsVaildCommand(string cmd) {
         return true;
     }
 };
