@@ -22,5 +22,5 @@ private:
         return true;
     }
 
-    Executor* executor;
+    IExecutor* executor;
 };
