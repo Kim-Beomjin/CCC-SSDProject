@@ -6,7 +6,7 @@ interface Executor {
 	virtual bool execute(const char* command, const char* args) = 0;
 };
 
-class Writor : public Executor {
+class Writer : public Executor {
 public:
 	bool execute(const char* command, const char* args) override {
 		return true;
@@ -39,7 +39,7 @@ class ExecutorFactory {
 public:
 	Executor* createExecutor(const std::string command) {
 		if (command == "write" || command == "fullwrite") {
-			return new Writor();
+			return new Writer();
 		} else if (command == "read" || command == "fullread") {
 			return new Reader();
 		} else if (command == "help") {
