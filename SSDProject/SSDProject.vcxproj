@@ -129,6 +129,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="nand.cpp" />
+    <ClCompile Include="nand_test.cpp" />
+    <ClCompile Include="ssd.cpp" />
+    <ClCompile Include="ssd_test.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="nand.h" />
+    <ClInclude Include="ssd.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
