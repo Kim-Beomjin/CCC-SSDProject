@@ -15,7 +15,7 @@ public:
 TEST_F(CommandParserFixture, HelpCommand) {
     string cmd = "help";
 
-    ret = parser.ParseCommend(cmd);
+    ret = parser.ParseCommand(cmd);
 
     EXPECT_EQ(true, ret);
 }
@@ -23,7 +23,7 @@ TEST_F(CommandParserFixture, HelpCommand) {
 TEST_F(CommandParserFixture, FullwriteCommand) {
     string cmd = "fullwrite";
 
-    ret = parser.ParseCommend(cmd);
+    ret = parser.ParseCommand(cmd);
 
     EXPECT_EQ(true, ret);
 }
@@ -31,7 +31,7 @@ TEST_F(CommandParserFixture, FullwriteCommand) {
 TEST_F(CommandParserFixture, fullreadCommand) {
     string cmd = "fullread";
 
-    ret = parser.ParseCommend(cmd);
+    ret = parser.ParseCommand(cmd);
 
     EXPECT_EQ(true, ret);
 }
