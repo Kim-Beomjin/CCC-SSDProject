@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include "executor.cpp"
 
 using namespace std;
 
@@ -9,10 +10,17 @@ public:
         if (IsVaildCommand(cmd) == false)
             return false;
 
+		executor = ExecutorFactory().createExecutor(cmd);
+        if (executor == nullptr) {
+            cout << "Command not found: " << cmd << endl;
+            return false;
+		}
         return true;
     }
 private:
     bool IsVaildCommand(string cmd) {
         return true;
     }
+
+    Executor* executor;
 };
