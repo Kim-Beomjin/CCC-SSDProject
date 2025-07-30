@@ -27,7 +27,6 @@ protected:
     const std::vector<int> INVALID_LBA_ADDR_LIST = { -100, -10, -1, 100, 10000 };
     const DATA WRITE_DATA = 0xFFFF;
     const DATA OVERWRITE_DATA = 0xCCCCC;
-    const DATA EMPTY_DATA = 0;
 };
 
 TEST_F(NandFixture, READ_VALID_PARAMETER_TEST) {
@@ -82,7 +81,7 @@ TEST_F(NandFixture, READ_AFTER_WRITE)
     }
 }
 
-TEST_F(NandFixture, Read_Without_Write)
+TEST_F(NandFixture, READ_WITHOUT_WRITE)
 {
     DeleteFile(NAND_FILE_NAME);
     for (int lba : VALID_LBA_ADDR_LIST) {
@@ -91,7 +90,7 @@ TEST_F(NandFixture, Read_Without_Write)
     }
 }
 
-TEST_F(NandFixture, Read_AfterOverWrite)
+TEST_F(NandFixture, READ_AFTER_OVERWRITE)
 {
     DeleteFile(NAND_FILE_NAME);
     for (int lba : VALID_LBA_ADDR_LIST) {

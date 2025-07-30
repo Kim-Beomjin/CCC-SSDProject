@@ -5,107 +5,86 @@
 
 bool Nand::Read(const LBA lba, DATA& readData)
 {
-	if (_IsValidParameter(lba) == false)
+	if (IsInvalidParameter(lba))
 	{
 		return false;
 	}
-
-	if (_IsFileValid(NAND_FILE_NAME) == false)
-	{
-		_CreateFile(NAND_FILE_NAME);
-	}
-	else
-	{
-		_ReadFile(NAND_FILE_NAME);
-	}
+	_LoadNandFromFile(NAND_FILE_NAME);
 	readData = nandData[lba];
 	return true;
 }
 
 bool Nand::Write(const LBA lba, const DATA writeData)
 {
-	if (_IsValidParameter(lba) == false)
+	if (IsInvalidParameter(lba))
 	{
 		return false;
 	}
-
-	if (_IsFileValid(NAND_FILE_NAME) == false)
-	{
-		_CreateFile(NAND_FILE_NAME);
-	}
-	else
-	{
-		_ReadFile(NAND_FILE_NAME);
-	}
-
+	_LoadNandFromFile(NAND_FILE_NAME);
 	nandData[lba] = writeData;
-	_WriteFile(NAND_FILE_NAME);
+	_DumpNandToFile(NAND_FILE_NAME);
 	return true;
 }
 
 
-bool Nand::_IsValidParameter(const LBA lba)
+bool Nand::IsInvalidParameter(const LBA lba)
 {
 	if (lba < LBA_START_ADDR || lba >= LBA_END_ADDR)
 	{
-#ifdef _DEBUG
-		throw(std::exception("INVALID PARAMETER"));
-#else
-		return false;
-#endif
+		DEBUG_ASSERT(false, "INVALID_PARAMETER");
+		return true;
 	}
-	return true;
+	return false;
+}
+
+void Nand::_LoadNandFromFile(const std::string& filename)
+{
+	if (_IsInvalidFile(NAND_FILE_NAME))
+	{
+		_CreateFile(NAND_FILE_NAME);
+	}
+	_ReadFile(NAND_FILE_NAME);
+}
+
+void Nand::_DumpNandToFile(const std::string& filename)
+{
+	std::ofstream outFile(filename);
+	for (LBA lba = LBA_START_ADDR; lba < LBA_END_ADDR; ++lba) {
+		outFile.write(reinterpret_cast<const char*>(&nandData[lba]), sizeof(nandData[lba]));
+	}
 }
 
 
-bool Nand::_IsFileValid(const std::string& filename)
+bool Nand::_IsInvalidFile(const std::string& filename)
 {
 	std::ifstream file(filename, std::ios::binary | std::ios::ate);
-	if (file.good() == false)
+	if (!file.good())
 	{
-		return false;
+		return true;
 	}
-	return (file.tellg() == FILE_SIZE);
+	return ((file.tellg() == FILE_SIZE) == false);
 }
 
 void Nand::_CreateFile(const std::string& filename)
 {
-	std::ofstream outFile(filename);
-	for (size_t i = LBA_START_ADDR; i < LBA_END_ADDR; ++i) {
-		nandData[i] = EMPTY_DATA;
-		outFile.write(reinterpret_cast<const char*>(&EMPTY_DATA), sizeof(EMPTY_DATA));
+	for(LBA lba = LBA_START_ADDR; lba < LBA_END_ADDR; ++lba)
+	{
+		nandData[lba] = EMPTY_DATA; // explicit initialization
 	}
-	if (outFile.is_open()) {
-		outFile.close();
-	}
+	_DumpNandToFile(filename);
 }
 
 void Nand::_ReadFile(const std::string& filename)
 {
-	std::ifstream inFile(filename, std::ios::binary);
-	if (_IsFileValid(filename) == false) // this case cannot be happen
+	if (_IsInvalidFile(filename)) // this case cannot be happen
 	{
-#ifdef _DEBUG
-		throw(std::exception("INVALID FILE"));
-#endif
+		DEBUG_ASSERT(false, "INVALID FILE");
 	}
 
-	for (size_t i = LBA_START_ADDR; i < LBA_END_ADDR; ++i) {
+	std::ifstream inFile(filename, std::ios::binary);
+	for (LBA lba = LBA_START_ADDR; lba < LBA_END_ADDR; ++lba) {
 		int data;
 		inFile.read(reinterpret_cast<char*>(&data), sizeof(data));
-		nandData[i] = data;
-	}
-
-	inFile.close();
-}
-
-void Nand::_WriteFile(const std::string& filename)
-{
-	std::ofstream outFile(filename);
-	for (size_t i = LBA_START_ADDR; i < LBA_END_ADDR; ++i) {
-		outFile.write(reinterpret_cast<const char*>(&nandData[i]), sizeof(nandData[i]));
-	}
-	if (outFile.is_open()) {
-		outFile.close();
+		nandData[lba] = data;
 	}
 }

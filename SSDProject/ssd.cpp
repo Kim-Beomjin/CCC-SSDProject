@@ -7,25 +7,25 @@ bool SSD::read(LBA lba)
     return false;
   }
 
-  DATA data;
-  if (nand->Read(lba, data) == false)
+  DATA readData;
+  if (nand->Read(lba, readData) == false)
   {
     return false;
   }
   
-  _updateOutputFile(data);
+  _updateOutputFile(readData);
 
   return true;
 }
 
-bool SSD::write(LBA lba, DATA data)
+bool SSD::write(LBA lba, DATA writeData)
 {
   if (_IsInvalidParameter(lba))
   {
     return false;
   }
 
-  return nand->Write(lba, data);
+  return nand->Write(lba, writeData);
 }
 
 bool SSD::_IsInvalidParameter(LBA lba)
@@ -41,12 +41,12 @@ bool SSD::_IsInvalidParameter(LBA lba)
   return false;
 }
 
-void SSD::_updateOutputFile(DATA data)
+void SSD::_updateOutputFile(DATA Data)
 {
   std::string outputFile = "ssd_output.txt";
   std::ofstream ofs(outputFile);
 
-  std::string stringData = std::to_string(data);
+  std::string stringData = std::to_string(Data);
   ofs.write(stringData.c_str(), stringData.size());
   ofs.close();
 }
