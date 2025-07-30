@@ -33,7 +33,7 @@ public:
             else {
                 commandParser->DoExecution(cmd);
             }
-        } while (!isExit);
+        } while (isExit == false);
     }
 
 private:
