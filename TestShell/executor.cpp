@@ -6,10 +6,21 @@ using std::string;
 using std::cout;
 using std::endl;
 
+class SsdApp : public ISsdApp {
+public:
+	u32 Read(u32 lba) override {
+		// TODO: need to execute existing exe file of ssd
+	}
+
+	bool Write(u32 lba, u32 data) override {
+		// TODO: need to execute existing exe file of ssd
+	}
+};
+
 class Writer : public IExecutor {
 public:
 	Writer(ISsdApp* pApp) : IExecutor(pApp) {}
-	bool execute(const string& command, int lba, const string& data) override {
+	bool execute(const string& command, u32 lba, u32 data) override {
 		if (command == "write") {
 			app->Write(lba, data);
 			return true;
@@ -25,13 +36,13 @@ public:
 class Reader : public IExecutor {
 public:
 	Reader(ISsdApp* pApp) : IExecutor(pApp) {}
-	bool execute(const string& command, int lba, const string& data) override {
+	bool execute(const string& command, u32 lba, u32 data) override {
 		if (command == "read") {
 			app->Read(lba);
 			return true;
 		}
 		else if (command == "fullread") {
-			for (int i = 0; i < SSD_MAX_SIZE; ++i) app->Read(i);
+			for (int i = 0; i < SSD_MAX_SIZE; ++i) app->Read((u32)i);
 			return true;
 		}
 		return false;
@@ -40,7 +51,7 @@ public:
 
 class Helper : public IExecutor {
 public:
-	bool execute(const string& command, int lba, const string& data) override {
+	bool execute(const string& command, u32 lba, u32 data) override {
 		cout << "ÆÀ¸í: CCC(Clean Code Collective) \n";
 		cout << "ÆÀÀå : ±è¹üÁø / ÆÀ¿ø : ±è°æ¹Î, ±èÀ±Áø, ±èÀ²°ï, Á¤ÁöÀ±\n\n";
 		cout << "Command ¼³¸í:\n";
@@ -57,7 +68,7 @@ public:
 
 class Exiter : public IExecutor {
 public:
-	bool execute(const string& command, int lba, const string& data) override {
+	bool execute(const string& command, u32 lba, u32 data) override {
 		cout << "Exit!!" << endl;
 		return true;
 	}

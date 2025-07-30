@@ -7,14 +7,13 @@ using namespace testing;
 
 class MockSsdApp : public ISsdApp {
 public:
-	MOCK_METHOD(string, Read, (int), (override));
-	MOCK_METHOD(bool, Write, (int, const string&), (override));
+	MOCK_METHOD(u32, Read, (u32), (override));
+	MOCK_METHOD(bool, Write, (u32, u32), (override));
 };
 
 class ExecutorTestFixture : public Test {
 public:
 	void SetUpExecutor(string cmd) {
-		//static ISsdApp& fake_app = SsdAppFactory().GetApp("fake");
 		executor = ExecutorFactory().createExecutor(cmd, &mock_app);
 	}
 
@@ -28,9 +27,9 @@ public:
 	const string HELP_CMD = "help";
 	const string EXIT_CMD = "exit";
 
-	const int TEST_LBA = 2;
-	const string TEST_DATA = "0x12345678";
-	const string NO_DATA = "0x00000000";
+	const u32 TEST_LBA = 2;
+	const u32 TEST_DATA = 0x12345678;
+	const u32 NO_DATA = 0x00000000;
 };
 
 TEST_F(ExecutorTestFixture, exitCommandTest) {
