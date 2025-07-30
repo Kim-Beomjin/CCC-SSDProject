@@ -12,6 +12,10 @@ class Reader : public IExecutor
 {
 public:
 	bool execute(const string& command, LBA lba, DATA data, ISsdApp* app) override;
+	string GetResultFromFile(void);
+
+	const string OUTPUT_NAME = "ssd_output.txt";
+
 };
 
 class Helper : public IExecutor
