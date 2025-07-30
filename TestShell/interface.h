@@ -1,21 +1,17 @@
 #pragma once
 #include <string>
-#include <unordered_map>
 
 using std::string;
-using std::unordered_map;
 
 #define interface struct
 
 const int SSD_MAX_SIZE = 100;
 
 interface ISsdApp {
-	ISsdApp() : ssd_nand{} {}
+	ISsdApp() {}
 
 	virtual string Read(int lba) = 0;
 	virtual bool Write(int lba, const string& data) = 0;
-protected:
-	unordered_map<int, string> ssd_nand;
 };
 
 interface IExecutor {

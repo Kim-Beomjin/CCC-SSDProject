@@ -2,7 +2,6 @@
 #include <string>
 #include "gmock/gmock.h"
 #include "interface.h"
-//#include "mock_ssd_app.h"
 
 using namespace testing;
 
