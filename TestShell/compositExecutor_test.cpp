@@ -1,6 +1,6 @@
 #ifdef _DEBUG
 #include "gmock/gmock.h"
-#include "testScript.h"
+#include "CompositExecutor.h"
 
 using namespace testing;
 
@@ -21,7 +21,7 @@ public:
 	MOCK_METHOD(bool, execute, (const string&, LBA, DATA, ISsdApp*), (override));
 };
 
-class TestScriptFixture : public Test {
+class CompositExecutorFixture : public Test {
 public:
 	FullWriteAndReadCompare mockFirstApp{ &mockWriter, &mockReader };
 	PartialLBAWrite mockSecondApp{ &mockWriter, &mockReader };
@@ -47,7 +47,8 @@ public:
 	NiceMock<MockSsdApp> mockSsdApp;
 };
 
-TEST_F(TestScriptFixture, ThrowInvalidTestScript) {
+/*
+TEST_F(CompositExecutorFixture, ThrowInvalidCompositExecutor) {
 	EXPECT_THROW(mockFirstApp.execute(BLANK_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
 	EXPECT_THROW(mockSecondApp.execute(BLANK_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
 	EXPECT_THROW(mockThirdApp.execute(BLANK_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
@@ -56,35 +57,36 @@ TEST_F(TestScriptFixture, ThrowInvalidTestScript) {
 	EXPECT_THROW(mockSecondApp.execute(INVALID_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
 	EXPECT_THROW(mockThirdApp.execute(INVALID_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
 }
+*/
 
-TEST_F(TestScriptFixture, TestScript1CheckMockReadWriteMaxTimes) {
+TEST_F(CompositExecutorFixture, CompositExecutor1CheckMockReadWriteMaxTimes) {
 	EXPECT_CALL(mockWriter, execute)
 		.Times(FIRST_TEST_SCRIPT_MAX_IO_TIMES);
 
 	EXPECT_CALL(mockReader, execute)
 		.Times(FIRST_TEST_SCRIPT_MAX_IO_TIMES);
 
-	mockFirstApp.execute(FIRST_TEST_SCRIPT_NAME, &mockSsdApp);
+	mockFirstApp.execute(FIRST_TEST_SCRIPT_NAME, 0, 0, &mockSsdApp);
 }
 
-TEST_F(TestScriptFixture, TestScript2CheckMockReadWriteMaxTimes) {
+TEST_F(CompositExecutorFixture, CompositExecutor2CheckMockReadWriteMaxTimes) {
 	EXPECT_CALL(mockWriter, execute)
 		.Times(SECOND_TEST_SCRIPT_MAX_IO_TIMES);
 
 	EXPECT_CALL(mockReader, execute)
 		.Times(SECOND_TEST_SCRIPT_MAX_IO_TIMES);
 
-	mockSecondApp.execute(SECOND_TEST_SCRIPT_NAME, &mockSsdApp);
+	mockSecondApp.execute(SECOND_TEST_SCRIPT_NAME, 0, 0, &mockSsdApp);
 }
 
-TEST_F(TestScriptFixture, TestScript3CheckMockReadWriteMaxTimes) {
+TEST_F(CompositExecutorFixture, CompositExecutor3CheckMockReadWriteMaxTimes) {
 	EXPECT_CALL(mockWriter, execute)
 		.Times(THIRD_TEST_SCRIPT_MAX_IO_TIMES);
 
 	EXPECT_CALL(mockReader, execute)
 		.Times(THIRD_TEST_SCRIPT_MAX_IO_TIMES);
 
-	mockThirdApp.execute(THIRD_TEST_SCRIPT_NAME, &mockSsdApp);
+	mockThirdApp.execute(THIRD_TEST_SCRIPT_NAME, 0, 0, &mockSsdApp);
 }
 
 #endif

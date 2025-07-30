@@ -1,18 +1,10 @@
-#include "testScript.h"
+#include "CompositExecutor.h"
 #ifdef _DEBUG
 #include <stdexcept>
 #endif
 
-bool FullWriteAndReadCompare::execute(string input, ISsdApp* app)
+bool FullWriteAndReadCompare::execute(const string& command, LBA lba, DATA data, ISsdApp* app)
 {
-	if (IsValidTestScriptName(input) == false)
-	{
-#ifdef _DEBUG
-		throw runtime_error("Invalid Test Script");
-#endif
-		return false;
-	}
-
 	for (int loop = 0; loop < LOOP_COUNT; loop++)
 	{
 		int startLba = loop * NUM_LBA_PER_LOOP;
@@ -33,16 +25,8 @@ bool FullWriteAndReadCompare::execute(string input, ISsdApp* app)
 	return true;
 }
 
-bool PartialLBAWrite::execute(string input, ISsdApp* app)
+bool PartialLBAWrite::execute(const string& command, LBA lba, DATA data, ISsdApp* app)
 {
-	if (IsValidTestScriptName(input) == false)
-	{
-#ifdef _DEBUG
-		throw runtime_error("Invalid Test Script");
-#endif
-		return false;
-	}
-
 	int writeLba[5] = { 4, 0, 3, 1, 2 };
 	int readStartLba = 0;
 	int readEndLba = NUM_LBA_PER_LOOP;
@@ -61,18 +45,12 @@ bool PartialLBAWrite::execute(string input, ISsdApp* app)
 			reader->execute("read", lba, data, app);
 		}
 	}
+
+	return true;
 }
 
-bool WriteReadAging::execute(string input, ISsdApp* app)
+bool WriteReadAging::execute(const string& command, LBA lba, DATA data, ISsdApp* app)
 {
-	if (IsValidTestScriptName(input) == false)
-	{
-#ifdef _DEBUG
-		throw runtime_error("Invalid Test Script");
-#endif
-		return false;
-	}
-
 	int ioLba[2] = { 0, 99 };
 
 	for (int loop = 0; loop < LOOP_COUNT; loop++)
@@ -88,20 +66,6 @@ bool WriteReadAging::execute(string input, ISsdApp* app)
 			reader->execute("read", lba, data, app);
 		}
 	}
-}
 
-bool FullWriteAndReadCompare::IsValidTestScriptName(std::string& input)
-{
-	return (input == SHORT_NAME) || (input == FULL_NAME);
+	return true;
 }
-
-bool PartialLBAWrite::IsValidTestScriptName(std::string& input)
-{
-	return (input == SHORT_NAME) || (input == FULL_NAME);
-}
-
-bool WriteReadAging::IsValidTestScriptName(std::string& input)
-{
-	return (input == SHORT_NAME) || (input == FULL_NAME);
-}
-
