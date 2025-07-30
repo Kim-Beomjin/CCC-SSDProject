@@ -1,23 +1,21 @@
-#include <string>
 #include <iostream>
-
-#define interface struct
+#include <exception>
+#include "interface.h"
 
 using std::string;
 using std::cout;
 using std::endl;
 
-interface IExecutor {
-	virtual bool execute(const string command = "", int lba = 0, int data = 0) = 0;
-};
-
 class Writer : public IExecutor {
 public:
-	bool execute(const string command = "", int lba = 0, int data = 0) override {
+	Writer(ISsdApp* pApp) : IExecutor(pApp) {}
+	bool execute(const string& command, int lba, const string& data) override {
 		if (command == "write") {
+			app->Write(lba, data);
 			return true;
 		}
 		else if (command == "fullwrite") {
+			for (int i = 0; i < SSD_MAX_SIZE; ++i) app->Write(i, data);
 			return true;
 		}
 		return false;
@@ -26,11 +24,14 @@ public:
 
 class Reader : public IExecutor {
 public:
-	bool execute(const string command = "", int lba = 0, int data = 0) override {
+	Reader(ISsdApp* pApp) : IExecutor(pApp) {}
+	bool execute(const string& command, int lba, const string& data) override {
 		if (command == "read") {
+			app->Read(lba);
 			return true;
 		}
 		else if (command == "fullread") {
+			for (int i = 0; i < SSD_MAX_SIZE; ++i) app->Read(i);
 			return true;
 		}
 		return false;
@@ -39,7 +40,7 @@ public:
 
 class Helper : public IExecutor {
 public:
-	bool execute(const string command = "", int lba = 0, int data = 0) override {
+	bool execute(const string& command, int lba, const string& data) override {
 		cout << "ÆÀ¸í: CCC(Clean Code Collective) \n";
 		cout << "ÆÀÀå : ±è¹üÁø / ÆÀ¿ø : ±è°æ¹Î, ±èÀ±Áø, ±èÀ²°ï, Á¤ÁöÀ±\n\n";
 		cout << "Command ¼³¸í:\n";
@@ -56,23 +57,27 @@ public:
 
 class Exiter : public IExecutor {
 public:
-	bool execute(const string command = "", int lba = 0, int data = 0) override {
+	bool execute(const string& command, int lba, const string& data) override {
+		cout << "Exit!!" << endl;
 		return true;
 	}
 };
 
-class ExecutorFactory {
-public:
-	IExecutor* createExecutor(const std::string command) {
-		if (command == "write" || command == "fullwrite") {
-			return new Writer();
-		} else if (command == "read" || command == "fullread") {
-			return new Reader();
-		} else if (command == "help") {
-			return new Helper();
-		} else if (command == "exit") {
-			return new Exiter();
-		}
-		return nullptr;
+IExecutor* ExecutorFactory::createExecutor(const string command, ISsdApp* pApp) {
+	if (command == "write" || command == "fullwrite") {
+		return new Writer(pApp);
 	}
-};
+	else if (command == "read" || command == "fullread") {
+		return new Reader(pApp);
+	}
+	else if (command == "help") {
+		return new Helper();
+	}
+	else if (command == "exit") {
+		return new Exiter();
+	}
+
+	cout << "Invalid command:" << command << endl;
+	return nullptr;
+}
+

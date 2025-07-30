@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include "executor.cpp"
+#include "interface.h"
 
 using namespace std;
 
