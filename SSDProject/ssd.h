@@ -6,6 +6,7 @@
 class SSD
 {
 public:
+  SSD() : nand{ new Nand() } {};
   SSD(NandInterface* nand) : nand {nand}{};
   bool read(LBA lba);
   bool write(LBA lba, DATA writeData);
