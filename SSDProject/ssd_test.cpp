@@ -26,7 +26,7 @@ public:
 
   const LBA VALID_LBA = 5;
   const LBA INVALID_LBA = 101;
-  const std::string WRITE_DATA = "0xdeadcafe";
+  const std::string WRITE_DATA = "0xDEADCAFE";
   const std::string INVALID_DATA = "0x00000000";
   const std::string outputFile = "ssd_output.txt";
 
