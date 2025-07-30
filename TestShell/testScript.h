@@ -13,6 +13,7 @@ public:
 
 	bool FullWriteAndReadCompare(string input, ISsdApp* app);
 	bool PartialLBAWrite(string input, ISsdApp* app);
+	bool WriteReadAging(string input, ISsdApp* app);
 
 	const string FIRST_TEST_SCRIPT_NAME_SHORT = "1_";
 	const string FIRST_TEST_SCRIPT_NAME_FULL = "1_FullWriteAndReadCompare";
@@ -24,10 +25,15 @@ public:
 	static const int SECOND_TEST_SCRIPT_LOOP_COUNT = 30;
 	static const int SECOND_TEST_SCRIPT_LOOP_LBA = 5;
 
+	const string THIRD_TEST_SCRIPT_NAME_SHORT = "3_";
+	const string THIRD_TEST_SCRIPT_NAME_FULL = "3_WriteReadAging";
+	static const int THIRD_TEST_SCRIPT_LOOP_COUNT = 200;
+	static const int THIRD_TEST_SCRIPT_LOOP_LBA = 2;
+
 private:
 	bool IsValidTestScript1Name(std::string& input);
 	bool IsValidTestScript2Name(std::string& input);
-
+	bool IsValidTestScript3Name(std::string& input);
 
 	Writer* writer;
 	Reader* reader;
