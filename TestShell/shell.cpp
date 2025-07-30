@@ -7,7 +7,7 @@ using namespace std;
 class Shell {
 public:
     Shell() : commandParser(nullptr) {}
-    Shell(CommandParserBridge* broker) : commandParser(broker) {}
+    Shell(ICommandParserBridge* broker) : commandParser(broker) {}
 
     void RunShellLoop(void) {
         string cmd;
@@ -35,5 +35,5 @@ private:
     }
 
 protected:
-    CommandParserBridge *commandParser = nullptr;
+    ICommandParserBridge *commandParser = nullptr;
 };
