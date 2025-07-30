@@ -6,14 +6,14 @@ void HostInterface::Execute(int argc, char* argv[])
 
 	if (_WriteCondition(argc,argv))
 	{
-		if (_LoadWriteParameterAndCheckInvalid(argv[2], argv[3])) {
+		if (_LoadWriteParameterAndCheckInvalid(argv[ARGV::LBA_IDX], argv[ARGV::DATA_IDX])) {
 			return;
 		}
 		ssd->write(lba, data);
 	}
 	else if (_ReadCondition(argc, argv))
 	{
-		if (_LoadReadParameterAndCheckInvalid(argv[2])) {
+		if (_LoadReadParameterAndCheckInvalid(argv[ARGV::LBA_IDX])) {
 			return;
 		}
 		ssd->read(lba);
@@ -25,12 +25,12 @@ void HostInterface::Execute(int argc, char* argv[])
 
 bool HostInterface::_WriteCondition(int argc, char* argv[])
 {
-	return (argc == 4 && argv[1] == "W");
+	return (argc == WRITE_COMMAND_ARG_COUNT && argv[ARGV::CMD_IDX] == WRITE_CMD);
 }
 
 bool HostInterface::_ReadCondition(int argc, char* argv[])
 {
-	return (argc == 3 && argv[1] == "R");
+	return (argc == READ_COMMAND_ARG_COUNT && argv[ARGV::CMD_IDX] == READ_CMD);
 }
 
 
@@ -57,7 +57,7 @@ bool HostInterface::_LoadReadParameterAndCheckInvalid(char* lbaStr)
 {
 	if (_IsNegative(lbaStr))
 	{
-		DEBUG_ASSERT(false, "INVALID PARAMETER");
+		DEBUG_ASSERT(false, "INVALID INPUT PARAMETERS");
 		return false;
 	}
 	try {
@@ -65,7 +65,7 @@ bool HostInterface::_LoadReadParameterAndCheckInvalid(char* lbaStr)
 	}
 	catch (std::exception)
 	{
-		DEBUG_ASSERT(false, "INVALID INPUT TYPE");
+		DEBUG_ASSERT(false, "INVALID INPUT PARAMETERS");
 		return false;
 	}
 	return true;
@@ -78,7 +78,7 @@ bool HostInterface::_IsNegative(char* lbaStr)
 
 bool HostInterface::_IsInvalidLength(char* dataStr)
 {
-	return (strlen(dataStr) != 10 || dataStr[0] != '0' || dataStr[1] != 'x');
+	return (strlen(dataStr) != 10 || dataStr[0] != ZERO || !(dataStr[1] == LARGE_EX || dataStr[1] == SMALL_EX));
 }
 
 unsigned int HostInterface::_SafeStoul(char* str)
@@ -86,7 +86,7 @@ unsigned int HostInterface::_SafeStoul(char* str)
 	size_t idx;
 	unsigned int ret = std::stoul(str, &idx, 0);
 	if (idx != strlen(str)) {
-		DEBUG_ASSERT(false, "INVALID INPUT TYPE");
+		DEBUG_ASSERT(false, "INVALID INPUT PARAMETERS");
 	}
 	return ret;
 }

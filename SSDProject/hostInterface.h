@@ -1,6 +1,14 @@
 #pragma once
 #include "ssd.h"
 
+enum ARGV
+{
+    PGM_IDX = 0,
+    CMD_IDX,
+    LBA_IDX,
+    DATA_IDX,
+};
+
 class HostInterface
 {
 public:
@@ -30,4 +38,12 @@ private:
     LBA lba;
     DATA data;
     SSD* ssd;
+
+    const int WRITE_COMMAND_ARG_COUNT = 4;
+    const int READ_COMMAND_ARG_COUNT = 3;
+    const char* WRITE_CMD = "W";
+    const char* READ_CMD = "R";
+    const char ZERO = '0';
+    const char SMALL_EX = 'x';
+    const char LARGE_EX = 'X';
 };

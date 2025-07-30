@@ -36,7 +36,7 @@ protected:
         { (char*)"SSD.exe", (char*)"W", (char*)"123", (char*)"0x12345678" },
         { (char*)"SSD.exe", (char*)"W", (char*)"11523", (char*)"0x55565678" },
         { (char*)"SSD.exe", (char*)"W", (char*)"224", (char*)"0x12335678" },
-        { (char*)"SSD.exe", (char*)"W", (char*)"12", (char*)"0xDEADBeeF" },
+        { (char*)"SSD.exe", (char*)"W", (char*)"12", (char*)"0XDEADBeeF" },
         { (char*)"SSD.exe", (char*)"W", (char*)"23", (char*)"0xDeaDBEE1" },
     };
 
