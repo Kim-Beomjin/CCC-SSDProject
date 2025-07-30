@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <fstream>
-#define NAND_FILE_NAME ("ssd_nand.txt")
+#define NAND_FILE_NAME ("./ssd_nand.txt")
 
 class NandInterface
 {
