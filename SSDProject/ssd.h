@@ -2,9 +2,6 @@
 
 #include "nand.h"
 #include "global_config.h"
-#include <iostream>
-#include <fstream>
-#include <string>
 
 class SSD
 {
