@@ -3,9 +3,9 @@
 #include <stdexcept>
 #endif
 
-bool TestScript::FullWriteAndReadCompare(string input, ISsdApp* app)
+bool FullWriteAndReadCompare::execute(string input, ISsdApp* app)
 {
-	if (IsValidTestScript1Name(input) == false)
+	if (IsValidTestScriptName(input) == false)
 	{
 #ifdef _DEBUG
 		throw runtime_error("Invalid Test Script");
@@ -13,10 +13,10 @@ bool TestScript::FullWriteAndReadCompare(string input, ISsdApp* app)
 		return false;
 	}
 
-	for (int loop = 0; loop < FIRST_TEST_SCRIPT_LOOP_COUNT; loop++)
+	for (int loop = 0; loop < LOOP_COUNT; loop++)
 	{
-		int startLba = loop * FIRST_TEST_SCRIPT_LOOP_LBA;
-		int endLba = (loop + 1) * FIRST_TEST_SCRIPT_LOOP_LBA;
+		int startLba = loop * NUM_LBA_PER_LOOP;
+		int endLba = (loop + 1) * NUM_LBA_PER_LOOP;
 
 		for (int lba = startLba; lba < endLba; lba++)
 		{
@@ -33,9 +33,9 @@ bool TestScript::FullWriteAndReadCompare(string input, ISsdApp* app)
 	return true;
 }
 
-bool TestScript::PartialLBAWrite(string input, ISsdApp* app)
+bool PartialLBAWrite::execute(string input, ISsdApp* app)
 {
-	if (IsValidTestScript2Name(input) == false)
+	if (IsValidTestScriptName(input) == false)
 	{
 #ifdef _DEBUG
 		throw runtime_error("Invalid Test Script");
@@ -45,9 +45,9 @@ bool TestScript::PartialLBAWrite(string input, ISsdApp* app)
 
 	int writeLba[5] = { 4, 0, 3, 1, 2 };
 	int readStartLba = 0;
-	int readEndLba = SECOND_TEST_SCRIPT_LOOP_LBA;
+	int readEndLba = NUM_LBA_PER_LOOP;
 
-	for (int loop = 0; loop < SECOND_TEST_SCRIPT_LOOP_COUNT; loop++)
+	for (int loop = 0; loop < LOOP_COUNT; loop++)
 	{
 
 		for (auto lba : writeLba)
@@ -63,9 +63,9 @@ bool TestScript::PartialLBAWrite(string input, ISsdApp* app)
 	}
 }
 
-bool TestScript::WriteReadAging(string input, ISsdApp* app)
+bool WriteReadAging::execute(string input, ISsdApp* app)
 {
-	if (IsValidTestScript3Name(input) == false)
+	if (IsValidTestScriptName(input) == false)
 	{
 #ifdef _DEBUG
 		throw runtime_error("Invalid Test Script");
@@ -75,7 +75,7 @@ bool TestScript::WriteReadAging(string input, ISsdApp* app)
 
 	int ioLba[2] = { 0, 99 };
 
-	for (int loop = 0; loop < THIRD_TEST_SCRIPT_LOOP_COUNT; loop++)
+	for (int loop = 0; loop < LOOP_COUNT; loop++)
 	{
 		for (auto lba : ioLba)
 		{
@@ -90,18 +90,18 @@ bool TestScript::WriteReadAging(string input, ISsdApp* app)
 	}
 }
 
-bool TestScript::IsValidTestScript1Name(std::string& input)
+bool FullWriteAndReadCompare::IsValidTestScriptName(std::string& input)
 {
-	return (input == FIRST_TEST_SCRIPT_NAME_SHORT) || (input == FIRST_TEST_SCRIPT_NAME_FULL);
+	return (input == SHORT_NAME) || (input == FULL_NAME);
 }
 
-bool TestScript::IsValidTestScript2Name(std::string& input)
+bool PartialLBAWrite::IsValidTestScriptName(std::string& input)
 {
-	return (input == SECOND_TEST_SCRIPT_NAME_SHORT) || (input == SECOND_TEST_SCRIPT_NAME_FULL);
+	return (input == SHORT_NAME) || (input == FULL_NAME);
 }
 
-bool TestScript::IsValidTestScript3Name(std::string& input)
+bool WriteReadAging::IsValidTestScriptName(std::string& input)
 {
-	return (input == THIRD_TEST_SCRIPT_NAME_SHORT) || (input == THIRD_TEST_SCRIPT_NAME_FULL);
+	return (input == SHORT_NAME) || (input == FULL_NAME);
 }
 

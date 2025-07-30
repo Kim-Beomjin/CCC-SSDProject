@@ -23,8 +23,9 @@ public:
 
 class TestScriptFixture : public Test {
 public:
-	TestScript app;
-	TestScript mockApp{ &mockWriter, &mockReader };
+	FullWriteAndReadCompare mockFirstApp{ &mockWriter, &mockReader };
+	PartialLBAWrite mockSecondApp{ &mockWriter, &mockReader };
+	WriteReadAging mockThirdApp{ &mockWriter, &mockReader };
 
 	const string BLANK_TEST_SCRIPT_NAME = "";
 	const string INVALID_TEST_SCRIPT_NAME = "123";
@@ -33,13 +34,13 @@ public:
 	const string THIRD_TEST_SCRIPT_NAME = "3_";
 
 	const int FIRST_TEST_SCRIPT_MAX_IO_TIMES =
-		TestScript::FIRST_TEST_SCRIPT_LOOP_COUNT * TestScript::FIRST_TEST_SCRIPT_LOOP_LBA;
+		FullWriteAndReadCompare::LOOP_COUNT * FullWriteAndReadCompare::NUM_LBA_PER_LOOP;
 
 	const int SECOND_TEST_SCRIPT_MAX_IO_TIMES =
-		TestScript::SECOND_TEST_SCRIPT_LOOP_COUNT * TestScript::SECOND_TEST_SCRIPT_LOOP_LBA;
+		PartialLBAWrite::LOOP_COUNT * PartialLBAWrite::NUM_LBA_PER_LOOP;
 
 	const int THIRD_TEST_SCRIPT_MAX_IO_TIMES =
-		TestScript::THIRD_TEST_SCRIPT_LOOP_COUNT * TestScript::THIRD_TEST_SCRIPT_LOOP_LBA;
+		WriteReadAging::LOOP_COUNT * WriteReadAging::NUM_LBA_PER_LOOP;
 
 	NiceMock<MockWriter> mockWriter;
 	NiceMock<MockReader> mockReader;
@@ -47,13 +48,13 @@ public:
 };
 
 TEST_F(TestScriptFixture, ThrowInvalidTestScript) {
-	EXPECT_THROW(app.FullWriteAndReadCompare(BLANK_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
-	EXPECT_THROW(app.PartialLBAWrite(BLANK_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
-	EXPECT_THROW(app.WriteReadAging(BLANK_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
+	EXPECT_THROW(mockFirstApp.execute(BLANK_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
+	EXPECT_THROW(mockSecondApp.execute(BLANK_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
+	EXPECT_THROW(mockThirdApp.execute(BLANK_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
 
-	EXPECT_THROW(app.FullWriteAndReadCompare(INVALID_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
-	EXPECT_THROW(app.PartialLBAWrite(INVALID_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
-	EXPECT_THROW(app.WriteReadAging(INVALID_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
+	EXPECT_THROW(mockFirstApp.execute(INVALID_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
+	EXPECT_THROW(mockSecondApp.execute(INVALID_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
+	EXPECT_THROW(mockThirdApp.execute(INVALID_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
 }
 
 TEST_F(TestScriptFixture, TestScript1CheckMockReadWriteMaxTimes) {
@@ -63,7 +64,7 @@ TEST_F(TestScriptFixture, TestScript1CheckMockReadWriteMaxTimes) {
 	EXPECT_CALL(mockReader, execute)
 		.Times(FIRST_TEST_SCRIPT_MAX_IO_TIMES);
 
-	mockApp.FullWriteAndReadCompare(FIRST_TEST_SCRIPT_NAME, &mockSsdApp);
+	mockFirstApp.execute(FIRST_TEST_SCRIPT_NAME, &mockSsdApp);
 }
 
 TEST_F(TestScriptFixture, TestScript2CheckMockReadWriteMaxTimes) {
@@ -73,7 +74,7 @@ TEST_F(TestScriptFixture, TestScript2CheckMockReadWriteMaxTimes) {
 	EXPECT_CALL(mockReader, execute)
 		.Times(SECOND_TEST_SCRIPT_MAX_IO_TIMES);
 
-	mockApp.PartialLBAWrite(SECOND_TEST_SCRIPT_NAME, &mockSsdApp);
+	mockSecondApp.execute(SECOND_TEST_SCRIPT_NAME, &mockSsdApp);
 }
 
 TEST_F(TestScriptFixture, TestScript3CheckMockReadWriteMaxTimes) {
@@ -83,7 +84,7 @@ TEST_F(TestScriptFixture, TestScript3CheckMockReadWriteMaxTimes) {
 	EXPECT_CALL(mockReader, execute)
 		.Times(THIRD_TEST_SCRIPT_MAX_IO_TIMES);
 
-	mockApp.WriteReadAging(THIRD_TEST_SCRIPT_NAME, &mockSsdApp);
+	mockThirdApp.execute(THIRD_TEST_SCRIPT_NAME, &mockSsdApp);
 }
 
 #endif
