@@ -1,4 +1,6 @@
 #include "ssd.h"
+#include <fstream>
+#include <string>
 
 bool SSD::read(LBA lba)
 {

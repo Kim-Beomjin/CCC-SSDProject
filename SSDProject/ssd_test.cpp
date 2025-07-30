@@ -1,6 +1,8 @@
 #ifdef _DEBUG
 #include "gmock/gmock.h"
 #include "ssd.h"
+#include <fstream>
+#include <string>
 
 using namespace testing;
 
