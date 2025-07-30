@@ -2,8 +2,6 @@
 
 bool SSD::read(LBA lba)
 {
-  bool result;
-
   if (_IsInvalidParameter(lba))
   {
     return false;
@@ -32,7 +30,7 @@ bool SSD::write(LBA lba, DATA data)
 
 bool SSD::_IsInvalidParameter(LBA lba)
 {
-  if (lba > 99)
+  if (lba >= LBA_END_ADDR)
   {
 #ifdef _DEBUG
     throw(std::exception("INVALID PARAMETER"));
