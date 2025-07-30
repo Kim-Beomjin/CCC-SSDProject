@@ -39,6 +39,12 @@
     <ClCompile Include="executor.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="shell.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="shellInterface_test.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
