@@ -5,7 +5,7 @@
 
 bool TestScript::FullWriteAndReadCompare(string input)
 {
-	if ((input != "1_") || (input != "1_FullWriteAndReadCompare"))
+	if ((input != "1_") && (input != "1_FullWriteAndReadCompare"))
 	{
 #ifdef _DEBUG
 		throw runtime_error("Invalid Test Script");
