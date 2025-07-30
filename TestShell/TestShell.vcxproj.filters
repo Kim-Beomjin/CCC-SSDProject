@@ -51,6 +51,9 @@
     <ClCompile Include="testScript.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="ssdApp.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -60,6 +63,18 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="interface.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="commandParser.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="executor.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ssdApp.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="global_config.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
