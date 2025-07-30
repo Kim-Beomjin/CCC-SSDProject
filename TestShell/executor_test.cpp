@@ -1,19 +1,20 @@
 #ifdef _DEBUG
 #include <string>
 #include "gmock/gmock.h"
+#include "global_config.h"
 #include "interface.h"
 
 using namespace testing;
 
 class MockSsdApp : public ISsdApp {
 public:
-	MOCK_METHOD(u32, Read, (u32), (override));
-	MOCK_METHOD(bool, Write, (u32, u32), (override));
+	MOCK_METHOD(DATA, Read, (LBA), (override));
+	MOCK_METHOD(bool, Write, (LBA, DATA), (override));
 };
 
 class ExecutorTestFixture : public Test {
 public:
-	void checkExecute(string cmd = "", u32 lba = 0, u32 data = 0, u32 expect_data = 0) {
+	void checkExecute(string cmd = "", LBA lba = 0, DATA data = 0, DATA expect_data = 0) {
 		executor = ExecutorFactory().createExecutor(cmd);
 
 		bool ret = executor->execute(cmd, lba, data, &mock_app);
@@ -30,9 +31,9 @@ public:
 	const string HELP_CMD = "help";
 	const string EXIT_CMD = "exit";
 
-	const u32 TEST_LBA = 2;
-	const u32 TEST_DATA = 0x12345678;
-	const u32 NO_DATA = 0x00000000;
+	const LBA TEST_LBA = 2;
+	const DATA TEST_DATA = 0x12345678;
+	const DATA NO_DATA = 0x00000000;
 };
 
 TEST_F(ExecutorTestFixture, exitCommandTest) {
