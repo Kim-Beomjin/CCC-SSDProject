@@ -78,7 +78,7 @@ bool HostInterface::_IsNegative(char* lbaStr)
 
 bool HostInterface::_IsInvalidLength(char* dataStr)
 {
-	return (strlen(dataStr) != 10);
+	return (strlen(dataStr) != 10 || dataStr[0] != '0' || dataStr[1] != 'x');
 }
 
 unsigned int HostInterface::_SafeStoul(char* str)
