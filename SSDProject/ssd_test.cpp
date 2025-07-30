@@ -36,7 +36,7 @@ public:
     int result = std::remove(outputFile.c_str());
     if (result != 0)
     {
-      std::perror("파일 삭제 실패");
+      std::perror("file remove fail");
     }
   }
 
@@ -48,53 +48,51 @@ public:
 
     return readData;
   }
+
+  void ReadAndUpdateOutputFile(LBA lba, const std::string writeData)
+  {
+    ON_CALL(mockNand, Read(_, _))
+      .WillByDefault(Invoke([=](const LBA, DATA& readData) -> bool
+    {
+      readData = stoul(writeData, nullptr, 16);
+      return true;
+    }));
+
+    ssd.Read(lba);
+  }
+  void ValidateOutputDataWith(const std::string expectedData)
+  {
+    std::string outputData = GetDataFromOutputFile();
+    EXPECT_EQ(expectedData, outputData);
+  }
 };
 
 TEST_F(MockNandSSDFixture, ReadAfterWrite)
 {
   ssd.Write(VALID_LBA, stoul(WRITE_DATA, nullptr, 16));
+  ReadAndUpdateOutputFile(VALID_LBA, WRITE_DATA);
 
-  ON_CALL(mockNand, Read(_, _))
-    .WillByDefault(Invoke([=](const LBA, DATA& readData) -> bool
-  {
-    readData = stoul(WRITE_DATA, nullptr, 16);
-    return true;
-  }));
-
-  ssd.Read(VALID_LBA);
-  std::string readData = GetDataFromOutputFile();
-
-  EXPECT_EQ(WRITE_DATA, readData);
+  ValidateOutputDataWith(WRITE_DATA);
 }
 
 TEST_F(MockNandSSDFixture, ReadWithoutWrite)
 {
-  ON_CALL(mockNand, Read(_, _))
-    .WillByDefault(Invoke([=](const LBA lba, DATA& readData) -> bool
-  {
-    readData = stoul(INVALID_DATA, nullptr, 16);
-    return true;
-  }));
+  ReadAndUpdateOutputFile(VALID_LBA, INVALID_DATA);
 
-  ssd.Read(VALID_LBA);
-  std::string readData = GetDataFromOutputFile();
-
-  EXPECT_EQ(INVALID_DATA, readData);
+  ValidateOutputDataWith(INVALID_DATA);
 }
 
 TEST_F(MockNandSSDFixture, ReadInvalidParam)
 {
   ssd.Read(INVALID_LBA);
-  std::string outputData = GetDataFromOutputFile();
 
-  EXPECT_EQ(ERROR_MSG, outputData);
+  ValidateOutputDataWith(ERROR_MSG);
 }
 
 TEST_F(MockNandSSDFixture, WriteInvalidParam)
 {
   ssd.Write(INVALID_LBA, stoul(WRITE_DATA, nullptr, 16));
-  std::string outputData = GetDataFromOutputFile();
 
-  EXPECT_EQ(ERROR_MSG, outputData);
+  ValidateOutputDataWith(ERROR_MSG);
 }
 #endif
