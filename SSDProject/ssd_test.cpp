@@ -33,11 +33,7 @@ public:
 
   void SetUp() override
   {
-    int result = std::remove(outputFile.c_str());
-    if (result != 0)
-    {
-      std::perror("file remove fail");
-    }
+    _RemoveOutputFile();
   }
 
   std::string GetDataFromOutputFile(void)
@@ -64,6 +60,15 @@ public:
   {
     std::string outputData = GetDataFromOutputFile();
     EXPECT_EQ(expectedData, outputData);
+  }
+private:
+  void _RemoveOutputFile(void)
+  {
+    int result = std::remove(outputFile.c_str());
+    if (result != 0)
+    {
+      std::perror("file remove fail");
+    }
   }
 };
 
