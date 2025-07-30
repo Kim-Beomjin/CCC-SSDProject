@@ -23,8 +23,9 @@ bool CommandParser::ExecuteSsdUsingParsedCommand(ISsdApp* app) {
 
 bool CommandParser::IsVaildCommand(const string& cmd, size_t tokenSize) {
     if (cmd_set.find(cmd) != cmd_set.end()) {
-        if (cmd == WRITE_CMD && tokenSize <= 2) return false;
-        if (cmd == READ_CMD && tokenSize > 2) return false;
+        if (cmd == WRITE_CMD && tokenSize != 3) return false;
+        else if (cmd == READ_CMD && tokenSize != 2) return false;
+        else if (tokenSize != 1) return false;
         return true;
     }
     return false;
