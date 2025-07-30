@@ -4,12 +4,12 @@
 
 using namespace std;
 
-class CommandParserBridge {
+class ICommandParserBridge {
 public:
     virtual bool ParseCommand(string cmd) = 0;
 };
 
-class CommandParser : public CommandParserBridge {
+class CommandParser : public ICommandParserBridge {
 public:
     bool ParseCommand(string cmd) override {
         if (IsVaildCommand(cmd) == false)
@@ -17,7 +17,6 @@ public:
 
 		executor = ExecutorFactory().createExecutor(cmd);
         if (executor == nullptr) {
-            //cout << "Command not found: " << cmd << endl;
             return false;
 		}
         return true;

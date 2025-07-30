@@ -7,7 +7,7 @@
 using namespace std;
 using namespace testing;
 
-class MockCommandParser : public CommandParserBridge {
+class MockCommandParser : public ICommandParserBridge {
 public:
     MOCK_METHOD(bool, ParseCommand, (string cmd));
 };
