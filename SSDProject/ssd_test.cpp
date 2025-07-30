@@ -26,7 +26,8 @@ public:
 
   const LBA VALID_LBA = 5;
   const LBA INVALID_LBA = 101;
-  const DATA WRITE_DATA = 0xdeadcafe;
+  const std::string WRITE_DATA = "0xdeadcafe";
+  const std::string INVALID_DATA = "0x00000000";
   const std::string outputFile = "ssd_output.txt";
 
   std::string getDataFromOutputFile(void)
@@ -44,16 +45,16 @@ TEST_F(MockNandSSDFixture, ReadAfterWrite)
   ON_CALL(mockNand, Read(_, _))
     .WillByDefault(Invoke([=](const LBA, DATA& out) -> bool
   {
-    out = WRITE_DATA;
+    out = stoul(WRITE_DATA, nullptr, 16);
     return true;
   }));
 
-  ssd.write(VALID_LBA, WRITE_DATA);
+  ssd.write(VALID_LBA, stoul(WRITE_DATA, nullptr, 16));
 
   ssd.read(VALID_LBA);
   std::string readData = getDataFromOutputFile();
 
-  EXPECT_EQ((WRITE_DATA), (stoul(readData)));
+  EXPECT_EQ(WRITE_DATA, readData);
 }
 
 TEST_F(MockNandSSDFixture, ReadWithoutWrite)
@@ -61,14 +62,14 @@ TEST_F(MockNandSSDFixture, ReadWithoutWrite)
   ON_CALL(mockNand, Read(_, _))
     .WillByDefault(Invoke([=](const LBA lba, DATA& out) -> bool
   {
-    out = EMPTY_DATA;
+    out = stoul(INVALID_DATA, nullptr, 16);
     return true;
   }));
 
   ssd.read(VALID_LBA);
   std::string readData = getDataFromOutputFile();
 
-  EXPECT_EQ(EMPTY_DATA, stoul(readData));
+  EXPECT_EQ(INVALID_DATA, readData);
 }
 
 TEST_F(MockNandSSDFixture, ReadInvalidParam)
@@ -81,7 +82,7 @@ TEST_F(MockNandSSDFixture, ReadInvalidParam)
 
 TEST_F(MockNandSSDFixture, WriteInvalidParam)
 {
-  ssd.write(INVALID_LBA, WRITE_DATA);
+  ssd.write(INVALID_LBA, stoul(WRITE_DATA, nullptr, 16));
   std::string outputData = getDataFromOutputFile();
 
   EXPECT_EQ(ERROR_MSG, outputData);
