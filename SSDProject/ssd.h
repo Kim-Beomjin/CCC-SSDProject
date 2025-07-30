@@ -11,10 +11,10 @@ class SSD
 public:
   SSD(NandInterface* nand) : nand {nand}{};
   bool read(LBA lba);
-  bool write(LBA lba, DATA data);
+  bool write(LBA lba, DATA writeData);
 
 private:
   bool _IsInvalidParameter(LBA lba);
-  void _updateOutputFile(DATA data);
+  void _updateOutputFile(DATA Data);
   NandInterface* nand;
 };
