@@ -1,3 +1,3 @@
 #pragma once
-typedef unsigned int DATA;
-typedef unsigned int LBA;
+using DATA = unsigned int;
+using LBA = unsigned int;
