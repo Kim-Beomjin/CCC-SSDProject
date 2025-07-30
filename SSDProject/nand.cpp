@@ -3,6 +3,7 @@
 #endif
 #include "nand.h"
 
+
 bool Nand::Read(const int lba, int &readData)
 {
 	if (_IsValidParameter(lba) == false)
