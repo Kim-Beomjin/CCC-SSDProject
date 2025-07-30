@@ -65,11 +65,11 @@ bool TestScript::PartialLBAWrite(string input, ISsdApp* app)
 
 bool TestScript::IsValidTestScript1Name(std::string& input)
 {
-	return (input == "1_") || (input == "1_FullWriteAndReadCompare");
+	return (input == FIRST_TEST_SCRIPT_NAME_SHORT) || (input == FIRST_TEST_SCRIPT_NAME_FULL);
 }
 
 bool TestScript::IsValidTestScript2Name(std::string& input)
 {
-	return (input == "2_") || (input == "2_PartialLBAWrite");
+	return (input == SECOND_TEST_SCRIPT_NAME_SHORT) || (input == SECOND_TEST_SCRIPT_NAME_FULL);
 }
 
