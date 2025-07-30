@@ -41,12 +41,12 @@ bool SSD::_IsInvalidParameter(LBA lba)
   return false;
 }
 
-void SSD::_updateOutputFile(DATA Data)
+void SSD::_updateOutputFile(DATA data)
 {
   std::string outputFile = "ssd_output.txt";
   std::ofstream ofs(outputFile);
 
-  std::string stringData = std::to_string(Data);
+  std::string stringData = std::to_string(data);
   ofs.write(stringData.c_str(), stringData.size());
   ofs.close();
 }

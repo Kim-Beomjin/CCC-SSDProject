@@ -15,6 +15,6 @@ public:
 
 private:
   bool _IsInvalidParameter(LBA lba);
-  void _updateOutputFile(DATA Data);
+  void _updateOutputFile(DATA data);
   NandInterface* nand;
 };
