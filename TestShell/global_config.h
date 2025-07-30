@@ -29,3 +29,6 @@ const string THIRD_SCRIPT_FULL_NAME = "3_WriteReadAging";
 const LBA TEST_LBA = 2;
 const DATA TEST_DATA = 0x12345678;
 const DATA NO_DATA = 0x00000000;
+
+const int DATA_NUM_DIGIT = 8;
+const string EXE_FILE_NAME = "..\\x64\\Release\\SSD.exe";

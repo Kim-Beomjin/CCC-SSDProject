@@ -1,6 +1,4 @@
 #pragma once
-#include <string>
-#include <vector>
 #include <unordered_set>
 #include "global_config.h"
 #include "interface.h"
@@ -14,10 +12,7 @@ public:
 
 private:
     bool IsVaildCommand(const string& cmd, size_t tokenSize);
-    bool IsValidLba(const LBA lba);
     bool doParse(const string& cmd);
-    std::vector<string> splitCommand(const string& cmd);
-    unsigned int stringToUnsignedInt(const string& str);
 
     IExecutor* executor;
     string command = "";

@@ -1,9 +1,7 @@
 #include <iostream>
-#include <string>
 #include "shell.h"
 #include "ssdApp.h"
 #include "commandParser.h"
-#include "global_config.h"
 
 using namespace std;
 
