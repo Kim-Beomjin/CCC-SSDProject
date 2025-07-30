@@ -1,30 +1,16 @@
-#include <iostream>
-#include <string>
-#include "interface.h"
+#include "commandParser.h"
 
-using namespace std;
+bool CommandParser::ParseCommand(string cmd)
+{
+    if (IsVaildCommand(cmd) == false) return false;
 
-class ICommandParserBridge {
-public:
-    virtual bool ParseCommand(string cmd) = 0;
-};
+    executor = ExecutorFactory().createExecutor(cmd);
+    if (executor == nullptr) return false;
 
-class CommandParser : public ICommandParserBridge {
-public:
-    bool ParseCommand(string cmd) override {
-        if (IsVaildCommand(cmd) == false)
-            return false;
+    return true;
+}
 
-		executor = ExecutorFactory().createExecutor(cmd);
-        if (executor == nullptr) {
-            return false;
-		}
-        return true;
-    }
-private:
-    bool IsVaildCommand(string cmd) {
-        return true;
-    }
-
-    IExecutor* executor;
-};
+bool CommandParser::IsVaildCommand(string cmd)
+{
+    return true;
+}

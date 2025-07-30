@@ -128,13 +128,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="commandParser.cpp" />
-    <ClCompile Include="commendParser_test.cpp">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"> %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
+    <ClCompile Include="commendParser_test.cpp" />
     <ClCompile Include="executor.cpp" />
-    <ClCompile Include="executor_test.cpp">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"> %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
+    <ClCompile Include="executor_test.cpp" />
     <ClCompile Include="main.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"> %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'"> %(AdditionalOptions)</AdditionalOptions>
@@ -144,16 +140,19 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"> %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'"> %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="ssdApp.cpp" />
     <ClCompile Include="testScript.cpp" />
-    <ClCompile Include="testScript_test.cpp">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"> %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
+    <ClCompile Include="testScript_test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="commandParser.h" />
+    <ClInclude Include="executor.h" />
+    <ClInclude Include="global_config.h" />
     <ClInclude Include="interface.h" />
+    <ClInclude Include="ssdApp.h" />
     <ClInclude Include="testScript.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

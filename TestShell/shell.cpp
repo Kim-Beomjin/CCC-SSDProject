@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include "commandParser.cpp"
+#include "commandParser.h"
 
 using namespace std;
 

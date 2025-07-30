@@ -1,9 +1,7 @@
 #ifdef _DEBUG
-#include <string>
 #include "gmock/gmock.h"
-#include "commandParser.cpp"
+#include "commandParser.h"
 
-using namespace std;
 using namespace testing;
 
 class CommandParserFixture : public Test {
