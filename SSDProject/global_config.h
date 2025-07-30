@@ -12,11 +12,8 @@ using DATA = unsigned int;
 const std::string ERROR_MSG = "ERROR";
 const std::string HEXA_PREFIX = "0x";
 const char ZERO_PADDING = '0';
-#ifdef _DEBUG
-const std::string OUTPUT_FILE = "../x64/Debug/ssd_output.txt";
-#else
-const std::string OUTPUT_FILE = "../x64/Release/ssd_output.txt";
-#endif
+
+const std::string OUTPUT_FILE = "ssd_output.txt";
 
 #ifdef _DEBUG
 #define DEBUG_ASSERT(cond, msg)                     \
