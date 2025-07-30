@@ -4,7 +4,10 @@
 #include "commandParser.h"
 
 bool CommandParser::ParseCommand(const string& fullCmd) {
-    if (doParse(fullCmd) == false) return false;
+    if (doParse(fullCmd) == false) {
+        cout << "INVALID COMMAND" << endl;
+        return false;
+    }
 
     executor = ExecutorFactory().createExecutor(command);
     if (executor == nullptr) {
