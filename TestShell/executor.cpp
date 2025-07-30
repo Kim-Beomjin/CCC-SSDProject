@@ -6,8 +6,6 @@ using std::string;
 using std::cout;
 using std::endl;
 
-class MockSsdApp;
-
 class SsdApp : public ISsdApp {
 public:
 	u32 Read(u32 lba) override {
