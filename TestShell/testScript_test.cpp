@@ -31,11 +31,11 @@ public:
 	const string FIRST_TEST_SCRIPT_NAME = "1_";
 	const string SECOND_TEST_SCRIPT_NAME = "2_";
 
-	const int FIRST_TEST_SCRIPT_MAX_WRITE_TIMES = 100;
-	const int FIRST_TEST_SCRIPT_MAX_READ_TIMES = 100;
+	const int FIRST_TEST_SCRIPT_MAX_IO_TIMES =
+		TestScript::FIRST_TEST_SCRIPT_LOOP_COUNT * TestScript::FIRST_TEST_SCRIPT_LOOP_LBA;
 
-	const int SECOND_TEST_SCRIPT_MAX_WRITE_TIMES = 150;
-	const int SECOND_TEST_SCRIPT_MAX_READ_TIMES = 150;
+	const int SECOND_TEST_SCRIPT_MAX_IO_TIMES =
+		TestScript::SECOND_TEST_SCRIPT_LOOP_COUNT * TestScript::SECOND_TEST_SCRIPT_LOOP_LBA;
 
 	NiceMock<MockWriter> mockWriter;
 	NiceMock<MockReader> mockReader;
@@ -52,20 +52,20 @@ TEST_F(TestScriptFixture, ThrowInvalidTestScript) {
 
 TEST_F(TestScriptFixture, TestScript1CheckMockReadWriteMaxTimes) {
 	EXPECT_CALL(mockWriter, execute)
-		.Times(FIRST_TEST_SCRIPT_MAX_WRITE_TIMES);
+		.Times(FIRST_TEST_SCRIPT_MAX_IO_TIMES);
 
 	EXPECT_CALL(mockReader, execute)
-		.Times(FIRST_TEST_SCRIPT_MAX_READ_TIMES);
+		.Times(FIRST_TEST_SCRIPT_MAX_IO_TIMES);
 
 	mockApp.FullWriteAndReadCompare(FIRST_TEST_SCRIPT_NAME, &mockSsdApp);
 }
 
 TEST_F(TestScriptFixture, TestScript2CheckMockReadWriteMaxTimes) {
 	EXPECT_CALL(mockWriter, execute)
-		.Times(SECOND_TEST_SCRIPT_MAX_WRITE_TIMES);
+		.Times(SECOND_TEST_SCRIPT_MAX_IO_TIMES);
 
 	EXPECT_CALL(mockReader, execute)
-		.Times(SECOND_TEST_SCRIPT_MAX_READ_TIMES);
+		.Times(SECOND_TEST_SCRIPT_MAX_IO_TIMES);
 
 	mockApp.PartialLBAWrite(SECOND_TEST_SCRIPT_NAME, &mockSsdApp);
 }
