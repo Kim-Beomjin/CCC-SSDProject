@@ -141,8 +141,8 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'"> %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="ssdApp.cpp" />
-    <ClCompile Include="testScript.cpp" />
-    <ClCompile Include="testScript_test.cpp" />
+    <ClCompile Include="compositExecutor.cpp" />
+    <ClCompile Include="compositExecutor_test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -154,7 +154,7 @@
     <ClInclude Include="interface.h" />
     <ClInclude Include="shell.h" />
     <ClInclude Include="ssdApp.h" />
-    <ClInclude Include="testScript.h" />
+    <ClInclude Include="compositExecutor.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

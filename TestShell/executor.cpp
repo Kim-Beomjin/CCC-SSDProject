@@ -1,14 +1,18 @@
 #include <iostream>
 #include "executor.h"
+#include "compositExecutor.h"
 
 using namespace std;
 
 IExecutor* ExecutorFactory::createExecutor(const string command)
 {
-	if (command == "write" || command == "fullwrite") return new Writer();
-	if (command == "read" || command == "fullread") return new Reader();
-	if (command == "help") return new Helper();
-	if (command == "exit") return new Exiter();
+	if (command == WRITE_CMD || command == FULL_WRITE_CMD) return new Writer();
+	if (command == READ_CMD || command == FULL_READ_CMD) return new Reader();
+	if (command == HELP_CMD) return new Helper();
+	if (command == EXIT_CMD) return new Exiter();
+	if (command == FIRST_SCRIPT_SHORT_NAME || command == FIRST_SCRIPT_FULL_NAME)return new FullWriteAndReadCompare(new Writer(), new Reader());
+	if (command == SECOND_SCRIPT_SHORT_NAME || command == SECOND_SCRIPT_FULL_NAME) return new PartialLBAWrite(new Writer(), new Reader());
+	if (command == THIRD_SCRIPT_SHORT_NAME || command == THIRD_SCRIPT_FULL_NAME) return new WriteReadAging(new Writer(), new Reader());
 
 	return nullptr;
 }

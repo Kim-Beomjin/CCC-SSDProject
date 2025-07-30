@@ -13,6 +13,13 @@ const string FULL_WRITE_CMD = "fullwrite";
 const string HELP_CMD = "help";
 const string EXIT_CMD = "exit";
 
+const string FIRST_SCRIPT_SHORT_NAME = "1_";
+const string FIRST_SCRIPT_FULL_NAME = "1_FullWriteAndReadCompare";
+const string SECOND_SCRIPT_SHORT_NAME = "2_";
+const string SECOND_SCRIPT_FULL_NAME = "2_PartialLBAWrite";
+const string THIRD_SCRIPT_SHORT_NAME = "3_";
+const string THIRD_SCRIPT_FULL_NAME = "3_WriteReadAging";
+
 const LBA TEST_LBA = 2;
 const DATA TEST_DATA = 0x12345678;
 const DATA NO_DATA = 0x00000000;
