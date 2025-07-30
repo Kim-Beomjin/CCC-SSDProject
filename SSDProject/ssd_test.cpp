@@ -59,9 +59,9 @@ TEST_F(MockNandSSDFixture, ReadAfterWrite)
     return true;
   }));
 
-  ssd.write(VALID_LBA, stoul(WRITE_DATA, nullptr, 16));
+  ssd.Write(VALID_LBA, stoul(WRITE_DATA, nullptr, 16));
 
-  ssd.read(VALID_LBA);
+  ssd.Read(VALID_LBA);
   std::string readData = getDataFromOutputFile();
 
   EXPECT_EQ(WRITE_DATA, readData);
@@ -76,7 +76,7 @@ TEST_F(MockNandSSDFixture, ReadWithoutWrite)
     return true;
   }));
 
-  ssd.read(VALID_LBA);
+  ssd.Read(VALID_LBA);
   std::string readData = getDataFromOutputFile();
 
   EXPECT_EQ(INVALID_DATA, readData);
@@ -84,7 +84,7 @@ TEST_F(MockNandSSDFixture, ReadWithoutWrite)
 
 TEST_F(MockNandSSDFixture, ReadInvalidParam)
 {
-  ssd.read(INVALID_LBA);
+  ssd.Read(INVALID_LBA);
   std::string outputData = getDataFromOutputFile();
 
   EXPECT_EQ(ERROR_MSG, outputData);
@@ -92,7 +92,7 @@ TEST_F(MockNandSSDFixture, ReadInvalidParam)
 
 TEST_F(MockNandSSDFixture, WriteInvalidParam)
 {
-  ssd.write(INVALID_LBA, stoul(WRITE_DATA, nullptr, 16));
+  ssd.Write(INVALID_LBA, stoul(WRITE_DATA, nullptr, 16));
   std::string outputData = getDataFromOutputFile();
 
   EXPECT_EQ(ERROR_MSG, outputData);

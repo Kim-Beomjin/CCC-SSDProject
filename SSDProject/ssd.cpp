@@ -4,11 +4,11 @@
 #include <iomanip>
 #include <string>
 
-bool SSD::read(LBA lba)
+bool SSD::Read(LBA lba)
 {
   if (_IsInvalidParameter(lba))
   {
-    _updateOutputFile(ERROR_MSG);
+    _UpdateOutputFile(ERROR_MSG);
 
     return false;
    }
@@ -19,22 +19,16 @@ bool SSD::read(LBA lba)
     return false;
   }
 
-  std::stringstream ss;
-  ss << "0x"
-    << std::setw(8) << std::setfill('0')  // 8자리 0패딩
-    << std::hex << std::uppercase         // 대문자 16진수
-    << readData;
-  std::string hexStr = ss.str();
-  _updateOutputFile(hexStr);
+  _UpdateOutputFile(_DataToHexString(readData));
 
   return true;
 }
 
-bool SSD::write(LBA lba, DATA writeData)
+bool SSD::Write(LBA lba, DATA writeData)
 {
   if (_IsInvalidParameter(lba))
   {
-    _updateOutputFile(ERROR_MSG);
+    _UpdateOutputFile(ERROR_MSG);
 
     return false;
   }
@@ -52,10 +46,22 @@ bool SSD::_IsInvalidParameter(LBA lba)
   return false;
 }
 
-void SSD::_updateOutputFile(std::string stringData)
+void SSD::_UpdateOutputFile(std::string stringData)
 {
   std::string outputFile = "ssd_output.txt";
   std::ofstream ofs(outputFile);
 
   ofs.write(stringData.c_str(), stringData.size());
+}
+
+std::string SSD::_DataToHexString(const DATA data)
+{
+  std::stringstream hexString;
+  hexString << HEXA_PREFIX
+  << std::setw(DATA_NUM_DIGIT) << std::setfill(ZERO_PADDING)
+  << std::hex << std::uppercase
+  << data;
+  std::string hexStringData = hexString.str();
+
+  return hexStringData;
 }
