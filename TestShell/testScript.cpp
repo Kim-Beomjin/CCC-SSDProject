@@ -63,6 +63,33 @@ bool TestScript::PartialLBAWrite(string input, ISsdApp* app)
 	}
 }
 
+bool TestScript::WriteReadAging(string input, ISsdApp* app)
+{
+	if (IsValidTestScript3Name(input) == false)
+	{
+#ifdef _DEBUG
+		throw runtime_error("Invalid Test Script");
+#endif
+		return false;
+	}
+
+	int ioLba[2] = { 0, 99 };
+
+	for (int loop = 0; loop < THIRD_TEST_SCRIPT_LOOP_COUNT; loop++)
+	{
+		for (auto lba : ioLba)
+		{
+			writer->execute("write", lba, lba, app);
+		}
+
+		for (auto lba : ioLba)
+		{
+			int data = 0;
+			reader->execute("read", lba, data, app);
+		}
+	}
+}
+
 bool TestScript::IsValidTestScript1Name(std::string& input)
 {
 	return (input == FIRST_TEST_SCRIPT_NAME_SHORT) || (input == FIRST_TEST_SCRIPT_NAME_FULL);
@@ -71,5 +98,10 @@ bool TestScript::IsValidTestScript1Name(std::string& input)
 bool TestScript::IsValidTestScript2Name(std::string& input)
 {
 	return (input == SECOND_TEST_SCRIPT_NAME_SHORT) || (input == SECOND_TEST_SCRIPT_NAME_FULL);
+}
+
+bool TestScript::IsValidTestScript3Name(std::string& input)
+{
+	return (input == THIRD_TEST_SCRIPT_NAME_SHORT) || (input == THIRD_TEST_SCRIPT_NAME_FULL);
 }
 
