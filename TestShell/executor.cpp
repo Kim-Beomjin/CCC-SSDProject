@@ -94,6 +94,5 @@ IExecutor* ExecutorFactory::createExecutor(const string command) {
 		return new Exiter();
 	}
 
-	cout << "Invalid command:" << command << endl;
 	return nullptr;
 }
