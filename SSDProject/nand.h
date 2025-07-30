@@ -1,23 +1,25 @@
 #pragma once
-#include <string>
+
 #include <fstream>
+#include "global_config.h"
+
 #define NAND_FILE_NAME ("./ssd_nand.txt")
 
 class NandInterface
 {
 public:
-	virtual bool Read(const int lba, int& out) = 0;
-	virtual bool Write(const int lba, const int data) = 0;
+	virtual bool Read(const LBA lba, DATA& out) = 0;
+	virtual bool Write(const LBA lba, const DATA data) = 0;
 };
 
 class Nand : public NandInterface
 {
 public:
   Nand() {}
-  bool Read(const int lba, int& out);
-  bool Write(const int lba, const int data);
+  bool Read(const LBA lba, DATA& out);
+  bool Write(const LBA lba, const DATA data);
 private:
-	bool _IsValidParameter(const int lba);
+	bool _IsValidParameter(const LBA lba);
 	bool _IsFileValid(const std::string& filename);
 	void _CreateFile(const std::string& filename);
 	void _ReadFile(const std::string& filename);
