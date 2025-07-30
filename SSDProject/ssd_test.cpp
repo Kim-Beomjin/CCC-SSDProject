@@ -15,8 +15,8 @@ using ::testing::SetArgReferee;
 class MockNand : public NandInterface
 {
 public:
-  MOCK_METHOD(bool, Read, (const LBA lba, DATA& out), (override));
-  MOCK_METHOD(bool, Write, (const LBA lba, const DATA data), (override));
+  MOCK_METHOD(bool, Read, (const LBA lba, DATA& readData), (override));
+  MOCK_METHOD(bool, Write, (const LBA lba, const DATA writeData), (override));
 };
 
 class MockNandSSDFixture : public Test
@@ -40,7 +40,7 @@ public:
     }
   }
 
-  std::string getDataFromOutputFile(void)
+  std::string GetDataFromOutputFile(void)
   {
     std::ifstream ifs(outputFile);
     std::string readData((std::istreambuf_iterator<char>(ifs)),
@@ -52,17 +52,17 @@ public:
 
 TEST_F(MockNandSSDFixture, ReadAfterWrite)
 {
+  ssd.Write(VALID_LBA, stoul(WRITE_DATA, nullptr, 16));
+
   ON_CALL(mockNand, Read(_, _))
-    .WillByDefault(Invoke([=](const LBA, DATA& out) -> bool
+    .WillByDefault(Invoke([=](const LBA, DATA& readData) -> bool
   {
-    out = stoul(WRITE_DATA, nullptr, 16);
+    readData = stoul(WRITE_DATA, nullptr, 16);
     return true;
   }));
 
-  ssd.Write(VALID_LBA, stoul(WRITE_DATA, nullptr, 16));
-
   ssd.Read(VALID_LBA);
-  std::string readData = getDataFromOutputFile();
+  std::string readData = GetDataFromOutputFile();
 
   EXPECT_EQ(WRITE_DATA, readData);
 }
@@ -70,14 +70,14 @@ TEST_F(MockNandSSDFixture, ReadAfterWrite)
 TEST_F(MockNandSSDFixture, ReadWithoutWrite)
 {
   ON_CALL(mockNand, Read(_, _))
-    .WillByDefault(Invoke([=](const LBA lba, DATA& out) -> bool
+    .WillByDefault(Invoke([=](const LBA lba, DATA& readData) -> bool
   {
-    out = stoul(INVALID_DATA, nullptr, 16);
+    readData = stoul(INVALID_DATA, nullptr, 16);
     return true;
   }));
 
   ssd.Read(VALID_LBA);
-  std::string readData = getDataFromOutputFile();
+  std::string readData = GetDataFromOutputFile();
 
   EXPECT_EQ(INVALID_DATA, readData);
 }
@@ -85,7 +85,7 @@ TEST_F(MockNandSSDFixture, ReadWithoutWrite)
 TEST_F(MockNandSSDFixture, ReadInvalidParam)
 {
   ssd.Read(INVALID_LBA);
-  std::string outputData = getDataFromOutputFile();
+  std::string outputData = GetDataFromOutputFile();
 
   EXPECT_EQ(ERROR_MSG, outputData);
 }
@@ -93,7 +93,7 @@ TEST_F(MockNandSSDFixture, ReadInvalidParam)
 TEST_F(MockNandSSDFixture, WriteInvalidParam)
 {
   ssd.Write(INVALID_LBA, stoul(WRITE_DATA, nullptr, 16));
-  std::string outputData = getDataFromOutputFile();
+  std::string outputData = GetDataFromOutputFile();
 
   EXPECT_EQ(ERROR_MSG, outputData);
 }
