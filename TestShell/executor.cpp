@@ -1,5 +1,6 @@
 #include <iostream>
 #include <exception>
+#include "global_config.h"
 #include "interface.h"
 
 using std::string;
@@ -8,11 +9,11 @@ using std::endl;
 
 class SsdApp : public ISsdApp {
 public:
-	u32 Read(u32 lba) override {
+	DATA Read(LBA lba) override {
 		// TODO: need to execute existing exe file of ssd
 	}
 
-	bool Write(u32 lba, u32 data) override {
+	bool Write(LBA lba, DATA data) override {
 		// TODO: need to execute existing exe file of ssd
 	}
 
@@ -26,13 +27,13 @@ private:
 
 class Writer : public IExecutor {
 public:
-	bool execute(const string& command, u32 lba, u32 data, ISsdApp * app) override {
+	bool execute(const string& command, LBA lba, DATA data, ISsdApp * app) override {
 		if (command == "write") {
 			app->Write(lba, data);
 			return true;
 		}
 		else if (command == "fullwrite") {
-			for (u32 lba = 0; lba < SSD_MAX_SIZE; ++lba) app->Write(lba, data);
+			for (LBA lba = 0; lba < SSD_MAX_SIZE; ++lba) app->Write(lba, data);
 			return true;
 		}
 		return false;
@@ -41,13 +42,13 @@ public:
 
 class Reader : public IExecutor {
 public:
-	bool execute(const string& command, u32 lba, u32 data, ISsdApp * app) override {
+	bool execute(const string& command, LBA lba, DATA data, ISsdApp * app) override {
 		if (command == "read") {
 			app->Read(lba);
 			return true;
 		}
 		else if (command == "fullread") {
-			for (u32 lba = 0; lba < SSD_MAX_SIZE; ++lba) app->Read(lba);
+			for (DATA lba = 0; lba < SSD_MAX_SIZE; ++lba) app->Read(lba);
 			return true;
 		}
 		return false;
@@ -56,7 +57,7 @@ public:
 
 class Helper : public IExecutor {
 public:
-	bool execute(const string& command, u32 lba, u32 data, ISsdApp *app) override {
+	bool execute(const string& command, LBA lba, DATA data, ISsdApp *app) override {
 		cout << "ÆÀ¸í: CCC(Clean Code Collective) \n";
 		cout << "ÆÀÀå : ±è¹üÁø / ÆÀ¿ø : ±è°æ¹Î, ±èÀ±Áø, ±èÀ²°ï, Á¤ÁöÀ±\n\n";
 		cout << "Command ¼³¸í:\n";
@@ -73,7 +74,7 @@ public:
 
 class Exiter : public IExecutor {
 public:
-	bool execute(const string& command, u32 lba, u32 data, ISsdApp *app) override {
+	bool execute(const string& command, LBA lba, DATA data, ISsdApp *app) override {
 		cout << "Exit!!" << endl;
 		return true;
 	}
