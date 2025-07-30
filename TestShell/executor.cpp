@@ -1,4 +1,7 @@
 #include <iostream>
+#include <fstream>
+#include <sstream>
+#include <direct.h>
 #include "executor.h"
 
 using namespace std;
@@ -35,7 +38,9 @@ bool Reader::execute(const string& command, LBA lba, DATA data, ISsdApp * app)
 	if (command == "read")
 	{
 		app->Read(lba);
-		cout << "[Read] Done\n";
+
+		string result = GetResultFromFile();
+		cout << "[Read] LBA " << lba << " : " << result << "\n";
 		return true;
 	}
 	else if (command == "fullread")
@@ -44,6 +49,25 @@ bool Reader::execute(const string& command, LBA lba, DATA data, ISsdApp * app)
 		return true;
 	}
 	return false;
+}
+
+string Reader::GetResultFromFile(void)
+{
+	string result = "0x00000000";
+
+	ifstream file(OUTPUT_NAME);
+	if (!file.is_open()) file.open("../" + OUTPUT_NAME);
+	if (!file.is_open()) file.open("../../" + OUTPUT_NAME);
+	if (!file.is_open()) return result;
+
+	std::stringstream buffer;
+	buffer << file.rdbuf();
+
+	result = buffer.str();
+
+	file.close();
+	return result;
+
 }
 
 bool Helper::execute(const string& command, LBA lba, DATA data, ISsdApp *app)
