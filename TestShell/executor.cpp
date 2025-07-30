@@ -26,7 +26,7 @@ public:
 			return true;
 		}
 		else if (command == "fullwrite") {
-			for (u32 i = 0; i < SSD_MAX_SIZE; ++i) app->Write(i, data);
+			for (u32 lba = 0; lba < SSD_MAX_SIZE; ++lba) app->Write(lba, data);
 			return true;
 		}
 		return false;
@@ -42,7 +42,7 @@ public:
 			return true;
 		}
 		else if (command == "fullread") {
-			for (u32 i = 0; i < SSD_MAX_SIZE; ++i) app->Read(i);
+			for (u32 lba = 0; lba < SSD_MAX_SIZE; ++lba) app->Read(lba);
 			return true;
 		}
 		return false;
