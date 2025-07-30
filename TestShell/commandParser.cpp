@@ -10,6 +10,17 @@ bool CommandParser::ParseCommand(string cmd)
     return true;
 }
 
+bool  CommandParser::DoExecution(string cmd)
+{
+    bool ret = false;
+    if (executor == nullptr) return false;
+
+    ret = executor->execute(cmd);
+
+    delete executor;
+    return ret;
+}
+
 bool CommandParser::IsVaildCommand(string cmd)
 {
     return true;

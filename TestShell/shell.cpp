@@ -11,6 +11,7 @@ public:
 
     void RunShellLoop(void) {
         string cmd;
+        bool isExit = false;
 
         if (commandParser == nullptr)
             commandParser = new CommandParser();
@@ -26,7 +27,13 @@ public:
 #ifdef _DEBUG
             cout << cmd << "\n";
 #endif
-        } while (IsCmdExit(cmd) == false);
+            if (IsCmdExit(cmd)) {
+                isExit = commandParser->DoExecution(cmd);
+            }
+            else {
+                commandParser->DoExecution(cmd);
+            }
+        } while (!isExit);
     }
 
 private:
