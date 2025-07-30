@@ -50,7 +50,7 @@ void Nand::_LoadNandFromFile(const std::string& filename)
 
 void Nand::_DumpNandToFile(const std::string& filename)
 {
-	std::ofstream outFile(filename);
+	std::ofstream outFile(filename, std::ios::binary);
 	for (LBA lba = LBA_START_ADDR; lba < LBA_END_ADDR; ++lba) {
 		outFile.write(reinterpret_cast<const char*>(&nandData[lba]), sizeof(nandData[lba]));
 	}
