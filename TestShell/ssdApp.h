@@ -13,7 +13,7 @@ public:
 
 private:
 	SsdApp() {}
-	const char* makeExecuteCmd(string cmd, LBA lba = 0, DATA data = 0);
+	const string makeExecuteCmd(string cmd, LBA lba = 0, DATA data = 0);
 	string _DataToHexString(const DATA data);
 
 	const int DATA_NUM_DIGIT = 8;

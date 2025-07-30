@@ -9,12 +9,14 @@ using std::cout;
 using std::endl;
 
 DATA SsdApp::Read(LBA lba) {
-	system(makeExecuteCmd(SEND_READ_CMD, lba));
+	string sendReadString = makeExecuteCmd(SEND_READ_CMD, lba);
+	system(sendReadString.c_str());
 	return 0;
 }
 
 bool SsdApp::Write(LBA lba, DATA data) {
-	system(makeExecuteCmd(SEND_WRITE_CMD, lba, data));
+	string sendWriteString = makeExecuteCmd(SEND_WRITE_CMD, lba, data);
+	system(sendWriteString.c_str());
 	return true;
 }
 
@@ -24,7 +26,7 @@ SsdApp* SsdApp::getInstance()
 	return &instance;
 }
 
-const char* SsdApp::makeExecuteCmd(string cmd, LBA lba, DATA data) {
+const string SsdApp::makeExecuteCmd(string cmd, LBA lba, DATA data) {
 	std::ostringstream oss;
 	oss << EXE_FILE_NAME << " " << cmd << " " << lba;
 	if (cmd == SEND_WRITE_CMD) {
@@ -32,7 +34,7 @@ const char* SsdApp::makeExecuteCmd(string cmd, LBA lba, DATA data) {
 	}
 	string commandStr = oss.str();
 	cout << commandStr << endl;
-	return commandStr.c_str();
+	return commandStr;
 }
 
 string SsdApp::_DataToHexString(const DATA data)
