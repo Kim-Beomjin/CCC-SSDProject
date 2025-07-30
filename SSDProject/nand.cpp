@@ -2,6 +2,8 @@
 #include <stdexcept>
 #endif
 #include "nand.h"
+#include <fstream>
+#include <string>
 
 bool Nand::Read(const LBA lba, DATA& readData)
 {
