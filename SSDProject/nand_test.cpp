@@ -26,6 +26,8 @@ protected:
     const std::vector<int> VALID_LBA_ADDR_LIST = { 0, 50, 70, 90, 99 };
     const std::vector<int> INVALID_LBA_ADDR_LIST = { -100, -10, -1, 100, 10000 };
     const int WRITE_DATA = 0xFFFF;
+    const int OVERWRITE_DATA = 0xCCCCC;
+    const int EMPTY_DATA = 0;
 };
 
 TEST_F(NandFixture, READ_VALID_PARAMETER_TEST) {
@@ -77,6 +79,34 @@ TEST_F(NandFixture, READ_AFTER_WRITE)
     for (int lba : VALID_LBA_ADDR_LIST) {
         nand.Read(lba, readData);
         EXPECT_EQ(readData, WRITE_DATA);
+    }
+}
+
+TEST_F(NandFixture, Read_Without_Write)
+{
+    DeleteFile(NAND_FILE_NAME);
+    for (int lba : VALID_LBA_ADDR_LIST) {
+        nand.Read(lba, readData);
+        EXPECT_EQ(readData, EMPTY_DATA);
+    }
+}
+
+TEST_F(NandFixture, Read_AfterOverWrite)
+{
+    DeleteFile(NAND_FILE_NAME);
+    for (int lba : VALID_LBA_ADDR_LIST) {
+        nand.Write(lba, WRITE_DATA);
+    }
+    for (int lba : VALID_LBA_ADDR_LIST) {
+        nand.Read(lba, readData);
+        EXPECT_EQ(readData, WRITE_DATA);
+    }
+    for (int lba : VALID_LBA_ADDR_LIST) {
+        nand.Write(lba, OVERWRITE_DATA);
+    }
+    for (int lba : VALID_LBA_ADDR_LIST) {
+        nand.Read(lba, readData);
+        EXPECT_EQ(readData, OVERWRITE_DATA);
     }
 }
 
