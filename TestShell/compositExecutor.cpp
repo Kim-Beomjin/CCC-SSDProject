@@ -82,8 +82,8 @@ bool WriteReadAging::execute(const string& command, LBA lba, DATA data, ISsdApp*
 		DATA inputData[2] = { loop, LOOP_COUNT - loop };
 #else
 		DATA inputData[2];
-		DATA inputData[0] = rand();
-		DATA inputData[1] = rand();
+		inputData[0] = rand();
+		inputData[1] = rand();
 #endif
 
 		for (int index = 0; index < NUM_LBA_PER_LOOP; index++)
