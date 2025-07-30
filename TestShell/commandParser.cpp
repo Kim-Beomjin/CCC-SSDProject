@@ -6,7 +6,7 @@
 bool CommandParser::ParseCommand(const string& fullCmd) {
     if (doParse(fullCmd) == false) return false;
 
-    executor = ExecutorFactory().createExecutor(fullCmd);
+    executor = ExecutorFactory().createExecutor(command);
     if (executor == nullptr) {
         return false;
     }
@@ -26,6 +26,7 @@ bool CommandParser::IsVaildCommand(const string& cmd) {
 
 bool CommandParser::IsValidLba(const LBA lba) {
     if (lba >= SSD_MAX_SIZE) return false;
+    return true;
 }
 
 bool CommandParser::doParse(const string& fullCmd) {
@@ -35,8 +36,10 @@ bool CommandParser::doParse(const string& fullCmd) {
 
     command = tokens[0];
     if (IsVaildCommand(command) == false) return false;
-    if (tokens.size() > 1) lba = stringToUnsignedInt(tokens[1]);
-    if (IsValidLba(lba) == false) return false;
+    if (tokens.size() > 1) {
+        lba = stringToUnsignedInt(tokens[1]);
+        if (IsValidLba(lba) == false) return false;
+    }
     if (tokens.size() > 2) data = stringToUnsignedInt(tokens[2]);
 
     return true;
