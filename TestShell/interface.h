@@ -18,6 +18,13 @@ interface IExecutor {
 	virtual bool execute(const string& command = "", u32 lba = 0, u32 data = 0, ISsdApp *pApp = nullptr) = 0;
 };
 
+class ICommandParserBridge
+{
+public:
+	virtual bool ParseCommand(const string& cmd) = 0;
+	virtual bool ExecuteSsdUsingParsedCommand(ISsdApp* app) = 0;
+};
+
 class ExecutorFactory {
 public:
 	IExecutor* createExecutor(const string command);
