@@ -4,8 +4,10 @@ bool SSD::read(LBA lba)
 {
   if (_IsInvalidParameter(lba))
   {
+    _updateOutputFile(ERROR_MSG);
+
     return false;
-  }
+   }
 
   DATA readData;
   if (nand->Read(lba, readData) == false)
@@ -13,7 +15,7 @@ bool SSD::read(LBA lba)
     return false;
   }
   
-  _updateOutputFile(readData);
+  _updateOutputFile(std::to_string(readData));
 
   return true;
 }
@@ -22,6 +24,8 @@ bool SSD::write(LBA lba, DATA writeData)
 {
   if (_IsInvalidParameter(lba))
   {
+    _updateOutputFile(ERROR_MSG);
+
     return false;
   }
 
@@ -32,21 +36,16 @@ bool SSD::_IsInvalidParameter(LBA lba)
 {
   if (lba >= LBA_END_ADDR)
   {
-#ifdef _DEBUG
-    throw(std::exception("INVALID PARAMETER"));
-#endif
     return true;
   }
 
   return false;
 }
 
-void SSD::_updateOutputFile(DATA data)
+void SSD::_updateOutputFile(std::string stringData)
 {
   std::string outputFile = "ssd_output.txt";
   std::ofstream ofs(outputFile);
 
-  std::string stringData = std::to_string(data);
   ofs.write(stringData.c_str(), stringData.size());
-  ofs.close();
 }
