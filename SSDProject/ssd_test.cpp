@@ -71,11 +71,17 @@ TEST_F(MockNandSSDFixture, ReadWithoutWrite)
 
 TEST_F(MockNandSSDFixture, ReadInvalidParam)
 {
-  EXPECT_THROW(ssd.read(INVALID_LBA), std::exception);
+  ssd.read(INVALID_LBA);
+  std::string outputData = getDataFromOutputFile();
+
+  EXPECT_EQ(ERROR_MSG, outputData);
 }
 
 TEST_F(MockNandSSDFixture, WriteInvalidParam)
 {
-  EXPECT_THROW(std::to_string(ssd.write(INVALID_LBA, WRITE_DATA)), std::exception);
+  ssd.write(INVALID_LBA, WRITE_DATA);
+  std::string outputData = getDataFromOutputFile();
+
+  EXPECT_EQ(ERROR_MSG, outputData);
 }
 #endif
