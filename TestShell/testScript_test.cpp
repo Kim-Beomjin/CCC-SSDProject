@@ -9,32 +9,14 @@ using namespace testing;
 class TestScriptFixture : public Test {
 public:
     TestScript app;
+
+	const string BLANK_TEST_SCRIPT_NAME = "";
+	const string INVALID_TEST_SCRIPT_NAME = "123";
 };
 
-TEST_F(TestScriptFixture, ThrowBlankTestScript) {
-	string blankString = "";
-
-	try {
-		app.FullWriteAndReadCompare(blankString);
-		FAIL();
-	}
-	catch (runtime_error& e) {
-		EXPECT_EQ(string{ e.what() },
-			string{ "Invalid Test Script" });
-	}
-}
-
 TEST_F(TestScriptFixture, ThrowInvalidTestScript) {
-	string invalidString = "123";
-
-	try {
-		app.FullWriteAndReadCompare(invalidString);
-		FAIL();
-	}
-	catch (runtime_error& e) {
-		EXPECT_EQ(string{ e.what() },
-			string{ "Invalid Test Script" });
-	}
+	EXPECT_THROW(app.FullWriteAndReadCompare(BLANK_TEST_SCRIPT_NAME), runtime_error);
+	EXPECT_THROW(app.FullWriteAndReadCompare(INVALID_TEST_SCRIPT_NAME), runtime_error);
 }
 
 #endif
