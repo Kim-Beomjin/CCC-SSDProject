@@ -1,46 +1,46 @@
 #include <iostream>
 #include <string>
+#include "shell.h"
+#include "ssdApp.h"
 #include "commandParser.h"
+#include "global_config.h"
 
 using namespace std;
 
-class Shell {
-public:
-    Shell() : commandParser(nullptr) {}
-    Shell(ICommandParserBridge* broker) : commandParser(broker) {}
+void Shell::RunShellLoop(void) {
+    string cmd;
 
-    void RunShellLoop(void) {
-        string cmd;
-        bool isExit = false;
+    if (commandParser == nullptr)
+        commandParser = new CommandParser();
 
-        if (commandParser == nullptr)
-            commandParser = new CommandParser();
+    do {
+        cout << "Shell> ";
 
-        do {
-            cout << "Shell> ";
-
-            getline(std::cin, cmd);
-            // cin.ignore();
-            // Parse cmd
-            bool ret = commandParser->ParseCommand(cmd);
+        getline(std::cin, cmd);
+        // cin.ignore();
+        // Parse cmd
+        bool ret = commandParser->ParseCommand(cmd);
+#ifdef _DEBUG
+        if (ret)
+            commandParser->ExecuteSsdUsingParsedCommand(app);
+#else
+        if (ret)
+            commandParser->ExecuteSsdUsingParsedCommand(SsdApp::getInstance());
+#endif
 
 #ifdef _DEBUG
-            cout << cmd << "\n";
+        cout << cmd << "\n";
 #endif
-            if (IsCmdExit(cmd)) {
-                isExit = commandParser->DoExecution(cmd);
-            }
-            else {
-                commandParser->DoExecution(cmd);
-            }
-        } while (isExit == false);
-    }
+    } while (IsCmdExit(cmd) == false);
+}
 
-private:
-    bool IsCmdExit(string cmd) {
-        return cmd == "exit";
-    }
+bool Shell::IsCmdExit(string cmd) {
+    return cmd == EXIT_CMD;
+}
 
-protected:
-    ICommandParserBridge *commandParser = nullptr;
-};
+#ifdef _DEBUG
+void Shell::setSsdApp(ISsdApp* pApp) {
+    app = pApp;
+}
+
+#endif

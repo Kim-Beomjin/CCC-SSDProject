@@ -4,33 +4,39 @@
 
 using namespace testing;
 
+class MockSsdApp : public ISsdApp {
+public:
+    MOCK_METHOD(DATA, Read, (LBA), (override));
+    MOCK_METHOD(bool, Write, (LBA, DATA), (override));
+};
+
 class CommandParserFixture : public Test {
 public:
     class CommandParser parser;
-    int ret = true;
+    MockSsdApp mock_app;
+    void CheckParseCommand(const string& cmd, LBA lba = 0, DATA data = 0) {
+        EXPECT_TRUE(parser.ParseCommand(cmd));
+        EXPECT_TRUE(parser.ExecuteSsdUsingParsedCommand(&mock_app));
+    }
 };
 
 TEST_F(CommandParserFixture, HelpCommand) {
-    string cmd = "help";
-
-    ret = parser.ParseCommand(cmd);
-
-    EXPECT_EQ(true, ret);
+    CheckParseCommand(HELP_CMD);
 }
 
 TEST_F(CommandParserFixture, FullwriteCommand) {
-    string cmd = "fullwrite";
+    EXPECT_CALL(mock_app, Write)
+        .Times(100)
+        .WillRepeatedly(Return(true));
 
-    ret = parser.ParseCommand(cmd);
-
-    EXPECT_EQ(true, ret);
+    CheckParseCommand(FULL_WRITE_CMD, 0, TEST_DATA);
 }
 
 TEST_F(CommandParserFixture, fullreadCommand) {
-    string cmd = "fullread";
+    EXPECT_CALL(mock_app, Read)
+        .Times(100)
+        .WillRepeatedly(Return(true));
 
-    ret = parser.ParseCommand(cmd);
-
-    EXPECT_EQ(true, ret);
+    CheckParseCommand(FULL_READ_CMD);
 }
 #endif

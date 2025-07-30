@@ -152,6 +152,7 @@
     <ClInclude Include="executor.h" />
     <ClInclude Include="global_config.h" />
     <ClInclude Include="interface.h" />
+    <ClInclude Include="shell.h" />
     <ClInclude Include="ssdApp.h" />
     <ClInclude Include="testScript.h" />
   </ItemGroup>
