@@ -10,11 +10,18 @@ using namespace testing;
 class ShellFixture : public Test {
 public:
     class Shell shell;
+    string EXIT_CMD = "exit\n";
+    string WRITE_CMD = "write 3 0x12345678\n";
+    string READ_CMD = "read 3\n";
+
+    string EXIT_RESULT = "Shell> exit\n";
+    string WRITE_RESULT = "Shell> write 3 0x12345678\n";
+    string READ_RESULT = "Shell> read 3\n";
 };
 
 TEST_F(ShellFixture, ExitCommand) {
-    string fakeCmd = "exit";
-    string EXIT_RESULT = "Shell> exit\n";
+    string fakeCmd = EXIT_CMD;
+
     istringstream iss(fakeCmd);
     ostringstream oss;
 
@@ -35,8 +42,8 @@ TEST_F(ShellFixture, ExitCommand) {
 }
 
 TEST_F(ShellFixture, WriteAndExit) {
-    string fakeCmd = "write 3 0x12345678\nexit";
-    string WRITEANDEXIT_RESULT = "Shell> write 3 0x12345678\nShell> exit\n";
+    string fakeCmd = WRITE_CMD + EXIT_CMD;
+    string WRITEANDEXIT_RESULT = WRITE_RESULT + EXIT_RESULT;
     istringstream iss(fakeCmd);
     ostringstream oss;
 
@@ -57,8 +64,8 @@ TEST_F(ShellFixture, WriteAndExit) {
 }
 
 TEST_F(ShellFixture, ReadAndExit) {
-    string fakeCmd = "read 3\nexit";
-    string READANDEXIT_RESULT = "Shell> read 3\nShell> exit\n";
+    string fakeCmd = READ_CMD + EXIT_CMD;
+    string READANDEXIT_RESULT = READ_RESULT + EXIT_RESULT;
     istringstream iss(fakeCmd);
     ostringstream oss;
 
