@@ -18,6 +18,8 @@ bool Writer::execute(const string& command, LBA lba, DATA data, ISsdApp * app)
 	if (command == "write")
 	{
 		app->Write(lba, data);
+		cout << "[Write] Done\n";
+
 		return true;
 	}
 	else if (command == "fullwrite")
@@ -33,6 +35,7 @@ bool Reader::execute(const string& command, LBA lba, DATA data, ISsdApp * app)
 	if (command == "read")
 	{
 		app->Read(lba);
+		cout << "[Read] Done\n";
 		return true;
 	}
 	else if (command == "fullread")

@@ -7,7 +7,6 @@ using std::endl;
 
 DATA SsdApp::Read(LBA lba) {
 	system(makeExecuteCmd(READ_CMD, lba));
-	// TODO: need to read result txt file
 	return 0;
 }
 
