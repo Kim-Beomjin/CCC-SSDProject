@@ -9,14 +9,14 @@ void HostInterface::Execute(int argc, char* argv[])
 		if (_LoadWriteParameterAndCheckInvalid(argv[ARGV::LBA_IDX], argv[ARGV::DATA_IDX])) {
 			return;
 		}
-		ssd->write(lba, data);
+		ssd->Write(lba, data);
 	}
 	else if (_ReadCondition(argc, argv))
 	{
 		if (_LoadReadParameterAndCheckInvalid(argv[ARGV::LBA_IDX])) {
 			return;
 		}
-		ssd->read(lba);
+		ssd->Read(lba);
 	}
 	else {
 		DEBUG_ASSERT(false, "INVALID INPUT PARAMETERS");
