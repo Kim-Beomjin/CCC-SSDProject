@@ -30,12 +30,16 @@ public:
 	const string INVALID_TEST_SCRIPT_NAME = "123";
 	const string FIRST_TEST_SCRIPT_NAME = "1_";
 	const string SECOND_TEST_SCRIPT_NAME = "2_";
+	const string THIRD_TEST_SCRIPT_NAME = "3_";
 
 	const int FIRST_TEST_SCRIPT_MAX_IO_TIMES =
 		TestScript::FIRST_TEST_SCRIPT_LOOP_COUNT * TestScript::FIRST_TEST_SCRIPT_LOOP_LBA;
 
 	const int SECOND_TEST_SCRIPT_MAX_IO_TIMES =
 		TestScript::SECOND_TEST_SCRIPT_LOOP_COUNT * TestScript::SECOND_TEST_SCRIPT_LOOP_LBA;
+
+	const int THIRD_TEST_SCRIPT_MAX_IO_TIMES =
+		TestScript::THIRD_TEST_SCRIPT_LOOP_COUNT * TestScript::THIRD_TEST_SCRIPT_LOOP_LBA;
 
 	NiceMock<MockWriter> mockWriter;
 	NiceMock<MockReader> mockReader;
@@ -45,9 +49,11 @@ public:
 TEST_F(TestScriptFixture, ThrowInvalidTestScript) {
 	EXPECT_THROW(app.FullWriteAndReadCompare(BLANK_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
 	EXPECT_THROW(app.PartialLBAWrite(BLANK_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
+	EXPECT_THROW(app.WriteReadAging(BLANK_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
 
 	EXPECT_THROW(app.FullWriteAndReadCompare(INVALID_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
 	EXPECT_THROW(app.PartialLBAWrite(INVALID_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
+	EXPECT_THROW(app.WriteReadAging(INVALID_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
 }
 
 TEST_F(TestScriptFixture, TestScript1CheckMockReadWriteMaxTimes) {
@@ -68,6 +74,16 @@ TEST_F(TestScriptFixture, TestScript2CheckMockReadWriteMaxTimes) {
 		.Times(SECOND_TEST_SCRIPT_MAX_IO_TIMES);
 
 	mockApp.PartialLBAWrite(SECOND_TEST_SCRIPT_NAME, &mockSsdApp);
+}
+
+TEST_F(TestScriptFixture, TestScript3CheckMockReadWriteMaxTimes) {
+	EXPECT_CALL(mockWriter, execute)
+		.Times(THIRD_TEST_SCRIPT_MAX_IO_TIMES);
+
+	EXPECT_CALL(mockReader, execute)
+		.Times(THIRD_TEST_SCRIPT_MAX_IO_TIMES);
+
+	mockApp.WriteReadAging(THIRD_TEST_SCRIPT_NAME, &mockSsdApp);
 }
 
 #endif
