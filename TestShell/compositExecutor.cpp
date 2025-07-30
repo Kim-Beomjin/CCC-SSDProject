@@ -1,4 +1,5 @@
 #include "CompositExecutor.h"
+#include <iostream>
 #ifdef _DEBUG
 #include <stdexcept>
 #else
@@ -8,10 +9,14 @@
 bool CompositExecutor::ReadCompare(ISsdApp* app, LBA lba, DATA expectedData)
 {
 	DATA ouputData = 0;
-	reader->execute("read", lba, ouputData, app);
+	reader->execute(SCRIPT_READ_CMD, lba, ouputData, app);
 
 #ifndef _DEBUG
-	if (ouputData != expectedData) return false;
+	if (ouputData != expectedData)
+	{
+		cout << "FAIL\n";
+		return false;
+	}
 #endif
 
 	return true;
@@ -28,7 +33,7 @@ bool FullWriteAndReadCompare::execute(const string& command, LBA lba, DATA data,
 
 		for (int lba = startLba; lba < endLba; lba++)
 		{
-			writer->execute("write", lba, inputData, app);
+			writer->execute(SCRIPT_WRITE_CMD, lba, inputData, app);
 		}
 
 		for (int lba = startLba; lba < endLba; lba++)
@@ -37,6 +42,7 @@ bool FullWriteAndReadCompare::execute(const string& command, LBA lba, DATA data,
 		}
 	}
 
+	cout << "PASS\n";
 	return true;
 }
 
@@ -52,7 +58,7 @@ bool PartialLBAWrite::execute(const string& command, LBA lba, DATA data, ISsdApp
 
 		for (auto lba : writeLba)
 		{
-			writer->execute("write", lba, inputData, app);
+			writer->execute(SCRIPT_WRITE_CMD, lba, inputData, app);
 		}
 
 		for (int lba = readStartLba; lba < readEndLba; lba++)
@@ -61,6 +67,7 @@ bool PartialLBAWrite::execute(const string& command, LBA lba, DATA data, ISsdApp
 		}
 	}
 
+	cout << "PASS\n";
 	return true;
 }
 
@@ -81,7 +88,7 @@ bool WriteReadAging::execute(const string& command, LBA lba, DATA data, ISsdApp*
 
 		for (int index = 0; index < NUM_LBA_PER_LOOP; index++)
 		{
-			writer->execute("write", ioLba[index], inputData[index], app);
+			writer->execute(SCRIPT_WRITE_CMD, ioLba[index], inputData[index], app);
 		}
 
 		for (int index = 0; index < NUM_LBA_PER_LOOP; index++)
@@ -90,5 +97,6 @@ bool WriteReadAging::execute(const string& command, LBA lba, DATA data, ISsdApp*
 		}
 	}
 
+	cout << "PASS\n";
 	return true;
 }

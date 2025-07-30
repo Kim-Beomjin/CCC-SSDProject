@@ -22,37 +22,33 @@ IExecutor* ExecutorFactory::createExecutor(const string command)
 
 bool Writer::execute(const string& command, LBA lba, DATA data, ISsdApp * app)
 {
-	if (command == "write")
-	{
-		app->Write(lba, data);
-		cout << "[Write] Done\n";
-
-		return true;
-	}
-	else if (command == "fullwrite")
+	if (command == FULL_WRITE_CMD)
 	{
 		for (LBA lba = 0; lba < SSD_MAX_SIZE; ++lba) app->Write(lba, data);
 		return true;
 	}
-	return false;
+
+	app->Write(lba, data);
+	if (command == SCRIPT_WRITE_CMD) return true;
+
+	cout << "[Write] Done\n";
+	return true;
 }
 
 bool Reader::execute(const string& command, LBA lba, DATA data, ISsdApp * app)
 {
-	if (command == "read")
-	{
-		app->Read(lba);
-
-		string result = GetResultFromFile();
-		cout << "[Read] LBA " << lba << " : " << result << "\n";
-		return true;
-	}
-	else if (command == "fullread")
+	if (command == FULL_READ_CMD)
 	{
 		for (DATA lba = 0; lba < SSD_MAX_SIZE; ++lba) app->Read(lba);
 		return true;
 	}
-	return false;
+
+	app->Read(lba);
+	if (command == SCRIPT_READ_CMD) return true;
+
+	string result = GetResultFromFile();
+	cout << "[Read] LBA " << lba << " : " << result << "\n";
+	return true;
 }
 
 string Reader::GetResultFromFile(void)
