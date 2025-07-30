@@ -1,24 +1,39 @@
 #include "CompositExecutor.h"
 #ifdef _DEBUG
 #include <stdexcept>
+#else
+#include <random>
 #endif
+
+bool CompositExecutor::ReadCompare(ISsdApp* app, LBA lba, DATA expectedData)
+{
+	DATA ouputData = 0;
+	reader->execute("read", lba, ouputData, app);
+
+#ifndef _DEBUG
+	if (ouputData != expectedData) return false;
+#endif
+
+	return true;
+}
+
 
 bool FullWriteAndReadCompare::execute(const string& command, LBA lba, DATA data, ISsdApp* app)
 {
 	for (int loop = 0; loop < LOOP_COUNT; loop++)
 	{
-		int startLba = loop * NUM_LBA_PER_LOOP;
-		int endLba = (loop + 1) * NUM_LBA_PER_LOOP;
+		LBA startLba = loop * NUM_LBA_PER_LOOP;
+		LBA endLba = (loop + 1) * NUM_LBA_PER_LOOP;
+		const DATA inputData = loop;
 
 		for (int lba = startLba; lba < endLba; lba++)
 		{
-			writer->execute("write", lba, lba, app);
+			writer->execute("write", lba, inputData, app);
 		}
 
 		for (int lba = startLba; lba < endLba; lba++)
 		{
-			int data = 0;
-			reader->execute("read", lba, data, app);
+			if (!ReadCompare(app, lba, inputData)) return false;
 		}
 	}
 
@@ -27,22 +42,22 @@ bool FullWriteAndReadCompare::execute(const string& command, LBA lba, DATA data,
 
 bool PartialLBAWrite::execute(const string& command, LBA lba, DATA data, ISsdApp* app)
 {
-	int writeLba[5] = { 4, 0, 3, 1, 2 };
-	int readStartLba = 0;
-	int readEndLba = NUM_LBA_PER_LOOP;
+	LBA writeLba[5] = { 4, 0, 3, 1, 2 };
+	LBA readStartLba = 0;
+	LBA readEndLba = NUM_LBA_PER_LOOP;
 
 	for (int loop = 0; loop < LOOP_COUNT; loop++)
 	{
+		const DATA inputData = loop;
 
 		for (auto lba : writeLba)
 		{
-			writer->execute("write", lba, lba, app);
+			writer->execute("write", lba, inputData, app);
 		}
 
 		for (int lba = readStartLba; lba < readEndLba; lba++)
 		{
-			int data = 0;
-			reader->execute("read", lba, data, app);
+			if (!ReadCompare(app, lba, inputData)) return false;
 		}
 	}
 
@@ -51,19 +66,27 @@ bool PartialLBAWrite::execute(const string& command, LBA lba, DATA data, ISsdApp
 
 bool WriteReadAging::execute(const string& command, LBA lba, DATA data, ISsdApp* app)
 {
-	int ioLba[2] = { 0, 99 };
+	LBA ioLba[2] = { 0, 99 };
 
 	for (int loop = 0; loop < LOOP_COUNT; loop++)
 	{
-		for (auto lba : ioLba)
+
+#ifdef _DEBUG
+		DATA inputData[2] = { loop, LOOP_COUNT - loop };
+#else
+		DATA inputData[2];
+		DATA inputData[0] = rand();
+		DATA inputData[1] = rand();
+#endif
+
+		for (int index = 0; index < NUM_LBA_PER_LOOP; index++)
 		{
-			writer->execute("write", lba, lba, app);
+			writer->execute("write", ioLba[index], inputData[index], app);
 		}
 
-		for (auto lba : ioLba)
+		for (int index = 0; index < NUM_LBA_PER_LOOP; index++)
 		{
-			int data = 0;
-			reader->execute("read", lba, data, app);
+			if (!ReadCompare(app, ioLba[index], inputData[index])) return false;
 		}
 	}
 
