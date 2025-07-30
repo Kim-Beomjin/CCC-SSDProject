@@ -29,7 +29,6 @@ public:
   const LBA INVALID_LBA = 101;
   const std::string WRITE_DATA = "0x001F2DC0";
   const std::string INVALID_DATA = "0x00000000";
-  const std::string outputFile = "ssd_output.txt";
 
   void SetUp() override
   {
@@ -38,7 +37,7 @@ public:
 
   std::string GetDataFromOutputFile(void)
   {
-    std::ifstream ifs(outputFile);
+    std::ifstream ifs(OUTPUT_FILE);
     std::string readData((std::istreambuf_iterator<char>(ifs)),
       std::istreambuf_iterator<char>());
 
@@ -64,7 +63,7 @@ public:
 private:
   void _RemoveOutputFile(void)
   {
-    int result = std::remove(outputFile.c_str());
+    int result = std::remove(OUTPUT_FILE.c_str());
     if (result != 0)
     {
       std::perror("file remove fail");
