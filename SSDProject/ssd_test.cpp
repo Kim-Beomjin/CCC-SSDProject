@@ -22,10 +22,9 @@ public:
   NiceMock<MockNand> mockNand;
   SSD ssd{ &mockNand };
 
-  const LBA validLba = 5;
-  const LBA invalidLba = 101;
-  const DATA writeData = 0xdeadcafe;
-  const DATA InvalidData = 0x0;
+  const LBA VALID_LBA = 5;
+  const LBA INVALID_LBA = 101;
+  const DATA WRITE_DATA = 0xdeadcafe;
   const std::string outputFile = "ssd_output.txt";
 
   std::string getDataFromOutputFile(void)
@@ -33,7 +32,6 @@ public:
     std::ifstream ifs(outputFile);
     std::string readData((std::istreambuf_iterator<char>(ifs)),
       std::istreambuf_iterator<char>());
-    ifs.close();
 
     return readData;
   }
@@ -44,16 +42,16 @@ TEST_F(MockNandSSDFixture, ReadAfterWrite)
   ON_CALL(mockNand, Read(_, _))
     .WillByDefault(Invoke([=](const LBA, DATA& out) -> bool
   {
-    out = writeData;
+    out = WRITE_DATA;
     return true;
   }));
 
-  ssd.write(validLba, writeData);
+  ssd.write(VALID_LBA, WRITE_DATA);
 
-  ssd.read(validLba);
+  ssd.read(VALID_LBA);
   std::string readData = getDataFromOutputFile();
 
-  EXPECT_EQ((writeData), (stoul(readData)));
+  EXPECT_EQ((WRITE_DATA), (stoul(readData)));
 }
 
 TEST_F(MockNandSSDFixture, ReadWithoutWrite)
@@ -61,23 +59,23 @@ TEST_F(MockNandSSDFixture, ReadWithoutWrite)
   ON_CALL(mockNand, Read(_, _))
     .WillByDefault(Invoke([=](const LBA lba, DATA& out) -> bool
   {
-    out = InvalidData;
+    out = EMPTY_DATA;
     return true;
   }));
 
-  ssd.read(validLba);
+  ssd.read(VALID_LBA);
   std::string readData = getDataFromOutputFile();
 
-  EXPECT_EQ(InvalidData, stoul(readData));
+  EXPECT_EQ(EMPTY_DATA, stoul(readData));
 }
 
 TEST_F(MockNandSSDFixture, ReadInvalidParam)
 {
-  EXPECT_THROW(ssd.read(invalidLba), std::exception);
+  EXPECT_THROW(ssd.read(INVALID_LBA), std::exception);
 }
 
 TEST_F(MockNandSSDFixture, WriteInvalidParam)
 {
-  EXPECT_THROW(std::to_string(ssd.write(invalidLba, writeData)), std::exception);
+  EXPECT_THROW(std::to_string(ssd.write(INVALID_LBA, WRITE_DATA)), std::exception);
 }
 #endif
