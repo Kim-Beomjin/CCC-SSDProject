@@ -30,6 +30,9 @@ public:
 	const string INVALID_TEST_SCRIPT_NAME = "123";
 	const string FIRST_TEST_SCRIPT_NAME = "1_";
 
+	const int FIRST_TEST_SCRIPT_MAX_WRITE_TIMES = 100;
+	const int FIRST_TEST_SCRIPT_MAX_READ_TIMES = 100;
+
 	NiceMock<MockWriter> mockWriter;
 	NiceMock<MockReader> mockReader;
 	NiceMock<MockSsdApp> mockSsdApp;
@@ -40,12 +43,12 @@ TEST_F(TestScriptFixture, ThrowInvalidTestScript) {
 	EXPECT_THROW(app.FullWriteAndReadCompare(INVALID_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
 }
 
-TEST_F(TestScriptFixture, TestScript1CheckMockReadWriteTimes) {
+TEST_F(TestScriptFixture, TestScript1CheckMockReadWriteMaxTimes) {
 	EXPECT_CALL(mockWriter, execute)
-		.Times(100);
+		.Times(FIRST_TEST_SCRIPT_MAX_WRITE_TIMES);
 
 	EXPECT_CALL(mockReader, execute)
-		.Times(100);
+		.Times(FIRST_TEST_SCRIPT_MAX_READ_TIMES);
 
 	mockApp.FullWriteAndReadCompare(FIRST_TEST_SCRIPT_NAME, &mockSsdApp);
 }

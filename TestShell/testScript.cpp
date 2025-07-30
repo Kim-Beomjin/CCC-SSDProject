@@ -5,7 +5,7 @@
 
 bool TestScript::FullWriteAndReadCompare(string input, ISsdApp* app)
 {
-	if ((input != "1_") && (input != "1_FullWriteAndReadCompare"))
+	if (IsValidTestScriptName(input) == false)
 	{
 #ifdef _DEBUG
 		throw runtime_error("Invalid Test Script");
@@ -13,10 +13,10 @@ bool TestScript::FullWriteAndReadCompare(string input, ISsdApp* app)
 		return false;
 	}
 
-	for (int step = 0; step < 20; step++)
+	for (int loop = 0; loop < FIRST_TEST_SCRIPT_LOOP_COUNT; loop++)
 	{
-		int startLba = step * 5;
-		int endLba = (step + 1) * 5;
+		int startLba = loop * FIRST_TEST_SCRIPT_LOOP_LBA;
+		int endLba = (loop + 1) * FIRST_TEST_SCRIPT_LOOP_LBA;
 
 		for (int lba = startLba; lba < endLba; lba++)
 		{
@@ -31,4 +31,9 @@ bool TestScript::FullWriteAndReadCompare(string input, ISsdApp* app)
 	}
 
 	return true;
+}
+
+bool TestScript::IsValidTestScriptName(std::string& input)
+{
+	return (input == "1_") || (input == "1_FullWriteAndReadCompare");
 }
