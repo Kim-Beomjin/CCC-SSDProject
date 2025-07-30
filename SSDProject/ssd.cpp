@@ -1,5 +1,7 @@
 #include "ssd.h"
 #include <fstream>
+#include <sstream>
+#include <iomanip>
 #include <string>
 
 bool SSD::read(LBA lba)
@@ -16,8 +18,14 @@ bool SSD::read(LBA lba)
   {
     return false;
   }
-  
-  _updateOutputFile(std::to_string(readData));
+
+  std::stringstream ss;
+  ss << "0x"
+    << std::setw(8) << std::setfill('0')  // 8자리 0패딩
+    << std::hex << std::uppercase         // 대문자 16진수
+    << readData;
+  std::string hexStr = ss.str();
+  _updateOutputFile(hexStr);
 
   return true;
 }
