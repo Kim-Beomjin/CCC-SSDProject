@@ -68,4 +68,16 @@ TEST_F(NandFixture, FILE_EXIST_AFTER_WRITE) {
     EXPECT_EQ(IsFileExist(NAND_FILE_NAME), true);
 }
 
+TEST_F(NandFixture, READ_AFTER_WRITE)
+{
+    DeleteFile(NAND_FILE_NAME);
+    for (int lba : VALID_LBA_ADDR_LIST) {
+        nand.Write(lba, WRITE_DATA);
+    }
+    for (int lba : VALID_LBA_ADDR_LIST) {
+        nand.Read(lba, readData);
+        EXPECT_EQ(readData, WRITE_DATA);
+    }
+}
+
 #endif
