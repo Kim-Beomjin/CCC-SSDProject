@@ -1,12 +1,7 @@
-#include <sstream>
 #include <iostream>
 #include <direct.h>
-#include <fstream>
-#include <iomanip>
 #include "ssdApp.h"
-
-using std::cout;
-using std::endl;
+#include "utils.h"
 
 DATA SsdApp::Read(LBA lba) {
 	string sendReadString = makeExecuteCmd(SEND_READ_CMD, lba);
@@ -26,25 +21,3 @@ SsdApp* SsdApp::getInstance()
 	return &instance;
 }
 
-const string SsdApp::makeExecuteCmd(string cmd, LBA lba, DATA data) {
-	std::ostringstream oss;
-	oss << EXE_FILE_NAME << " " << cmd << " " << lba;
-	if (cmd == SEND_WRITE_CMD) {
-		oss << _DataToHexString(data);
-	}
-	string commandStr = oss.str();
-	cout << commandStr << endl;
-	return commandStr;
-}
-
-string SsdApp::_DataToHexString(const DATA data)
-{
-	std::stringstream hexString;
-	hexString << " 0x"
-		<< std::setw(DATA_NUM_DIGIT) << std::setfill('0')
-		<< std::hex << std::uppercase
-		<< data;
-	std::string hexStringData = hexString.str();
-
-	return hexStringData;
-}

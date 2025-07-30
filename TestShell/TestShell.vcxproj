@@ -143,6 +143,7 @@
     <ClCompile Include="ssdApp.cpp" />
     <ClCompile Include="compositExecutor.cpp" />
     <ClCompile Include="compositExecutor_test.cpp" />
+    <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -155,6 +156,7 @@
     <ClInclude Include="shell.h" />
     <ClInclude Include="ssdApp.h" />
     <ClInclude Include="compositExecutor.h" />
+    <ClInclude Include="utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

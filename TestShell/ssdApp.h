@@ -13,9 +13,4 @@ public:
 
 private:
 	SsdApp() {}
-	const string makeExecuteCmd(string cmd, LBA lba = 0, DATA data = 0);
-	string _DataToHexString(const DATA data);
-
-	const int DATA_NUM_DIGIT = 8;
-	const string EXE_FILE_NAME = "..\\x64\\Release\\SSD.exe";
 };

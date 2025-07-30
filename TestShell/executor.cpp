@@ -67,7 +67,6 @@ string Reader::GetResultFromFile(void)
 
 	file.close();
 	return result;
-
 }
 
 bool Helper::execute(const string& command, LBA lba, DATA data, ISsdApp *app)
