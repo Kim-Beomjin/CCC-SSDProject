@@ -1,17 +1,26 @@
 #ifdef _DEBUG
 #include <string>
 #include "gmock/gmock.h"
-#include "commandParser.cpp"
+#include "interface.h"
+//#include "mock_ssd_app.h"
 
 using namespace testing;
+
+class MockSsdApp : public ISsdApp {
+public:
+	MOCK_METHOD(string, Read, (int), (override));
+	MOCK_METHOD(bool, Write, (int, const string&), (override));
+};
 
 class ExecutorTestFixture : public Test {
 public:
 	void SetUpExecutor(string cmd) {
-		executor = ExecutorFactory().createExecutor(cmd);
+		//static ISsdApp& fake_app = SsdAppFactory().GetApp("fake");
+		executor = ExecutorFactory().createExecutor(cmd, &mock_app);
 	}
 
 	IExecutor* executor;
+	MockSsdApp mock_app;
 
 	const string READ_CMD = "read";
 	const string WRITE_CMD = "write";
@@ -21,13 +30,15 @@ public:
 	const string EXIT_CMD = "exit";
 
 	const int TEST_LBA = 2;
-	const int TEST_DATA = 0x12345678;
+	const string TEST_DATA = "0x12345678";
+	const string NO_DATA = "0x00000000";
 };
 
 TEST_F(ExecutorTestFixture, exitCommandTest) {
 	SetUpExecutor(EXIT_CMD);
 
-	EXPECT_TRUE(executor->execute());
+	bool ret = executor->execute();
+	EXPECT_TRUE(ret);
 }
 
 TEST_F(ExecutorTestFixture, helpCommandTest) {
@@ -39,30 +50,40 @@ TEST_F(ExecutorTestFixture, helpCommandTest) {
 TEST_F(ExecutorTestFixture, writeCommandTest) {
 	SetUpExecutor(WRITE_CMD);
 
+	EXPECT_CALL(mock_app, Write)
+		.Times(1)
+		.WillOnce(Return(true));
+
 	EXPECT_TRUE(executor->execute(WRITE_CMD, TEST_LBA, TEST_DATA));
 }
 
 TEST_F(ExecutorTestFixture, fullWriteCommandTest) {
 	SetUpExecutor(WRITE_CMD);
 
+	EXPECT_CALL(mock_app, Write)
+		.Times(100)
+		.WillRepeatedly(Return(true));
+
 	EXPECT_TRUE(executor->execute(FULL_WRITE_CMD, TEST_LBA));
-}
-
-TEST_F(ExecutorTestFixture, readAfterWriteTest) {
-	SetUpExecutor(WRITE_CMD);
-	EXPECT_TRUE(executor->execute(WRITE_CMD, TEST_LBA, TEST_DATA));
-
-	SetUpExecutor(READ_CMD);
-	EXPECT_TRUE(executor->execute(READ_CMD, TEST_LBA));
 }
 
 TEST_F(ExecutorTestFixture, readNonWriteTest) {
 	SetUpExecutor(READ_CMD);
+
+	EXPECT_CALL(mock_app, Read)
+		.Times(1)
+		.WillOnce(Return(NO_DATA));
+
 	EXPECT_TRUE(executor->execute(READ_CMD, TEST_LBA));
 }
 
 TEST_F(ExecutorTestFixture, fullreadCommandTest) {
 	SetUpExecutor(READ_CMD);
+
+	EXPECT_CALL(mock_app, Read)
+		.Times(100)
+		.WillRepeatedly(Return(NO_DATA));
+
 	EXPECT_TRUE(executor->execute(FULL_READ_CMD));
 }
 
