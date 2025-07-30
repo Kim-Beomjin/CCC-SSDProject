@@ -47,7 +47,7 @@ public:
 	NiceMock<MockSsdApp> mockSsdApp;
 };
 
-/*
+#if (FIX_ME_LATER == 0)
 TEST_F(CompositExecutorFixture, ThrowInvalidCompositExecutor) {
 	EXPECT_THROW(mockFirstApp.execute(BLANK_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
 	EXPECT_THROW(mockSecondApp.execute(BLANK_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
@@ -57,7 +57,7 @@ TEST_F(CompositExecutorFixture, ThrowInvalidCompositExecutor) {
 	EXPECT_THROW(mockSecondApp.execute(INVALID_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
 	EXPECT_THROW(mockThirdApp.execute(INVALID_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
 }
-*/
+#endif
 
 TEST_F(CompositExecutorFixture, CompositExecutor1CheckMockReadWriteMaxTimes) {
 	EXPECT_CALL(mockWriter, execute)

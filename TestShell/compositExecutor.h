@@ -10,6 +10,7 @@ class CompositExecutor : public IExecutor
 public:
 	CompositExecutor() = default;
 	CompositExecutor(Writer* writer, Reader* reader) : writer{ writer }, reader{ reader } {}
+	bool ReadCompare(ISsdApp* app, LBA lba, DATA expectedData);
 
 protected:
 	Writer* writer;

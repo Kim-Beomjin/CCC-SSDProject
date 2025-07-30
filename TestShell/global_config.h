@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 
+#define FIX_ME_LATER (1)
+
 using DATA = unsigned int;
 using LBA = unsigned int;
 
