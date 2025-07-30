@@ -15,10 +15,10 @@ class Writer : public IExecutor {
 public:
 	bool execute(const string command = "", int lba = 0, int data = 0) override {
 		if (command == "write") {
-
+			return true;
 		}
 		else if (command == "fullwrite") {
-			
+			return true;
 		}
 		return false;
 	}
@@ -28,10 +28,10 @@ class Reader : public IExecutor {
 public:
 	bool execute(const string command = "", int lba = 0, int data = 0) override {
 		if (command == "read") {
-
+			return true;
 		}
 		else if (command == "fullread") {
-
+			return true;
 		}
 		return false;
 	}
