@@ -2,40 +2,53 @@
 
 bool SSD::read(LBA lba)
 {
-  if (lba > 99)
+  bool result;
+
+  if (_IsInvalidParameter(lba))
   {
-#ifdef _DEBUG
-    throw(std::exception("INVALID PARAMETER"));
-#endif
     return false;
   }
 
-  bool result;
   DATA data;
-  std::string outputFile = "ssd_output.txt";
-
-  result = nand->Read(lba, data);
-  if (result)
+  if (nand->Read(lba, data) == false)
   {
-    std::ofstream ofs(outputFile);
-    
-    std::string stringData = std::to_string(data);
-    ofs.write(stringData.c_str(), stringData.size());
-    ofs.close();
+    return false;
   }
+  
+  _updateOutputFile(data);
 
-  return result;
+  return true;
 }
 
 bool SSD::write(LBA lba, DATA data)
+{
+  if (_IsInvalidParameter(lba))
+  {
+    return false;
+  }
+
+  return nand->Write(lba, data);
+}
+
+bool SSD::_IsInvalidParameter(LBA lba)
 {
   if (lba > 99)
   {
 #ifdef _DEBUG
     throw(std::exception("INVALID PARAMETER"));
 #endif
-    return false;
+    return true;
   }
 
-  return nand->Write(lba, data);
+  return false;
+}
+
+void SSD::_updateOutputFile(DATA data)
+{
+  std::string outputFile = "ssd_output.txt";
+  std::ofstream ofs(outputFile);
+
+  std::string stringData = std::to_string(data);
+  ofs.write(stringData.c_str(), stringData.size());
+  ofs.close();
 }
