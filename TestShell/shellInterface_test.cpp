@@ -13,11 +13,25 @@ public:
 };
 
 TEST_F(ShellFixture, ExitCommand) {
-    string cmd = "exit";
+    string fakeCmd = "exit";
+    string EXIT_RESULT = "Shell> exit\n";
+    istringstream iss(fakeCmd);
+    ostringstream oss;
 
-    shell.LoopGetCommand();
+    auto* oldInputBuf = cin.rdbuf();
+    streambuf* oldOutputBuf = cout.rdbuf();
 
-    //EXPECT_EQ(true, ret);
+    std::cin.rdbuf(iss.rdbuf());
+    std::cout.rdbuf(oss.rdbuf());
+
+    shell.RunShellLoop();
+
+    std::cin.rdbuf(oldInputBuf);
+    std::cout.rdbuf(oldOutputBuf);
+
+    std::string result = oss.str();
+    //std::cout << "output" << result;
+    EXPECT_EQ(EXIT_RESULT, result);
 }
 
 #endif
