@@ -6,6 +6,8 @@ using std::string;
 using std::cout;
 using std::endl;
 
+class MockSsdApp;
+
 class SsdApp : public ISsdApp {
 public:
 	u32 Read(u32 lba) override {
@@ -15,12 +17,18 @@ public:
 	bool Write(u32 lba, u32 data) override {
 		// TODO: need to execute existing exe file of ssd
 	}
+
+	static SsdApp* getInstance() {
+		static SsdApp instance;
+		return &instance;
+	}
+private:
+	SsdApp() {}
 };
 
 class Writer : public IExecutor {
 public:
-	Writer(ISsdApp* pApp) : IExecutor(pApp) {}
-	bool execute(const string& command, u32 lba, u32 data) override {
+	bool execute(const string& command, u32 lba, u32 data, ISsdApp * app) override {
 		if (command == "write") {
 			app->Write(lba, data);
 			return true;
@@ -35,8 +43,7 @@ public:
 
 class Reader : public IExecutor {
 public:
-	Reader(ISsdApp* pApp) : IExecutor(pApp) {}
-	bool execute(const string& command, u32 lba, u32 data) override {
+	bool execute(const string& command, u32 lba, u32 data, ISsdApp * app) override {
 		if (command == "read") {
 			app->Read(lba);
 			return true;
@@ -51,7 +58,7 @@ public:
 
 class Helper : public IExecutor {
 public:
-	bool execute(const string& command, u32 lba, u32 data) override {
+	bool execute(const string& command, u32 lba, u32 data, ISsdApp *app) override {
 		cout << "ÆÀ¸í: CCC(Clean Code Collective) \n";
 		cout << "ÆÀÀå : ±è¹üÁø / ÆÀ¿ø : ±è°æ¹Î, ±èÀ±Áø, ±èÀ²°ï, Á¤ÁöÀ±\n\n";
 		cout << "Command ¼³¸í:\n";
@@ -68,18 +75,18 @@ public:
 
 class Exiter : public IExecutor {
 public:
-	bool execute(const string& command, u32 lba, u32 data) override {
+	bool execute(const string& command, u32 lba, u32 data, ISsdApp *app) override {
 		cout << "Exit!!" << endl;
 		return true;
 	}
 };
 
-IExecutor* ExecutorFactory::createExecutor(const string command, ISsdApp* pApp) {
+IExecutor* ExecutorFactory::createExecutor(const string command) {
 	if (command == "write" || command == "fullwrite") {
-		return new Writer(pApp);
+		return new Writer();
 	}
 	else if (command == "read" || command == "fullread") {
-		return new Reader(pApp);
+		return new Reader();
 	}
 	else if (command == "help") {
 		return new Helper();
@@ -91,4 +98,3 @@ IExecutor* ExecutorFactory::createExecutor(const string command, ISsdApp* pApp) 
 	cout << "Invalid command:" << command << endl;
 	return nullptr;
 }
-

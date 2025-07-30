@@ -9,6 +9,6 @@ int main() {
 	testing::InitGoogleMock();
 	return RUN_ALL_TESTS();
 #else
-	return;
+	return 0;
 #endif
 }
