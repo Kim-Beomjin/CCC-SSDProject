@@ -1,17 +1,18 @@
 #include <sstream>
 #include <iostream>
+#include <direct.h>
 #include "ssdApp.h"
 
 using std::cout;
 using std::endl;
 
 DATA SsdApp::Read(LBA lba) {
-	system(makeExecuteCmd(READ_CMD, lba));
+	system(makeExecuteCmd(SEND_READ_CMD, lba));
 	return 0;
 }
 
 bool SsdApp::Write(LBA lba, DATA data) {
-	system(makeExecuteCmd(WRITE_CMD, lba, data));
+	system(makeExecuteCmd(SEND_WRITE_CMD, lba, data));
 	return true;
 }
 

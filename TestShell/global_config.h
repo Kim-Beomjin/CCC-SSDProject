@@ -8,6 +8,8 @@ using std::string;
 
 const string READ_CMD = "read";
 const string WRITE_CMD = "write";
+const string SEND_READ_CMD = "R";
+const string SEND_WRITE_CMD = "W";
 const string FULL_READ_CMD = "fullread";
 const string FULL_WRITE_CMD = "fullwrite";
 const string HELP_CMD = "help";
