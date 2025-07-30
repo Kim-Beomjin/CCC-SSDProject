@@ -4,6 +4,12 @@
 
 using namespace testing;
 
+class MockSsdApp : public ISsdApp {
+public:
+	MOCK_METHOD(DATA, Read, (LBA), (override));
+	MOCK_METHOD(bool, Write, (LBA, DATA), (override));
+};
+
 class MockWriter : public Writer
 {
 public:
@@ -26,11 +32,12 @@ public:
 
 	NiceMock<MockWriter> mockWriter;
 	NiceMock<MockReader> mockReader;
+	NiceMock<MockSsdApp> mockSsdApp;
 };
 
 TEST_F(TestScriptFixture, ThrowInvalidTestScript) {
-	EXPECT_THROW(app.FullWriteAndReadCompare(BLANK_TEST_SCRIPT_NAME), runtime_error);
-	EXPECT_THROW(app.FullWriteAndReadCompare(INVALID_TEST_SCRIPT_NAME), runtime_error);
+	EXPECT_THROW(app.FullWriteAndReadCompare(BLANK_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
+	EXPECT_THROW(app.FullWriteAndReadCompare(INVALID_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
 }
 
 TEST_F(TestScriptFixture, TestScript1CheckMockReadWriteTimes) {
@@ -40,7 +47,7 @@ TEST_F(TestScriptFixture, TestScript1CheckMockReadWriteTimes) {
 	EXPECT_CALL(mockReader, execute)
 		.Times(100);
 
-	mockApp.FullWriteAndReadCompare(FIRST_TEST_SCRIPT_NAME);
+	mockApp.FullWriteAndReadCompare(FIRST_TEST_SCRIPT_NAME, &mockSsdApp);
 }
 
 #endif
