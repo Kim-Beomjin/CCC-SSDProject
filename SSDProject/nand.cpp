@@ -3,7 +3,7 @@
 #endif
 #include "nand.h"
 
-bool Nand::Read(const int lba, int& readData)
+bool Nand::Read(const LBA lba, DATA& readData)
 {
 	if (_IsValidParameter(lba) == false)
 	{
@@ -22,7 +22,7 @@ bool Nand::Read(const int lba, int& readData)
 	return true;
 }
 
-bool Nand::Write(const int lba, const int writeData)
+bool Nand::Write(const LBA lba, const DATA writeData)
 {
 	if (_IsValidParameter(lba) == false)
 	{
@@ -44,7 +44,7 @@ bool Nand::Write(const int lba, const int writeData)
 }
 
 
-bool Nand::_IsValidParameter(const int lba)
+bool Nand::_IsValidParameter(const LBA lba)
 {
 	if (lba < LBA_START_ADDR || lba >= LBA_END_ADDR)
 	{

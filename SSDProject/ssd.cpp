@@ -1,6 +1,6 @@
 #include "ssd.h"
 
-bool SSD::read(int lba)
+bool SSD::read(LBA lba)
 {
   if (lba > 99)
   {
@@ -11,7 +11,7 @@ bool SSD::read(int lba)
   }
 
   bool result;
-  int data;
+  DATA data;
   std::string outputFile = "ssd_output.txt";
 
   result = nand->Read(lba, data);
@@ -27,7 +27,7 @@ bool SSD::read(int lba)
   return result;
 }
 
-bool SSD::write(int lba, int data)
+bool SSD::write(LBA lba, DATA data)
 {
   if (lba > 99)
   {

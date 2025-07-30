@@ -12,20 +12,20 @@ using ::testing::SetArgReferee;
 class MockNand : public NandInterface
 {
 public:
-  MOCK_METHOD(bool, Read, (const int lba, int& out));
-  MOCK_METHOD(bool, Write, (const int lba, const int data));
+  MOCK_METHOD(bool, Read, (const LBA lba, DATA& out));
+  MOCK_METHOD(bool, Write, (const LBA lba, const DATA data));
 };
 
 TEST(TC, ReadAfterWrite)
 {
   MockNand* mockNand = new MockNand();
   SSD ssd(mockNand);
-  int lba = 5;
-  int writeData = 0xdeadcafe;
+  LBA lba = 5;
+  DATA writeData = 0xdeadcafe;
   std::string outputFile = "ssd_output.txt";
 
   ON_CALL(*mockNand, Read(_, _))
-    .WillByDefault(Invoke([=](const int, int& out) -> bool
+    .WillByDefault(Invoke([=](const LBA, DATA& out) -> bool
   {
     out = writeData;
     return true;
@@ -42,7 +42,7 @@ TEST(TC, ReadAfterWrite)
                     std::istreambuf_iterator<char>());
   ifs.close();
 
-  EXPECT_EQ((writeData), (stoi(readData)));
+  EXPECT_EQ((writeData), (stoul(readData)));
 
   delete mockNand;
 }
@@ -51,12 +51,12 @@ TEST(TC, ReadWithoutWrite)
 {
   MockNand* mockNand = new MockNand();
   SSD ssd(mockNand);
-  int lba = 5;
-  int expectData = 0x0;
+  LBA lba = 5;
+  DATA expectData = 0x0;
   std::string outputFile = "ssd_output.txt";
 
   ON_CALL(*mockNand, Read(_, _))
-    .WillByDefault(Invoke([=](const int lba, int& out) -> bool
+    .WillByDefault(Invoke([=](const LBA lba, DATA& out) -> bool
   {
     out = expectData;
     return true;
@@ -69,7 +69,7 @@ TEST(TC, ReadWithoutWrite)
                     std::istreambuf_iterator<char>());
   ifs.close();
 
-  EXPECT_EQ(expectData, stoi(readData));
+  EXPECT_EQ(expectData, stoul(readData));
 
   delete mockNand;
 }
@@ -78,7 +78,7 @@ TEST(TC, ReadInvalidParam)
 {
   MockNand* mockNand = new MockNand();
   SSD ssd(mockNand);
-  int lba = 101;
+  LBA lba = 101;
 
   EXPECT_THROW(ssd.read(lba), std::exception);
 
@@ -89,8 +89,8 @@ TEST(TC, WriteInvalidParam)
 {
   MockNand* mockNand = new MockNand();
   SSD ssd(mockNand);
-  int lba = 101;
-  int writeData = 0xdeadcafe;
+  LBA lba = 101;
+  DATA writeData = 0xdeadcafe;
 
   EXPECT_THROW(std::to_string(ssd.write(lba, writeData)), std::exception);
 

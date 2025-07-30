@@ -135,6 +135,7 @@
     <ClCompile Include="ssd_test.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="global_config.h" />
     <ClInclude Include="nand.h" />
     <ClInclude Include="ssd.h" />
   </ItemGroup>

@@ -21,13 +21,13 @@ protected:
     }
     class Nand nand;
     
-    int readData = 0;
+    DATA readData = 0;
     static const int TEST_SIZE = 5;
     const std::vector<int> VALID_LBA_ADDR_LIST = { 0, 50, 70, 90, 99 };
     const std::vector<int> INVALID_LBA_ADDR_LIST = { -100, -10, -1, 100, 10000 };
-    const int WRITE_DATA = 0xFFFF;
-    const int OVERWRITE_DATA = 0xCCCCC;
-    const int EMPTY_DATA = 0;
+    const DATA WRITE_DATA = 0xFFFF;
+    const DATA OVERWRITE_DATA = 0xCCCCC;
+    const DATA EMPTY_DATA = 0;
 };
 
 TEST_F(NandFixture, READ_VALID_PARAMETER_TEST) {
