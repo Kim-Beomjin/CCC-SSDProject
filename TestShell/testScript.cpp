@@ -13,5 +13,22 @@ bool TestScript::FullWriteAndReadCompare(string input)
 		return false;
 	}
 
+	for (int step = 0; step < 20; step++)
+	{
+		int startLba = step * 5;
+		int endLba = (step + 1) * 5;
+
+		for (int lba = startLba; lba < endLba; lba++)
+		{
+			writer->execute("write", lba, lba);
+		}
+
+		for (int lba = startLba; lba < endLba; lba++)
+		{
+			int data = 0;
+			reader->execute("read", lba, data);
+		}
+	}
+
 	return true;
 }
