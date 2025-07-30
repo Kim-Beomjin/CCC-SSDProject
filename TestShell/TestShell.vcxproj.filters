@@ -43,7 +43,7 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="shellInterface_test.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>테스트 파일</Filter>
     </ClCompile>
     <ClCompile Include="testScript_test.cpp">
       <Filter>테스트 파일</Filter>
