@@ -112,7 +112,7 @@ TEST_F(HostInterfaceFixture, WRITE_VALID_ARGV)
 
     for (auto testcase : VALID_WRITE_ARGV_LIST) {
         char** argv = const_cast<char**>(testcase.data());
-        EXPECT_THROW(host->Execute(VALID_WRITE_ARGC, argv), std::exception);
+        EXPECT_NO_THROW(host->Execute(VALID_WRITE_ARGC, argv), std::exception);
     }
 }
 
