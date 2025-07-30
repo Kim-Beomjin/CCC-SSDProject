@@ -128,6 +128,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="hostInterface.cpp" />
+    <ClCompile Include="hostInterface_test.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="nand.cpp" />
     <ClCompile Include="nand_test.cpp" />
@@ -136,6 +138,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="global_config.h" />
+    <ClInclude Include="hostInterface.h" />
     <ClInclude Include="nand.h" />
     <ClInclude Include="ssd.h" />
   </ItemGroup>
