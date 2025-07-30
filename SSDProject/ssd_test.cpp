@@ -1,6 +1,7 @@
 #ifdef _DEBUG
 #include "gmock/gmock.h"
 #include "ssd.h"
+#include <cstdio>
 #include <fstream>
 #include <string>
 
@@ -26,9 +27,18 @@ public:
 
   const LBA VALID_LBA = 5;
   const LBA INVALID_LBA = 101;
-  const std::string WRITE_DATA = "0xDEADCAFE";
+  const std::string WRITE_DATA = "0x001F2DC0";
   const std::string INVALID_DATA = "0x00000000";
   const std::string outputFile = "ssd_output.txt";
+
+  void SetUp() override
+  {
+    int result = std::remove(outputFile.c_str());
+    if (result != 0)
+    {
+      std::perror("파일 삭제 실패");
+    }
+  }
 
   std::string getDataFromOutputFile(void)
   {
