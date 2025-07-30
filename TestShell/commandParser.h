@@ -13,7 +13,7 @@ public:
     bool ExecuteSsdUsingParsedCommand(ISsdApp* app) override;
 
 private:
-    bool IsVaildCommand(const string& cmd);
+    bool IsVaildCommand(const string& cmd, size_t tokenSize);
     bool IsValidLba(const LBA lba);
     bool doParse(const string& cmd);
     std::vector<string> splitCommand(const string& cmd);

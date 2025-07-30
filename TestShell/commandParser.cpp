@@ -22,8 +22,11 @@ bool CommandParser::ExecuteSsdUsingParsedCommand(ISsdApp* app) {
     return executor->execute(command, lba, data, app);
 }
 
-bool CommandParser::IsVaildCommand(const string& cmd) {
-    if (cmd_set.find(cmd) != cmd_set.end()) return true;
+bool CommandParser::IsVaildCommand(const string& cmd, size_t tokenSize) {
+    if (cmd_set.find(cmd) != cmd_set.end()) {
+        if (cmd == WRITE_CMD && tokenSize <= 2) return false;
+        return true;
+    }
     return false;
 }
 
@@ -33,7 +36,7 @@ bool CommandParser::doParse(const string& fullCmd) {
     if (tokens.empty()) return false;
 
     command = tokens[0];
-    if (IsVaildCommand(command) == false) return false;
+    if (IsVaildCommand(command, tokens.size()) == false) return false;
     if (tokens.size() > 1) lba = stringToUnsignedInt(tokens[1]);
     if (tokens.size() > 2) data = stringToUnsignedInt(tokens[2]);
 
