@@ -3,10 +3,10 @@
 #include <stdexcept>
 #include "commandParser.h"
 
-bool CommandParser::ParseCommand(const string& full_cmd) {
-    if (doParse(full_cmd) == false) return false;
+bool CommandParser::ParseCommand(const string& fullCmd) {
+    if (doParse(fullCmd) == false) return false;
 
-    executor = ExecutorFactory().createExecutor(full_cmd);
+    executor = ExecutorFactory().createExecutor(fullCmd);
     if (executor == nullptr) {
         return false;
     }
@@ -28,13 +28,13 @@ bool CommandParser::IsValidLba(const LBA lba) {
     if (lba >= SSD_MAX_SIZE) return false;
 }
 
-bool CommandParser::doParse(const string& cmd) {
-    std::vector<string> tokens = splitCommand(cmd);
+bool CommandParser::doParse(const string& fullCmd) {
+    std::vector<string> tokens = splitCommand(fullCmd);
 
     if (tokens.empty()) return false;
 
     command = tokens[0];
-    if (IsVaildCommand(cmd) == false) return false;
+    if (IsVaildCommand(command) == false) return false;
     if (tokens.size() > 1) lba = stringToUnsignedInt(tokens[1]);
     if (IsValidLba(lba) == false) return false;
     if (tokens.size() > 2) data = stringToUnsignedInt(tokens[2]);
@@ -42,9 +42,9 @@ bool CommandParser::doParse(const string& cmd) {
     return true;
 }
 
-std::vector<string> CommandParser::splitCommand(const string& cmd) {
+std::vector<string> CommandParser::splitCommand(const string& fullCmd) {
     std::vector<string> tokens = {};
-    std::istringstream iss(cmd);
+    std::istringstream iss(fullCmd);
     std::string token;
     while (iss >> token) {
         tokens.push_back(token);
