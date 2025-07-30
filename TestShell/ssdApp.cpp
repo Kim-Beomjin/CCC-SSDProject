@@ -25,7 +25,7 @@ SsdApp* SsdApp::getInstance()
 const char* SsdApp::makeExecuteCmd(string cmd, LBA lba, DATA data) {
 	std::ostringstream oss;
 	oss << EXE_FILE_NAME << " " << cmd << " " << lba;
-	if (data >= 0) {
+	if (cmd == SEND_WRITE_CMD) {
 		oss << " 0x" << std::hex << std::uppercase << data;
 	}
 	string commandStr = oss.str();
