@@ -7,7 +7,11 @@ using DATA = unsigned int;
 #define LBA_START_ADDR  (0)
 #define LBA_END_ADDR    (100)
 #define EMPTY_DATA      (0)
+#define DATA_NUM_DIGIT  (8)
+
 const std::string ERROR_MSG = "ERROR";
+const std::string HEXA_PREFIX = "0x";
+const char ZERO_PADDING = '0';
 
 #ifdef _DEBUG
 #define DEBUG_ASSERT(cond, msg)                     \

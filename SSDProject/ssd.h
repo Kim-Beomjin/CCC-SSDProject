@@ -7,11 +7,12 @@ class SSD
 {
 public:
   SSD(NandInterface* nand) : nand {nand}{};
-  bool read(LBA lba);
-  bool write(LBA lba, DATA writeData);
+  bool Read(LBA lba);
+  bool Write(LBA lba, DATA writeData);
 
 private:
   bool _IsInvalidParameter(LBA lba);
-  void _updateOutputFile(std::string data);
+  void _UpdateOutputFile(std::string data);
+  std::string _DataToHexString(const DATA data);
   NandInterface* nand;
 };
