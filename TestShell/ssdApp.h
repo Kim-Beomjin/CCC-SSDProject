@@ -14,5 +14,5 @@ public:
 private:
 	SsdApp() {}
 	const char* makeExecuteCmd(string cmd, LBA lba = 0, DATA data = 0);
-	const string EXE_FILE_NAME = "SSD.exe";
+	const string EXE_FILE_NAME = "..\\x64\\Release\\SSD.exe";
 };
