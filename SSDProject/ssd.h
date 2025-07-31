@@ -10,10 +10,10 @@ public:
   SSD(NandInterface* nand) : nand {nand}{};
   bool Read(LBA lba);
   bool Write(LBA lba, DATA writeData);
-  bool Erase(LBA lba, int size);
+  bool Erase(LBA lba, ERASE_SIZE erase_size);
 
 private:
-  bool _IsInvalidParameter(LBA lba, int size = 0);
+  bool _IsInvalidParameter(LBA lba, ERASE_SIZE erase_size = 0);
   void _UpdateOutputFile(std::string data);
   std::string _DataToHexString(const DATA data);
   NandInterface* nand;
