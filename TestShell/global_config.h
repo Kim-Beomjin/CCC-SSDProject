@@ -14,12 +14,14 @@ const string WRITE_CMD = "write";
 const string SEND_READ_CMD = "R";
 const string SEND_WRITE_CMD = "W";
 const string SEND_ERASE_CMD = "E";
+const string SEND_FLUSH_CMD = "F";
 const string FULL_READ_CMD = "fullread";
 const string FULL_WRITE_CMD = "fullwrite";
 const string HELP_CMD = "help";
 const string EXIT_CMD = "exit";
 const string ERASE_CMD = "erase";
 const string ERASE_RANGE_CMD = "erase_range";
+const string FLUSH_CMD = "flush";
 
 const string FIRST_SCRIPT_SHORT_NAME = "1_";
 const string FIRST_SCRIPT_FULL_NAME = "1_FullWriteAndReadCompare";

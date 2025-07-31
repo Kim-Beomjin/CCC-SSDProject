@@ -18,6 +18,7 @@ IExecutor* ExecutorFactory::createExecutor(const string command)
 	if (command == ERASE_RANGE_CMD) return new RangeEraser();
 	if (command == HELP_CMD) return new Helper();
 	if (command == EXIT_CMD) return new Exiter();
+	if (command == FLUSH_CMD) return new Flusher();
 	if (command == FIRST_SCRIPT_SHORT_NAME || command == FIRST_SCRIPT_FULL_NAME)return new FullWriteAndReadCompare(new Writer(), new Comparer());
 	if (command == SECOND_SCRIPT_SHORT_NAME || command == SECOND_SCRIPT_FULL_NAME) return new PartialLBAWrite(new Writer(), new Comparer());
 	if (command == THIRD_SCRIPT_SHORT_NAME || command == THIRD_SCRIPT_FULL_NAME) return new WriteReadAging(new Writer(), new Comparer());
@@ -128,5 +129,13 @@ bool RangeEraser::execute(ISsdApp* app, LBA startLba, LBA endLba)
 	SIZE size = endLba - startLba + 1;
 
 	Eraser::execute(app, startLba, size);
+	return true;
+}
+
+bool Flusher::execute(ISsdApp* app, LBA lba, DATA data)
+{
+	app->Flush();
+
+	cout << "[Flusher] Done\n";
 	return true;
 }

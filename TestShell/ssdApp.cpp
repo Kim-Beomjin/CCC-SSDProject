@@ -21,6 +21,12 @@ bool SsdApp::Erase(LBA lba, SIZE size) {
 	return true;
 }
 
+bool SsdApp::Flush() {
+	string sendFlushString = makeExecuteCmd(SEND_FLUSH_CMD);
+	system(sendFlushString.c_str());
+	return true;
+}
+
 SsdApp* SsdApp::getInstance()
 {
 	static SsdApp instance;

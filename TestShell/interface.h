@@ -13,6 +13,7 @@ interface ISsdApp {
 	virtual u32 Read(u32 lba) = 0;
 	virtual bool Write(u32 lba, u32 data) = 0;
 	virtual bool Erase(u32 lba, u32 size) = 0;
+	virtual bool Flush() = 0;
 };
 
 interface IExecutor {
