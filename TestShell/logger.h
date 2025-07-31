@@ -6,7 +6,11 @@ using namespace std;
 
 //#define LOG_DEBUG
 
+#ifdef _DEBUG
+#define SHELL_LOG(...)
+#else
 #define SHELL_LOG(...) Logger::GetInstance().Log(__FUNCTION__, __VA_ARGS__)
+#endif
 
 class LogFile {
 public:

@@ -43,11 +43,10 @@ TEST_F(ExecutorTestFixture, writeCommandTest) {
 	checkExecute(WRITE_CMD, TEST_LBA, TEST_DATA);
 }
 
-TEST_F(ExecutorTestFixture, fullWriteCommandTest) {
+TEST_F(ExecutorTestFixture, fullwriteCommandTest) {
 	EXPECT_CALL(mock_app, Write)
 		.Times(SSD_MAX_SIZE)
-		.WillOnce(Return(true));
-	(Return(true));
+		.WillRepeatedly(Return(true));
 	
 	checkExecute(FULL_WRITE_CMD, 0, TEST_DATA);
 }
@@ -63,7 +62,7 @@ TEST_F(ExecutorTestFixture, readNonWriteTest) {
 TEST_F(ExecutorTestFixture, fullreadCommandTest) {
 	EXPECT_CALL(mock_app, Read)
 		.Times(SSD_MAX_SIZE)
-		.WillOnce(Return(NO_DATA));
+		.WillRepeatedly(Return(NO_DATA));
 
 	checkExecute(FULL_READ_CMD, 0, 0, NO_DATA);
 }

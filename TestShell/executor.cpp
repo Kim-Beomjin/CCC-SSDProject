@@ -13,9 +13,9 @@ using namespace std;
 
 IExecutor* ExecutorFactory::createExecutor(const string command)
 {
-	if (command == WRITE_CMD) return new Writer();
+	if (command == WRITE_CMD) return new OuputDecoratedWriter();
 	if (command == FULL_WRITE_CMD) return new FullWriter();
-	if (command == READ_CMD) return new Reader();
+	if (command == READ_CMD) return new OuputDecoratedReader();
 	if (command == FULL_READ_CMD) return new FullReader();
 	if (command == ERASE_CMD) return new Eraser();
 	if (command == ERASE_RANGE_CMD) return new RangeEraser();
@@ -34,28 +34,30 @@ bool Writer::execute(ISsdApp* app, LBA lba, DATA data)
 {
 	app->Write(lba, data);
 	SHELL_LOG("[Write] Done", lba, data);
+	return true;
+}
+
+bool OuputDecoratedWriter::execute(ISsdApp* app, LBA lba, DATA data)
+{
+	if (!Writer::execute(app, lba, data)) return false;
 	cout << "[Write] Done\n";
 	return true;
 }
 
 bool FullWriter::execute(ISsdApp* app, LBA lba, DATA data)
 {
-	bool ret = false;
 	for (LBA lba = 0; lba < SSD_MAX_SIZE; ++lba)
 	{
-		ret = Writer::execute(app, lba, data);
-		if (ret == false) return ret;
+		if (!Writer::execute(app, lba, data)) return false;
 	}
-
-	return ret;
+	cout << "[Full Write] Done\n";
+	return true;
 }
 
 bool Reader::execute(ISsdApp* app, LBA lba, DATA data)
 {
 	app->Read(lba);
-	string result = GetResultFromFile();
-	SHELL_LOG("[Read] LBA ", lba, result);
-	cout << "[Read] LBA " << lba << " : " << result << "\n";
+	SHELL_LOG("[Read] LBA ", lba, GetResultFromFile());
 	return true;
 }
 
@@ -77,16 +79,21 @@ string Reader::GetResultFromFile(void)
 	return result;
 }
 
+bool OuputDecoratedReader::execute(ISsdApp* app, LBA lba, DATA data)
+{
+	if (!Reader::execute(app, lba, data)) return false;
+	cout << "[Read] LBA " << lba << " : " << GetResultFromFile() << "\n";
+	return true;
+}
+
 bool FullReader::execute(ISsdApp* app, LBA lba, DATA data)
 {
-	bool ret = false;
 	for (LBA lba = 0; lba < SSD_MAX_SIZE; ++lba)
 	{
-		ret = Reader::execute(app, lba, data);
-		if (ret == false) return ret;
+		if (!OuputDecoratedReader::execute(app, lba, data)) return false;
 	}
-
-	return ret;
+	cout << "[Full Read] Done\n";
+	return true;
 }
 
 bool Comparer::execute(ISsdApp* app, LBA lba, DATA data)
@@ -101,10 +108,9 @@ bool Comparer::Compare(const DATA expectedData, const string &readResult)
 	DATA readData = stringToUnsignedInt(readResult);
 	if (expectedData == readData) return true;
 
-#if (FIX_ME_LATER == 1)
-	cout << "[Compare] Expected : " << expectedData << "\n";
-	cout << "[Caompre] Real : " << readData << "\n";
-#endif
+	SHELL_LOG("[Compare] Fail Expected ", expectedData);
+	SHELL_LOG("[Caompre] Fail Real ", readData);
+
 	return false;
 }
 
@@ -189,3 +195,4 @@ bool Flusher::execute(ISsdApp* app, LBA lba, DATA data)
 	cout << "[Flusher] Done\n";
 	return true;
 }
+
