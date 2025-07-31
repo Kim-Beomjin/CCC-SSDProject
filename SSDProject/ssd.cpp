@@ -42,7 +42,7 @@ bool SSD::_IsInvalidParameter(LBA lba)
 {
   if (lba >= LBA_END_ADDR)
   {
-    DEBUG_ASSERT(false, "INVALID PARAMETER");
+    TEST_LOGGER("INVALID PARAMETER");
     return true;
   }
 

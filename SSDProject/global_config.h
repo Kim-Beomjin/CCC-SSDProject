@@ -32,7 +32,7 @@ const std::string OUTPUT_FILE = "ssd_output.txt";
                 throw std::runtime_error(msg);      \
             }                                       \
         } while (0)
-#elsif _TEST_CONFIG
+#elif _TEST_CONFIG
 #define DEBUG_ASSERT(cond, msg) \
     TEST_LOGGER(msg)
 #else
