@@ -34,6 +34,8 @@ public:
     string EXIT_RESULT = "Shell> exit\n";
     string WRITE_RESULT = "Shell> write 3 0x12345678\n";
     string READ_RESULT = "Shell> read 3\n";
+    string WRITE_DONE = "[Write] Done\n";
+    string READ_DONE = "[Read] LBA 3 : 0x00000000\n";
 
     string GetResultFromRunShellLoop(class Shell *shell, string cmd) {
         shell->setSsdApp(&mock_app);
@@ -66,7 +68,11 @@ TEST_F(ShellFixture, ExitCommand) {
 
 TEST_F(ShellFixture, WriteAndExit) {
     string fakeCmd = WRITE_CMD + EXIT_CMD;
-    string WRITEANDEXIT_RESULT = WRITE_RESULT + EXIT_RESULT;
+    string WRITEANDEXIT_RESULT = WRITE_RESULT + WRITE_DONE + EXIT_RESULT;
+
+    EXPECT_CALL(mock_app, Write)
+        .Times(1)
+        .WillOnce(Return(true));
 
     string result = GetResultFromRunShellLoop(&shell, fakeCmd);
 
@@ -75,7 +81,11 @@ TEST_F(ShellFixture, WriteAndExit) {
 
 TEST_F(ShellFixture, ReadAndExit) {
     string fakeCmd = READ_CMD + EXIT_CMD;
-    string READANDEXIT_RESULT = READ_RESULT + EXIT_RESULT;
+    string READANDEXIT_RESULT = READ_RESULT + READ_DONE + EXIT_RESULT;
+
+    EXPECT_CALL(mock_app, Read)
+        .Times(1)
+        .WillOnce(Return(true));
 
     string result = GetResultFromRunShellLoop(&shell, fakeCmd);
 
