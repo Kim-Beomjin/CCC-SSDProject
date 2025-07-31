@@ -34,6 +34,9 @@ class Comparer : public Reader
 {
 public:
 	bool execute(ISsdApp* app, LBA lba, DATA data) override;
+
+private:
+	bool Compare(const DATA expectedData, const string& readResult);
 };
 
 class Helper : public IExecutor
