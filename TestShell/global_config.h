@@ -29,6 +29,8 @@ const string SECOND_SCRIPT_SHORT_NAME = "2_";
 const string SECOND_SCRIPT_FULL_NAME = "2_PartialLBAWrite";
 const string THIRD_SCRIPT_SHORT_NAME = "3_";
 const string THIRD_SCRIPT_FULL_NAME = "3_WriteReadAging";
+const string FOURTH_SCRIPT_SHORT_NAME = "4_";
+const string FOURTH_SCRIPT_FULL_NAME = "4_EraseAndWriteAging";
 
 const LBA TEST_LBA = 2;
 const DATA TEST_DATA = 0x12345678;
