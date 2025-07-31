@@ -25,7 +25,7 @@ public:
 	static const int LOOP_COUNT = 20;
 	static const int NUM_LBA_PER_LOOP = 5;
 
-	bool execute(ISsdApp* app, LBA lba, DATA data);
+	bool execute(ISsdApp* app, LBA lba, DATA data) override;
 };
 
 class PartialLBAWrite : public CompositExecutor {
@@ -36,7 +36,7 @@ public:
 	static const int LOOP_COUNT = 30;
 	static const int NUM_LBA_PER_LOOP = 5;
 
-	bool execute(ISsdApp* app, LBA lba, DATA data);
+	bool execute(ISsdApp* app, LBA lba, DATA data) override;
 };
 
 class WriteReadAging : public CompositExecutor {
@@ -47,5 +47,20 @@ public:
 	static const int LOOP_COUNT = 200;
 	static const int NUM_LBA_PER_LOOP = 2;
 
-	bool execute(ISsdApp* app, LBA lba, DATA data);
+	bool execute(ISsdApp* app, LBA lba, DATA data) override;
 };
+
+class EraseAndWriteAging : public CompositExecutor {
+public:
+	EraseAndWriteAging() = default;
+	EraseAndWriteAging(Writer* writer, Comparer* comparer, Eraser* eraser) :
+		CompositExecutor{ writer, comparer }, eraser { eraser } {}
+
+	static const int LOOP_COUNT = 30;
+
+	bool execute(ISsdApp* app, LBA lba, DATA data) override;
+
+private:
+	Eraser* eraser;
+};
+
