@@ -87,15 +87,19 @@ bool FullReader::execute(ISsdApp* app, LBA lba, DATA data)
 bool Comparer::execute(ISsdApp* app, LBA lba, DATA data)
 {
 	if (!Reader::execute(app, lba, data)) return false;
+	if (!Compare(data, Reader::GetResultFromFile())) return false;
+	return true;
+}
 
-	DATA readData = stringToUnsignedInt(Reader::GetResultFromFile());
-	if (data == readData) return true;
+bool Comparer::Compare(const DATA expectedData, const string &readResult)
+{
+	DATA readData = stringToUnsignedInt(readResult);
+	if (expectedData == readData) return true;
 
 #if (FIX_ME_LATER == 1)
-	cout << "[Compare] LBA " << lba << " Expected : " << data << "\n";
-	cout << "[Caompre] LBA " << lba << " Real : " << readData << "\n";
+	cout << "[Compare] Expected : " << expectedData << "\n";
+	cout << "[Caompre] Real : " << readData << "\n";
 #endif
-
 	return false;
 }
 
