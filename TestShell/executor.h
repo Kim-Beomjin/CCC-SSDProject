@@ -64,6 +64,8 @@ public:
 class Eraser : public IExecutor {
 public:
 	bool execute(ISsdApp* app, LBA lba = 0, SIZE size = 0) override;
+private:
+	bool sendEraseMessageWithCalculatedSize(ISsdApp* app, LBA startLba, SIZE size);
 };
 
 class RangeEraser : public Eraser {

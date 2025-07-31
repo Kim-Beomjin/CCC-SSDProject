@@ -6,8 +6,12 @@
 #include "compositExecutor.h"
 #include "utils.h"
 #include "logger.h"
+#include <tuple>
+#include <algorithm>
 
 using namespace std;
+
+#define ABS(x) ((x) < 0 ? (x) * -1 : (x))
 
 IExecutor* ExecutorFactory::createExecutor(const string command)
 {
@@ -119,17 +123,51 @@ bool Exiter::execute(ISsdApp* app, LBA lba, DATA data)
 
 bool Eraser::execute(ISsdApp* app, LBA startLba, SIZE size)
 {
-	app->Erase(startLba, size);
+	int localSize = size;
+	LBA savedStartLba = startLba;
+	SIZE calculatedSize = size;
+	if (localSize < 0) {
+		startLba = startLba - ABS(localSize) + 1;
+		calculatedSize = savedStartLba - startLba + 1;
+	}
+
+	if (sendEraseMessageWithCalculatedSize(app, startLba, calculatedSize) == false) {
+		cout << "[Eraser] operation failed\n";
+		return false;
+	}
 
 	cout << "[Eraser] Done\n";
 	return true;
 }
 
+bool Eraser::sendEraseMessageWithCalculatedSize(ISsdApp* app, LBA startLba, SIZE size) {
+	for (int remainedSize = size; remainedSize >= 0; remainedSize -= MAX_SEND_ERASE_SIZE_FOR_ONE_TIME) {
+		if (remainedSize < MAX_SEND_ERASE_SIZE_FOR_ONE_TIME) {
+			SIZE lastSize = remainedSize;
+			if (app->Erase(startLba, lastSize) == false) return false;
+			break;
+		}
+
+		if (app->Erase(startLba, MAX_SEND_ERASE_SIZE_FOR_ONE_TIME) == false) return false;
+		startLba += MAX_SEND_ERASE_SIZE_FOR_ONE_TIME;
+		if (startLba + MAX_SEND_ERASE_SIZE_FOR_ONE_TIME >= SSD_MAX_SIZE) {
+			SIZE lastRemainedSize = SSD_MAX_SIZE - startLba - 1;
+			if (app->Erase(startLba, lastRemainedSize) == false) return false;
+			break;
+		}
+	}
+
+	return true;
+}
+
 bool RangeEraser::execute(ISsdApp* app, LBA startLba, LBA endLba)
 {
-	SIZE size = endLba - startLba + 1;
+	LBA changedStartLba, changedEndLba;
+	std::tie(changedStartLba, changedEndLba) = std::minmax(startLba, endLba);
 
-	Eraser::execute(app, startLba, size);
+	SIZE size = changedEndLba - changedStartLba + 1;
+
+	Eraser::execute(app, changedStartLba, size);
 	return true;
 }
 

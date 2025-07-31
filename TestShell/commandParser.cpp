@@ -22,11 +22,12 @@ bool CommandParser::ExecuteSsdUsingParsedCommand(ISsdApp* app) {
 }
 
 bool CommandParser::IsVaildCommand(const string& cmd, size_t tokenSize) {
+    // TODO: need to refactor
     if (cmd_set.find(cmd) != cmd_set.end()) {
         if (IsWriteCmdValid(cmd, tokenSize)) return true;
         else if (IsReadCmdValid(cmd, tokenSize)) return true;
         else if (IsEraseCmdValid(cmd, tokenSize)) return true;
-        else if (tokenSize == 1) return true;
+        else if ((cmd != WRITE_CMD && cmd != READ_CMD) && tokenSize == 1) return true;
         return false;
     }
     return false;
