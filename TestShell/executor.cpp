@@ -91,11 +91,8 @@ bool Helper::execute(ISsdApp* app, LBA lba, DATA data)
 	return true;
 }
 
-bool Exiter::execute(ISsdApp* app, LBA lba, SIZE size)
+bool Exiter::execute(ISsdApp* app, LBA lba, DATA data)
 {
-	app->Erase(lba, size);
-
-	cout << "[Erase] Done\n";
 	return true;
 }
 
