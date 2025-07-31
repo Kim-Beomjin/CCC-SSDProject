@@ -11,10 +11,11 @@ public:
   bool Read(LBA lba);
   bool Write(LBA lba, DATA writeData);
   bool Erase(LBA lba, ERASE_SIZE erase_size);
+  void UpdateOutputFileUsingData(const DATA data);
 
 private:
   bool _IsInvalidParameter(LBA lba, ERASE_SIZE erase_size = 0);
-  void _UpdateOutputFile(std::string data);
+  void _UpdateOutputFile(std::string stringData);
   std::string _DataToHexString(const DATA data);
   NandInterface* nand;
 };

@@ -20,7 +20,7 @@ bool SSD::Read(LBA lba)
   }
   TEST_LOGGER(lba << ", " << readData);
 
-  _UpdateOutputFile(_DataToHexString(readData));
+  UpdateOutputFileUsingData(readData);
 
   return true;
 }
@@ -60,6 +60,11 @@ bool SSD::_IsInvalidParameter(LBA lba, ERASE_SIZE erase_size)
   }
 
   return false;
+}
+
+void SSD::UpdateOutputFileUsingData(const DATA data)
+{
+  _UpdateOutputFile(_DataToHexString(data));
 }
 
 void SSD::_UpdateOutputFile(std::string stringData)
