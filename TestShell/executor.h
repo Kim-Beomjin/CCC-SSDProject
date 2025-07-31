@@ -54,10 +54,10 @@ public:
 
 class Eraser : public IExecutor {
 public:
-	bool execute(ISsdApp* app, LBA lba = 0, DATA data = 0) override;
+	bool execute(ISsdApp* app, LBA lba = 0, SIZE size = 0) override;
 };
 
-class RangeEraser : public IExecutor {
+class RangeEraser : public Eraser {
 public:
-	bool execute(ISsdApp* app, LBA lba = 0, DATA data = 0) override;
+	bool execute(ISsdApp* app, LBA startLba = 0, LBA endLba = 0) override;
 };

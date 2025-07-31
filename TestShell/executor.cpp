@@ -108,8 +108,6 @@ bool RangeEraser::execute(ISsdApp* app, LBA startLba, LBA endLba)
 {
 	SIZE size = endLba - startLba + 1;
 
-	app->Erase(startLba, size);
-
-	cout << "[Erase_range] Done\n";
+	Eraser::execute(app, startLba, size);
 	return true;
 }
