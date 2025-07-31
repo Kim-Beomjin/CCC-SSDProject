@@ -123,15 +123,9 @@ bool Exiter::execute(ISsdApp* app, LBA lba, DATA data)
 
 bool Eraser::execute(ISsdApp* app, LBA startLba, SIZE size)
 {
-	int localSize = size;
-	LBA savedStartLba = startLba;
-	SIZE calculatedSize = size;
-	if (localSize < 0) {
-		startLba = startLba - ABS(localSize) + 1;
-		calculatedSize = savedStartLba - startLba + 1;
-	}
+	std::pair<LBA, SIZE> startLbaAndCalculatedSize = calculateStartLbaAndSize(startLba, size);
 
-	if (sendEraseMessageWithCalculatedSize(app, startLba, calculatedSize) == false) {
+	if (sendEraseMessageWithCalculatedSize(app, startLbaAndCalculatedSize.first, startLbaAndCalculatedSize.second) == false) {
 		cout << "[Eraser] operation failed\n";
 		return false;
 	}
@@ -140,9 +134,23 @@ bool Eraser::execute(ISsdApp* app, LBA startLba, SIZE size)
 	return true;
 }
 
+std::pair<LBA, SIZE> Eraser::calculateStartLbaAndSize(LBA lba, SIZE size) {
+	int localSize = size;
+	LBA savedStartLba = lba;
+	SIZE calculatedSize = size;
+	if (localSize < 0) {
+		int calcLba = lba - ABS(localSize) + 1;
+		if (calcLba < 0) calcLba = 0;
+		lba = calcLba;
+		calculatedSize = savedStartLba - lba + 1;
+	}
+
+	return { lba, calculatedSize };
+}
+
 bool Eraser::sendEraseMessageWithCalculatedSize(ISsdApp* app, LBA startLba, SIZE size) {
 	for (int remainedSize = size; remainedSize >= 0; remainedSize -= MAX_SEND_ERASE_SIZE_FOR_ONE_TIME) {
-		if (remainedSize < MAX_SEND_ERASE_SIZE_FOR_ONE_TIME) {
+		if (remainedSize <= MAX_SEND_ERASE_SIZE_FOR_ONE_TIME) {
 			SIZE lastSize = remainedSize;
 			if (app->Erase(startLba, lastSize) == false) return false;
 			break;
