@@ -18,9 +18,9 @@ IExecutor* ExecutorFactory::createExecutor(const string command)
 	if (command == ERASE_RANGE_CMD) return new RangeEraser();
 	if (command == HELP_CMD) return new Helper();
 	if (command == EXIT_CMD) return new Exiter();
-	if (command == FIRST_SCRIPT_SHORT_NAME || command == FIRST_SCRIPT_FULL_NAME)return new FullWriteAndReadCompare(new Writer(), new Reader());
-	if (command == SECOND_SCRIPT_SHORT_NAME || command == SECOND_SCRIPT_FULL_NAME) return new PartialLBAWrite(new Writer(), new Reader());
-	if (command == THIRD_SCRIPT_SHORT_NAME || command == THIRD_SCRIPT_FULL_NAME) return new WriteReadAging(new Writer(), new Reader());
+	if (command == FIRST_SCRIPT_SHORT_NAME || command == FIRST_SCRIPT_FULL_NAME)return new FullWriteAndReadCompare(new Writer(), new Comparer());
+	if (command == SECOND_SCRIPT_SHORT_NAME || command == SECOND_SCRIPT_FULL_NAME) return new PartialLBAWrite(new Writer(), new Comparer());
+	if (command == THIRD_SCRIPT_SHORT_NAME || command == THIRD_SCRIPT_FULL_NAME) return new WriteReadAging(new Writer(), new Comparer());
 
 	return nullptr;
 }
@@ -82,6 +82,21 @@ bool FullReader::execute(ISsdApp* app, LBA lba, DATA data)
 	}
 
 	return ret;
+}
+
+bool Comparer::execute(ISsdApp* app, LBA lba, DATA data)
+{
+	if (!Reader::execute(app, lba, data)) return false;
+
+	DATA readData = stringToUnsignedInt(Reader::GetResultFromFile());
+	if (data == readData) return true;
+
+#if (FIX_ME_LATER == 1)
+	cout << "[Compare] LBA " << lba << " Expected : " << data << "\n";
+	cout << "[Caompre] LBA " << lba << " Real : " << readData << "\n";
+#endif
+
+	return false;
 }
 
 bool Helper::execute(ISsdApp* app, LBA lba, DATA data)
