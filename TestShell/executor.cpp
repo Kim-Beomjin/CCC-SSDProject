@@ -14,6 +14,8 @@ IExecutor* ExecutorFactory::createExecutor(const string command)
 	if (command == FULL_WRITE_CMD) return new FullWriter();
 	if (command == READ_CMD) return new Reader();
 	if (command == FULL_READ_CMD) return new FullReader();
+	if (command == ERASE_CMD) return new Eraser();
+	if (command == ERASE_RANGE_CMD) return new RangeEraser();
 	if (command == HELP_CMD) return new Helper();
 	if (command == EXIT_CMD) return new Exiter();
 	if (command == FIRST_SCRIPT_SHORT_NAME || command == FIRST_SCRIPT_FULL_NAME)return new FullWriteAndReadCompare(new Writer(), new Reader());
@@ -89,8 +91,28 @@ bool Helper::execute(ISsdApp* app, LBA lba, DATA data)
 	return true;
 }
 
-bool Exiter::execute(ISsdApp* app, LBA lba, DATA data)
+bool Exiter::execute(ISsdApp* app, LBA lba, SIZE size)
 {
+	app->Erase(lba, size);
+
+	cout << "[Erase] Done\n";
 	return true;
 }
 
+bool Eraser::execute(ISsdApp* app, LBA startLba, SIZE size)
+{
+	app->Erase(startLba, size);
+
+	cout << "[Eraser] Done\n";
+	return true;
+}
+
+bool RangeEraser::execute(ISsdApp* app, LBA startLba, LBA endLba)
+{
+	SIZE size = endLba - startLba + 1;
+
+	app->Erase(startLba, size);
+
+	cout << "[Erase_range] Done\n";
+	return true;
+}

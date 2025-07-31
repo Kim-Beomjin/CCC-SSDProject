@@ -15,6 +15,12 @@ bool SsdApp::Write(LBA lba, DATA data) {
 	return true;
 }
 
+bool SsdApp::Erase(LBA lba, SIZE size) {
+	string sendEraseString = makeExecuteCmd(SEND_ERASE_CMD, lba, size);
+	system(sendEraseString.c_str());
+	return true;
+}
+
 SsdApp* SsdApp::getInstance()
 {
 	static SsdApp instance;

@@ -9,6 +9,8 @@ public:
 
 	bool Write(LBA lba, DATA data) override;
 
+	bool Erase(LBA lba, SIZE size);
+
 	static SsdApp* getInstance();
 
 private:
