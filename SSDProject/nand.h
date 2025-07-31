@@ -20,7 +20,7 @@ public:
   bool Write(const LBA lba, const DATA writeData);
   bool Erase(const LBA lba, const int size);
 private:
-	bool IsInvalidParameter(const LBA lba);
+	bool IsInvalidParameter(const LBA lba, const int size = 0);
 	
 	void _LoadNandFromFile(const std::string& filename);
 	void _DumpNandToFile(const std::string& filename);

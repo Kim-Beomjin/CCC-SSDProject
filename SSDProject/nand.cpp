@@ -30,12 +30,19 @@ bool Nand::Write(const LBA lba, const DATA writeData)
 
 bool Nand::Erase(const LBA lba, const int size)
 {
+	if (IsInvalidParameter(lba, size))
+	{
+		return false;
+	}
+	_LoadNandFromFile(NAND_FILE_NAME);
+	memset(nandData + lba, EMPTY_DATA, sizeof(DATA) * size);
+	_DumpNandToFile(NAND_FILE_NAME);
 	return true;
 }
 
-bool Nand::IsInvalidParameter(const LBA lba)
+bool Nand::IsInvalidParameter(const LBA lba, const int size)
 {
-	if (lba >= LBA_END_ADDR)
+	if (lba >= LBA_END_ADDR || lba + size > LBA_END_ADDR || size > MAX_ERASE_SIZE)
 	{
 		DEBUG_ASSERT(false, "INVALID_PARAMETER");
 		return true;

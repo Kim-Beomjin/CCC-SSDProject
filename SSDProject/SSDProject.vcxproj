@@ -153,7 +153,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BufferManager.cpp" />
-    <ClCompile Include="BufferManager_test.cpp" />
     <ClCompile Include="hostInterface.cpp" />
     <ClCompile Include="hostInterface_test.cpp" />
     <ClCompile Include="main.cpp" />

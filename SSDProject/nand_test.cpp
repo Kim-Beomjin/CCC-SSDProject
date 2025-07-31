@@ -24,6 +24,8 @@ protected:
     DATA readData = 0;
     static const int TEST_SIZE = 5;
     const std::vector<int> VALID_LBA_ADDR_LIST = { 0, 50, 70, 90, 99 };
+    const std::vector<int> VALID_ERASE_LBA_ADDR_LIST = { 0, 50, 70, 90, 99 };
+    const std::vector<int> VALID_ERASE_SIZE_LIST = { 5, 2, 10, 9, 1 };
     const std::vector<int> INVALID_LBA_ADDR_LIST = { -100, -10, -1, 100, 10000 };
     const DATA WRITE_DATA = 0xFFFF;
     const DATA OVERWRITE_DATA = 0xCCCCC;
@@ -56,9 +58,10 @@ TEST_F(NandFixture, WRITE_INVALID_PARAMETER_TEST) {
 }
 
 TEST_F(NandFixture, ERASE_VALID_PARAMETER_TEST) {
-    for (int lba : VALID_LBA_ADDR_LIST) {
-        EXPECT_EQ(nand.Erase(lba, LARGE_ERASE_SIZE), true);
-    }
+  for (int index = 0; index < TEST_SIZE; index++)
+  {
+      EXPECT_EQ(nand.Erase(VALID_ERASE_LBA_ADDR_LIST[index], VALID_ERASE_SIZE_LIST[index]), true);
+  }
 }
 
 TEST_F(NandFixture, ERASE_INVALID_PARAMETER_TEST) {
@@ -86,7 +89,7 @@ TEST_F(NandFixture, FILE_EXIST_AFTER_WRITE) {
 TEST_F(NandFixture, FILE_EXIST_AFTER_ERASE) {
     DeleteFile(NAND_FILE_NAME);
     for (int lba : VALID_LBA_ADDR_LIST) {
-        nand.Erase(lba, LARGE_ERASE_SIZE);
+        nand.Erase(lba, ERASE_SINGLE_LBA);
     }
     EXPECT_EQ(IsFileExist(NAND_FILE_NAME), true);
 }
@@ -157,28 +160,32 @@ TEST_F(NandFixture, SINGLE_ERASE_AFTER_WRITE)
 TEST_F(NandFixture, LARGE_ERASE_AFTER_WRITE)
 {
   DeleteFile(NAND_FILE_NAME);
-  for (int lba : VALID_LBA_ADDR_LIST)
+
+  for (int index = 0; index < TEST_SIZE; index++)
   {
-    for (int lbaIndex = 0; lbaIndex < LARGE_ERASE_SIZE; lbaIndex++)
+    int startLba = VALID_ERASE_LBA_ADDR_LIST[index];
+    for (int lba = startLba; lba < startLba + VALID_ERASE_SIZE_LIST[index]; lba++)
     {
-      nand.Write(lba + lbaIndex, WRITE_DATA);
+      nand.Write(lba, WRITE_DATA);
     }
   }
-  for (int lba : VALID_LBA_ADDR_LIST)
+  for (int index = 0; index < TEST_SIZE; index++)
   {
-    for (int lbaIndex = 0; lbaIndex < LARGE_ERASE_SIZE; lbaIndex++)
+    int startLba = VALID_ERASE_LBA_ADDR_LIST[index];
+    for (int lba = startLba; lba < startLba + VALID_ERASE_SIZE_LIST[index]; lba++)
     {
       nand.Read(lba, readData);
       EXPECT_EQ(readData, WRITE_DATA);
     }
   }
-  for (int lba : VALID_LBA_ADDR_LIST)
+  for (int index = 0; index < TEST_SIZE; index++)
   {
-    nand.Erase(lba, LARGE_ERASE_SIZE);
+    nand.Erase(VALID_ERASE_LBA_ADDR_LIST[index], VALID_ERASE_SIZE_LIST[index]);
   }
-  for (int lba : VALID_LBA_ADDR_LIST)
+  for (int index = 0; index < TEST_SIZE; index++)
   {
-    for (int lbaIndex = 0; lbaIndex < LARGE_ERASE_SIZE; lbaIndex++)
+    int startLba = VALID_ERASE_LBA_ADDR_LIST[index];
+    for (int lba = startLba; lba < startLba + VALID_ERASE_SIZE_LIST[index]; lba++)
     {
       nand.Read(lba, readData);
       EXPECT_EQ(readData, EMPTY_DATA);
