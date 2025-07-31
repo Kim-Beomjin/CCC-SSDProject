@@ -10,18 +10,20 @@ using std::endl;
 
 const string makeExecuteCmd(string cmd, LBA lba, DATA data) {
 	std::ostringstream oss;
-	oss << EXE_FILE_NAME << " " << cmd << " " << lba;
+	oss << EXE_FILE_NAME << " " << cmd;
+	if (cmd == SEND_FLUSH_CMD) return oss.str();
+	
+	oss << " " << lba;
 	if (cmd == SEND_WRITE_CMD) {
 		oss << " " << DataToHexString(data);
 	}
 	else if (cmd == SEND_ERASE_CMD) {
 		oss << " " << data;
 	}
-	string commandStr = oss.str();
 //#ifdef _DEBUG
-	cout << commandStr << endl;
+	cout << oss.str() << endl;
 //#endif
-	return commandStr;
+	return oss.str();
 }
 
 string DataToHexString(const DATA data)

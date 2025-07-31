@@ -70,3 +70,8 @@ class RangeEraser : public Eraser {
 public:
 	bool execute(ISsdApp* app, LBA startLba = 0, LBA endLba = 0) override;
 };
+
+class Flusher : public IExecutor {
+public:
+	bool execute(ISsdApp* app, LBA lba = 0, DATA data = 0) override;
+};

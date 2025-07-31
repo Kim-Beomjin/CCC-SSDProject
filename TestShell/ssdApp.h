@@ -11,6 +11,8 @@ public:
 
 	bool Erase(LBA lba, SIZE size) override;
 
+	bool Flush() override;
+
 	static SsdApp* getInstance();
 
 private:
