@@ -27,6 +27,8 @@ protected:
     const std::vector<int> INVALID_LBA_ADDR_LIST = { -100, -10, -1, 100, 10000 };
     const DATA WRITE_DATA = 0xFFFF;
     const DATA OVERWRITE_DATA = 0xCCCCC;
+    const int VALID_ERASE_SIZE = 6;
+    const int ERASE_SINGLE_LBA = 1;
 };
 
 TEST_F(NandFixture, READ_VALID_PARAMETER_TEST) {
@@ -53,6 +55,18 @@ TEST_F(NandFixture, WRITE_INVALID_PARAMETER_TEST) {
     }
 }
 
+TEST_F(NandFixture, ERASE_VALID_PARAMETER_TEST) {
+    for (int lba : VALID_LBA_ADDR_LIST) {
+        EXPECT_EQ(nand.Erase(lba, VALID_ERASE_SIZE), true);
+    }
+}
+
+TEST_F(NandFixture, ERASE_INVALID_PARAMETER_TEST) {
+    for (int lba : INVALID_LBA_ADDR_LIST) {
+        EXPECT_THROW(nand.Erase(lba, VALID_ERASE_SIZE), std::exception);
+    }
+}
+
 TEST_F(NandFixture, FILE_EXIST_AFTER_READ) {
     DeleteFile(NAND_FILE_NAME);
     for (int lba : VALID_LBA_ADDR_LIST) {
@@ -65,6 +79,14 @@ TEST_F(NandFixture, FILE_EXIST_AFTER_WRITE) {
     DeleteFile(NAND_FILE_NAME);
     for (int lba : VALID_LBA_ADDR_LIST) {
         nand.Write(lba, WRITE_DATA);
+    }
+    EXPECT_EQ(IsFileExist(NAND_FILE_NAME), true);
+}
+
+TEST_F(NandFixture, FILE_EXIST_AFTER_ERASE) {
+    DeleteFile(NAND_FILE_NAME);
+    for (int lba : VALID_LBA_ADDR_LIST) {
+        nand.Erase(lba, VALID_ERASE_SIZE);
     }
     EXPECT_EQ(IsFileExist(NAND_FILE_NAME), true);
 }
@@ -107,6 +129,29 @@ TEST_F(NandFixture, READ_AFTER_OVERWRITE)
         nand.Read(lba, readData);
         EXPECT_EQ(readData, OVERWRITE_DATA);
     }
+}
+
+TEST_F(NandFixture, ERASE_AFTER_WRITE)
+{
+  DeleteFile(NAND_FILE_NAME);
+  for (int lba : VALID_LBA_ADDR_LIST)
+  {
+    nand.Write(lba, WRITE_DATA);
+  }
+  for (int lba : VALID_LBA_ADDR_LIST)
+  {
+    nand.Read(lba, readData);
+    EXPECT_EQ(readData, WRITE_DATA);
+  }
+  for (int lba : VALID_LBA_ADDR_LIST)
+  {
+    nand.Erase(lba, ERASE_SINGLE_LBA);
+  }
+  for (int lba : VALID_LBA_ADDR_LIST)
+  {
+    nand.Read(lba, readData);
+    EXPECT_EQ(readData, EMPTY_DATA);
+  }
 }
 
 #endif
