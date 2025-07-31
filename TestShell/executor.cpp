@@ -5,6 +5,7 @@
 #include "executor.h"
 #include "compositExecutor.h"
 #include "utils.h"
+#include "logger.h"
 
 using namespace std;
 
@@ -26,7 +27,7 @@ IExecutor* ExecutorFactory::createExecutor(const string command)
 bool Writer::execute(ISsdApp* app, LBA lba, DATA data)
 {
 	app->Write(lba, data);
-
+	SHELL_LOG("[Write] Done", lba, data);
 	cout << "[Write] Done\n";
 	return true;
 }
@@ -47,7 +48,7 @@ bool Reader::execute(ISsdApp* app, LBA lba, DATA data)
 {
 	app->Read(lba);
 	string result = GetResultFromFile();
-
+	SHELL_LOG("[Read] LBA ", lba, result);
 	cout << "[Read] LBA " << lba << " : " << result << "\n";
 	return true;
 }
