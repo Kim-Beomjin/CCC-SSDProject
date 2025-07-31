@@ -28,7 +28,7 @@ public:
 #endif
 
 private:
-    HostInterface() : ssd{ new SSD() }, bufferManager{ new BufferManager(ssd) }, lba{0}, data{0} {};
+    HostInterface() : ssd{ new SSD() }, bufferManager{ new BufferManager(ssd) }, lba{ 0 }, data{ 0 }, length{ 0 } {};
     bool _WriteCondition(int argc, char* argv[]);
     bool _ReadCondition(int argc, char* argv[]);
     bool _EraseCondition(int argc, char* argv[]);

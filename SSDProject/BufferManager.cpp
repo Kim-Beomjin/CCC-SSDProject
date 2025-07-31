@@ -126,7 +126,6 @@ void BufferManager::_LoadBuffer()
 				LBA lba = std::stoul(command[1], &idx, 10);
 				DATA data = std::stoul(command[2], &idx, 16);
 				dataBuffer[lba] = { BUF_TYPE::WRITE, data };
-				std::cout << lba << " " << data << " ";
 			}
 			else if (command[0] == "E") {
 				LBA lba = std::stoul(command[1]);
