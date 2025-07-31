@@ -86,6 +86,17 @@ TEST_F(MockNandSSDFixture, ReadWithoutWrite)
   ValidateOutputDataWith(INVALID_DATA);
 }
 
+TEST_F(MockNandSSDFixture, EraseLba)
+{
+  ssd.Write(VALID_LBA, stoul(WRITE_DATA, nullptr, 16));
+  ReadAndUpdateOutputFile(VALID_LBA, WRITE_DATA);
+  //ValidateOutputDataWith(WRITE_DATA);
+
+  ssd.Erase(VALID_LBA, 1);
+  ReadAndUpdateOutputFile(VALID_LBA, "0x00000000" /*No_data*/);
+  ValidateOutputDataWith("0x00000000" /*No_data*/);
+}
+
 TEST_F(MockNandSSDFixture, ReadInvalidParam)
 {
   ssd.Read(INVALID_LBA);
@@ -96,6 +107,20 @@ TEST_F(MockNandSSDFixture, ReadInvalidParam)
 TEST_F(MockNandSSDFixture, WriteInvalidParam)
 {
   ssd.Write(INVALID_LBA, stoul(WRITE_DATA, nullptr, 16));
+
+  ValidateOutputDataWith(ERROR_MSG);
+}
+
+TEST_F(MockNandSSDFixture, EraseInvalidLBA)
+{
+  ssd.Erase(INVALID_LBA, 6);
+
+  ValidateOutputDataWith(ERROR_MSG);
+}
+
+TEST_F(MockNandSSDFixture, EraseInvalidSize)
+{
+  ssd.Erase(VALID_LBA, 11);
 
   ValidateOutputDataWith(ERROR_MSG);
 }
