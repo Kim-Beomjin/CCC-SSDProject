@@ -4,6 +4,7 @@
 #include <direct.h>
 #include "executor.h"
 #include "compositExecutor.h"
+#include "utils.h"
 
 using namespace std;
 
@@ -39,14 +40,24 @@ bool Reader::execute(const string& command, LBA lba, DATA data, ISsdApp * app)
 {
 	if (command == FULL_READ_CMD)
 	{
-		for (DATA lba = 0; lba < SSD_MAX_SIZE; ++lba) app->Read(lba);
+		for (LBA lba = 0; lba < SSD_MAX_SIZE; ++lba) app->Read(lba);
 		return true;
 	}
 
 	app->Read(lba);
-	if (command == SCRIPT_READ_CMD) return true;
-
 	string result = GetResultFromFile();
+
+	if (command == SCRIPT_READ_CMD)
+	{
+		string expected = DataToHexString(data);
+		if (result == expected) return true;
+#if (FIX_ME_LATER == 1)
+		cout << "[Read] Expected LBA " << lba << " : " << expected << "\n";
+		cout << "[Read] Real LBA " << lba << " : " << result << "\n";
+#endif
+		return false;
+	}
+
 	cout << "[Read] LBA " << lba << " : " << result << "\n";
 	return true;
 }
