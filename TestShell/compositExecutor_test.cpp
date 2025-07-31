@@ -63,7 +63,8 @@ TEST_F(CompositExecutorFixture, CompositExecutor1CheckMockReadWriteMaxTimes) {
 		.Times(FIRST_TEST_SCRIPT_MAX_IO_TIMES);
 
 	EXPECT_CALL(mockComparer, execute)
-		.Times(FIRST_TEST_SCRIPT_MAX_IO_TIMES);
+		.Times(FIRST_TEST_SCRIPT_MAX_IO_TIMES)
+		.WillRepeatedly(Return(true));
 
 	mockFirstApp.execute(&mockSsdApp, 0, 0);
 }
@@ -73,7 +74,8 @@ TEST_F(CompositExecutorFixture, CompositExecutor2CheckMockReadWriteMaxTimes) {
 		.Times(SECOND_TEST_SCRIPT_MAX_IO_TIMES);
 
 	EXPECT_CALL(mockComparer, execute)
-		.Times(SECOND_TEST_SCRIPT_MAX_IO_TIMES);
+		.Times(SECOND_TEST_SCRIPT_MAX_IO_TIMES)
+		.WillRepeatedly(Return(true));
 
 	mockSecondApp.execute(&mockSsdApp, 0, 0);
 }
@@ -83,7 +85,8 @@ TEST_F(CompositExecutorFixture, CompositExecutor3CheckMockReadWriteMaxTimes) {
 		.Times(THIRD_TEST_SCRIPT_MAX_IO_TIMES);
 
 	EXPECT_CALL(mockComparer, execute)
-		.Times(THIRD_TEST_SCRIPT_MAX_IO_TIMES);
+		.Times(THIRD_TEST_SCRIPT_MAX_IO_TIMES)
+		.WillRepeatedly(Return(true));
 
 	mockThirdApp.execute(&mockSsdApp, 0, 0);
 }
