@@ -9,6 +9,7 @@ class NandInterface
 public:
 	virtual bool Read(const LBA lba, DATA& readData) = 0;
 	virtual bool Write(const LBA lba, const DATA writeData) = 0;
+	virtual bool Erase(const LBA lba, const int size) = 0;
 };
 
 class Nand : public NandInterface
@@ -17,6 +18,7 @@ public:
   Nand() {}
   bool Read(const LBA lba, DATA& readData);
   bool Write(const LBA lba, const DATA writeData);
+  bool Erase(const LBA lba, const int size);
 private:
 	bool IsInvalidParameter(const LBA lba);
 	

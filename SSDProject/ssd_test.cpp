@@ -17,6 +17,7 @@ class MockNand : public NandInterface
 public:
   MOCK_METHOD(bool, Read, (const LBA lba, DATA& readData), (override));
   MOCK_METHOD(bool, Write, (const LBA lba, const DATA writeData), (override));
+  MOCK_METHOD(bool, Erase, (const LBA lba, const int size), (override));
 };
 
 class MockNandSSDFixture : public Test

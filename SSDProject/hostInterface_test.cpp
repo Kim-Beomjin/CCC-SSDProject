@@ -10,6 +10,7 @@ class MockNand : public NandInterface
 public:
     MOCK_METHOD(bool, Read, (const LBA lba, DATA& out), (override));
     MOCK_METHOD(bool, Write, (const LBA lba, const DATA data), (override));
+    MOCK_METHOD(bool, Erase, (const LBA lba, const int size), (override));
 };
 
 class HostInterfaceFixture : public testing::Test {
