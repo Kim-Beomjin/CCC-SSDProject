@@ -27,7 +27,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lib\native\src\gmock\gmock-all.cc">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="commendParser_test.cpp">
+    <ClCompile Include="commandParser_test.cpp">
       <Filter>테스트 파일</Filter>
     </ClCompile>
     <ClCompile Include="commandParser.cpp">

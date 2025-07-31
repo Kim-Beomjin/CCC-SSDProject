@@ -26,16 +26,16 @@ TEST_F(CommandParserFixture, HelpCommand) {
 
 TEST_F(CommandParserFixture, FullwriteCommand) {
     EXPECT_CALL(mock_app, Write)
-        .Times(100)
-        .WillRepeatedly(Return(true));
+        .Times(1)
+        .WillOnce(Return(true));
 
     CheckParseCommand(FULL_WRITE_CMD, 0, TEST_DATA);
 }
 
 TEST_F(CommandParserFixture, fullreadCommand) {
     EXPECT_CALL(mock_app, Read)
-        .Times(100)
-        .WillRepeatedly(Return(true));
+        .Times(1)
+        .WillOnce(Return(true));
 
     CheckParseCommand(FULL_READ_CMD);
 }

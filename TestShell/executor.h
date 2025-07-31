@@ -5,23 +5,35 @@
 class Writer : public IExecutor
 {
 public:
-	bool execute(ISsdApp* app, const string& command, LBA lba, DATA data) override;
+	bool execute(ISsdApp* app, LBA lba, DATA data) override;
+};
+
+class FullWriter : public Writer
+{
+public:
+	bool execute(ISsdApp* app, LBA lba, DATA data) override;
 };
 
 class Reader : public IExecutor
 {
 public:
-	bool execute(ISsdApp* app, const string& command, LBA lba, DATA data) override;
+	bool execute(ISsdApp* app, LBA lba, DATA data = 0) override;
+
 	string GetResultFromFile(void);
-
+private:
 	const string OUTPUT_NAME = "ssd_output.txt";
+};
 
+class FullReader : public Reader
+{
+public:
+	bool execute(ISsdApp* app, LBA lba, DATA data) override;
 };
 
 class Helper : public IExecutor
 {
 public:
-	bool execute(ISsdApp* app, const string& command, LBA lba, DATA data) override;
+	bool execute(ISsdApp* app, LBA lba = 0, DATA data = 0) override;
 private:
 	const std::string HELP_DESCRIPTION =
 		"ÆÀ¸í: CCC(Clean Code Collective) \n"
@@ -37,5 +49,5 @@ private:
 
 class Exiter : public IExecutor {
 public:
-	bool execute(ISsdApp* app, const string& command, LBA lba, DATA data) override;
+	bool execute(ISsdApp* app, LBA lba = 0, DATA data = 0) override;
 };

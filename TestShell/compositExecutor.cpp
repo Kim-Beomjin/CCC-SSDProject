@@ -1,4 +1,5 @@
 #include "CompositExecutor.h"
+#include "utils.h"
 #include <iostream>
 #ifdef _DEBUG
 #include <stdexcept>
@@ -8,7 +9,14 @@
 
 bool CompositExecutor::ReadCompare(ISsdApp* app, LBA lba, DATA expectedData)
 {
-	bool result = reader->execute(app, SCRIPT_READ_CMD, lba, expectedData);
+	bool result = reader->execute(app, lba, expectedData);
+
+	DATA read_result = stringToUnsignedInt(reader->GetResultFromFile());
+	if (read_result == expectedData) result = true;
+#if (FIX_ME_LATER == 1)
+		cout << "[Read] Expected LBA " << lba << " : " << expectedData << "\n";
+		cout << "[Read] Real LBA " << lba << " : " << result << "\n";
+#endif
 
 #ifndef _DEBUG
 	if (result == false) cout << "FAIL\n";
@@ -20,7 +28,7 @@ bool CompositExecutor::ReadCompare(ISsdApp* app, LBA lba, DATA expectedData)
 }
 
 
-bool FullWriteAndReadCompare::execute(ISsdApp* app, const string& command, LBA lba, DATA data)
+bool FullWriteAndReadCompare::execute(ISsdApp* app, LBA lba, DATA data)
 {
 	for (int loop = 0; loop < LOOP_COUNT; loop++)
 	{
@@ -30,7 +38,7 @@ bool FullWriteAndReadCompare::execute(ISsdApp* app, const string& command, LBA l
 
 		for (int lba = startLba; lba < endLba; lba++)
 		{
-			writer->execute(app, SCRIPT_WRITE_CMD, lba, inputData);
+			writer->execute(app, lba, inputData);
 		}
 
 		for (int lba = startLba; lba < endLba; lba++)
@@ -43,7 +51,7 @@ bool FullWriteAndReadCompare::execute(ISsdApp* app, const string& command, LBA l
 	return true;
 }
 
-bool PartialLBAWrite::execute(ISsdApp* app, const string& command, LBA lba, DATA data)
+bool PartialLBAWrite::execute(ISsdApp* app, LBA lba, DATA data)
 {
 	LBA writeLba[5] = { 4, 0, 3, 1, 2 };
 	LBA readStartLba = 0;
@@ -55,7 +63,7 @@ bool PartialLBAWrite::execute(ISsdApp* app, const string& command, LBA lba, DATA
 
 		for (auto lba : writeLba)
 		{
-			writer->execute(app, SCRIPT_WRITE_CMD, lba, inputData);
+			writer->execute(app, lba, inputData);
 		}
 
 		for (int lba = readStartLba; lba < readEndLba; lba++)
@@ -68,7 +76,7 @@ bool PartialLBAWrite::execute(ISsdApp* app, const string& command, LBA lba, DATA
 	return true;
 }
 
-bool WriteReadAging::execute(ISsdApp* app, const string& command, LBA lba, DATA data)
+bool WriteReadAging::execute(ISsdApp* app, LBA lba, DATA data)
 {
 	LBA ioLba[2] = { 0, 99 };
 
@@ -85,7 +93,7 @@ bool WriteReadAging::execute(ISsdApp* app, const string& command, LBA lba, DATA 
 
 		for (int index = 0; index < NUM_LBA_PER_LOOP; index++)
 		{
-			writer->execute(app, SCRIPT_WRITE_CMD, ioLba[index], inputData[index]);
+			writer->execute(app, ioLba[index], inputData[index]);
 		}
 
 		for (int index = 0; index < NUM_LBA_PER_LOOP; index++)

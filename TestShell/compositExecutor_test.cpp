@@ -13,12 +13,12 @@ public:
 class MockWriter : public Writer
 {
 public:
-	MOCK_METHOD(bool, execute, (ISsdApp*, const string&, LBA, DATA), (override));
+	MOCK_METHOD(bool, execute, (ISsdApp*, LBA, DATA), (override));
 };
 
 class MockReader : public Reader {
 public:
-	MOCK_METHOD(bool, execute, (ISsdApp*, const string&, LBA, DATA), (override));
+	MOCK_METHOD(bool, execute, (ISsdApp*, LBA, DATA), (override));
 };
 
 class CompositExecutorFixture : public Test {
@@ -29,9 +29,6 @@ public:
 
 	const string BLANK_TEST_SCRIPT_NAME = "";
 	const string INVALID_TEST_SCRIPT_NAME = "123";
-	const string FIRST_TEST_SCRIPT_NAME = "1_";
-	const string SECOND_TEST_SCRIPT_NAME = "2_";
-	const string THIRD_TEST_SCRIPT_NAME = "3_";
 
 	const int FIRST_TEST_SCRIPT_MAX_IO_TIMES =
 		FullWriteAndReadCompare::LOOP_COUNT * FullWriteAndReadCompare::NUM_LBA_PER_LOOP;
@@ -66,7 +63,7 @@ TEST_F(CompositExecutorFixture, CompositExecutor1CheckMockReadWriteMaxTimes) {
 	EXPECT_CALL(mockReader, execute)
 		.Times(FIRST_TEST_SCRIPT_MAX_IO_TIMES);
 
-	mockFirstApp.execute(&mockSsdApp, FIRST_TEST_SCRIPT_NAME, 0, 0);
+	mockFirstApp.execute(&mockSsdApp, 0, 0);
 }
 
 TEST_F(CompositExecutorFixture, CompositExecutor2CheckMockReadWriteMaxTimes) {
@@ -76,7 +73,7 @@ TEST_F(CompositExecutorFixture, CompositExecutor2CheckMockReadWriteMaxTimes) {
 	EXPECT_CALL(mockReader, execute)
 		.Times(SECOND_TEST_SCRIPT_MAX_IO_TIMES);
 
-	mockSecondApp.execute(&mockSsdApp, SECOND_TEST_SCRIPT_NAME, 0, 0);
+	mockSecondApp.execute(&mockSsdApp, 0, 0);
 }
 
 TEST_F(CompositExecutorFixture, CompositExecutor3CheckMockReadWriteMaxTimes) {
@@ -86,7 +83,7 @@ TEST_F(CompositExecutorFixture, CompositExecutor3CheckMockReadWriteMaxTimes) {
 	EXPECT_CALL(mockReader, execute)
 		.Times(THIRD_TEST_SCRIPT_MAX_IO_TIMES);
 
-	mockThirdApp.execute(&mockSsdApp, THIRD_TEST_SCRIPT_NAME, 0, 0);
+	mockThirdApp.execute(&mockSsdApp, 0, 0);
 }
 
 #endif

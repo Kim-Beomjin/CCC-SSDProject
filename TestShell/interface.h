@@ -15,7 +15,7 @@ interface ISsdApp {
 };
 
 interface IExecutor {
-	virtual bool execute(ISsdApp* pApp = nullptr, const string& command = "", u32 lba = 0, u32 data = 0) = 0;
+	virtual bool execute(ISsdApp* pApp = nullptr, u32 lba = 0, u32 data = 0) = 0;
 };
 
 class ICommandParserBridge

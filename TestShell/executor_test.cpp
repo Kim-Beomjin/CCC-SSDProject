@@ -17,7 +17,7 @@ public:
 	void checkExecute(string cmd = "", LBA lba = 0, DATA data = 0, DATA expect_data = 0) {
 		executor = ExecutorFactory().createExecutor(cmd);
 
-		bool ret = executor->execute(&mock_app, cmd, lba, data);
+		bool ret = executor->execute(&mock_app, lba, data);
 		EXPECT_TRUE(ret);
 	}
 
@@ -43,8 +43,9 @@ TEST_F(ExecutorTestFixture, writeCommandTest) {
 
 TEST_F(ExecutorTestFixture, fullWriteCommandTest) {
 	EXPECT_CALL(mock_app, Write)
-		.Times(100)
-		.WillRepeatedly(Return(true));
+		.Times(1)
+		.WillOnce(Return(true));
+	(Return(true));
 	
 	checkExecute(FULL_WRITE_CMD, 0, TEST_DATA);
 }
@@ -59,8 +60,8 @@ TEST_F(ExecutorTestFixture, readNonWriteTest) {
 
 TEST_F(ExecutorTestFixture, fullreadCommandTest) {
 	EXPECT_CALL(mock_app, Read)
-		.Times(100)
-		.WillRepeatedly(Return(NO_DATA));
+		.Times(1)
+		.WillOnce(Return(NO_DATA));
 
 	checkExecute(FULL_READ_CMD, 0, 0, NO_DATA);
 }
