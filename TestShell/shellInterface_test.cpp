@@ -19,12 +19,13 @@ class MockSsdApp : public ISsdApp {
 public:
     MOCK_METHOD(DATA, Read, (LBA), (override));
     MOCK_METHOD(bool, Write, (LBA, DATA), (override));
+    MOCK_METHOD(bool, Erase, (LBA, SIZE), (override));
 };
 
 class ShellFixture : public Test {
 public:
     NiceMock<MockCommandParser> mockCommandParser;
-    MockSsdApp mock_app;
+    NiceMock < MockSsdApp> mock_app;
     class Shell shell;
     class Shell mockshell {&mockCommandParser};
     string EXIT_CMD = "exit\n";

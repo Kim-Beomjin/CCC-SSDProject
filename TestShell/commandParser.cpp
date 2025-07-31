@@ -25,6 +25,7 @@ bool CommandParser::IsVaildCommand(const string& cmd, size_t tokenSize) {
     if (cmd_set.find(cmd) != cmd_set.end()) {
         if (IsWriteCmdValid(cmd, tokenSize)) return true;
         else if (IsReadCmdValid(cmd, tokenSize)) return true;
+        else if (IsEraseCmdValid(cmd, tokenSize)) return true;
         else if (tokenSize == 1) return true;
         return false;
     }
@@ -33,6 +34,11 @@ bool CommandParser::IsVaildCommand(const string& cmd, size_t tokenSize) {
 
 bool CommandParser::IsWriteCmdValid(const string& cmd, size_t tokenSize) {
     if (cmd == WRITE_CMD && tokenSize == 3) return true;
+    return false;
+}
+
+bool CommandParser::IsEraseCmdValid(const string& cmd, size_t tokenSize) {
+    if (cmd.find(ERASE_CMD) != string::npos && tokenSize == 3) return true;
     return false;
 }
 
@@ -49,27 +55,11 @@ bool CommandParser::doParse(const string& fullCmd) {
     command = tokens[0];
     if (IsVaildCommand(command, tokens.size()) == false) return false;
     if (tokens.size() > 1) {
-        try {
-            lba = stringToUnsignedInt(tokens[1]);
-        }
-        catch (const std::exception& e) {
-            cout << e.what() << endl;
-            return false;
-        }
+        if (setLbaFromToken(tokens[1]) == false) return false;
     }
     
     if (tokens.size() > 2) {
-        if (command == WRITE_CMD) {
-            if (IsValidWriteData(tokens[2]) == false) return false;
-        }
-
-        try {
-            data = stringToUnsignedInt(tokens[2]);
-        }
-        catch (const std::exception& e) {
-            cout << e.what() << endl;
-            return false;
-        }
+        if (setDataFromToken(tokens[2]) == false) return false;
     }
 
     return true;
@@ -89,3 +79,28 @@ bool CommandParser::IsValidWriteData(const string& data) {
     return true;
 }
 
+bool CommandParser::setLbaFromToken(const string& strLba) {
+    try {
+        lba = stringToUnsignedInt(strLba);
+    }
+    catch (const std::exception& e) {
+        cout << e.what() << endl;
+        return false;
+    }
+
+    return true;
+}
+
+bool CommandParser::setDataFromToken(const string& strData) {
+    if (command == WRITE_CMD && IsValidWriteData(strData) == false) return false;
+
+    try {
+        data = stringToUnsignedInt(strData);
+    }
+    catch (const std::exception& e) {
+        cout << e.what() << endl;
+        return false;
+    }
+
+    return true;
+}

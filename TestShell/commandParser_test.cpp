@@ -8,6 +8,7 @@ class MockSsdApp : public ISsdApp {
 public:
     MOCK_METHOD(DATA, Read, (LBA), (override));
     MOCK_METHOD(bool, Write, (LBA, DATA), (override));
+    MOCK_METHOD(bool, Erase, (LBA, SIZE), (override));
 };
 
 class CommandParserFixture : public Test {
@@ -39,4 +40,13 @@ TEST_F(CommandParserFixture, fullreadCommand) {
 
     CheckParseCommand(FULL_READ_CMD);
 }
+
+TEST_F(CommandParserFixture, eraseCommand) {
+    EXPECT_CALL(mock_app, Erase)
+        .Times(1)
+        .WillOnce(Return(true));
+
+    CheckParseCommand(ERASE_CMD, 0, 2);
+}
+
 #endif

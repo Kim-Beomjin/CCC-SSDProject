@@ -14,10 +14,13 @@ const string makeExecuteCmd(string cmd, LBA lba, DATA data) {
 	if (cmd == SEND_WRITE_CMD) {
 		oss << " " << DataToHexString(data);
 	}
+	else if (cmd == SEND_ERASE_CMD) {
+		oss << " " << data;
+	}
 	string commandStr = oss.str();
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	cout << commandStr << endl;
-#endif
+//#endif
 	return commandStr;
 }
 

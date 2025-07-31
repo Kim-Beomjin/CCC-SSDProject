@@ -10,6 +10,7 @@ class MockSsdApp : public ISsdApp {
 public:
 	MOCK_METHOD(DATA, Read, (LBA), (override));
 	MOCK_METHOD(bool, Write, (LBA, DATA), (override));
+	MOCK_METHOD(bool, Erase, (LBA, SIZE), (override));
 };
 
 class ExecutorTestFixture : public Test {
@@ -64,6 +65,14 @@ TEST_F(ExecutorTestFixture, fullreadCommandTest) {
 		.WillOnce(Return(NO_DATA));
 
 	checkExecute(FULL_READ_CMD, 0, 0, NO_DATA);
+}
+
+TEST_F(ExecutorTestFixture, eraseCommandTest) {
+	EXPECT_CALL(mock_app, Erase)
+		.Times(1)
+		.WillOnce(Return(true));
+
+	checkExecute(ERASE_CMD, 0, 2);
 }
 
 #endif

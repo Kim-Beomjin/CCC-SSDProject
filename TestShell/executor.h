@@ -51,3 +51,13 @@ class Exiter : public IExecutor {
 public:
 	bool execute(ISsdApp* app, LBA lba = 0, DATA data = 0) override;
 };
+
+class Eraser : public IExecutor {
+public:
+	bool execute(ISsdApp* app, LBA lba = 0, DATA data = 0) override;
+};
+
+class RangeEraser : public IExecutor {
+public:
+	bool execute(ISsdApp* app, LBA lba = 0, DATA data = 0) override;
+};
