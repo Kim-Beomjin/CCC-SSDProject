@@ -30,6 +30,12 @@ public:
 	bool execute(ISsdApp* app, LBA lba, DATA data) override;
 };
 
+class Comparer : public Reader
+{
+public:
+	bool execute(ISsdApp* app, LBA lba, DATA data) override;
+};
+
 class Helper : public IExecutor
 {
 public:

@@ -9,19 +9,11 @@
 
 bool CompositExecutor::ReadCompare(ISsdApp* app, LBA lba, DATA expectedData)
 {
-	bool result = reader->execute(app, lba, expectedData);
-
-	DATA read_result = stringToUnsignedInt(reader->GetResultFromFile());
-	if (read_result == expectedData) result = true;
-#if (FIX_ME_LATER == 1)
-		cout << "[Read] Expected LBA " << lba << " : " << expectedData << "\n";
-		cout << "[Read] Real LBA " << lba << " : " << result << "\n";
-#endif
+	if (comparer->execute(app, lba, expectedData)) return true;
 
 #ifndef _DEBUG
-	if (result == false) cout << "FAIL\n";
-
-	return result;
+	cout << "FAIL\n";
+	return false;
 #endif
 
 	return true;
