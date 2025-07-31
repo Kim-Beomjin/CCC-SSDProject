@@ -23,11 +23,21 @@ bool CommandParser::ExecuteSsdUsingParsedCommand(ISsdApp* app) {
 
 bool CommandParser::IsVaildCommand(const string& cmd, size_t tokenSize) {
     if (cmd_set.find(cmd) != cmd_set.end()) {
-        if (cmd == WRITE_CMD && tokenSize != 3) return false;
-        else if (cmd == READ_CMD && tokenSize != 2) return false;
-        else if (tokenSize != 1) return false;
-        return true;
+        if (IsWriteCmdValid(cmd, tokenSize)) return true;
+        else if (IsReadCmdValid(cmd, tokenSize)) return true;
+        else if (tokenSize == 1) return true;
+        return false;
     }
+    return false;
+}
+
+bool CommandParser::IsWriteCmdValid(const string& cmd, size_t tokenSize) {
+    if (cmd == WRITE_CMD && tokenSize == 3) return true;
+    return false;
+}
+
+bool CommandParser::IsReadCmdValid(const string& cmd, size_t tokenSize) {
+    if (cmd == READ_CMD && tokenSize == 2) return true;
     return false;
 }
 
@@ -49,6 +59,10 @@ bool CommandParser::doParse(const string& fullCmd) {
     }
     
     if (tokens.size() > 2) {
+        if (command == WRITE_CMD) {
+            if (IsValidWriteData(tokens[2]) == false) return false;
+        }
+
         try {
             data = stringToUnsignedInt(tokens[2]);
         }
@@ -61,4 +75,17 @@ bool CommandParser::doParse(const string& fullCmd) {
     return true;
 }
 
+bool CommandParser::IsValidWriteData(const string& data) {
+    if (data.size() != 10) return false;
+
+    if (!(data[0] == '0' && (data[1] == 'x' || data[1] == 'X')))
+        return false;
+
+    for (size_t i = 2; i < 10; ++i) {
+        if (!std::isxdigit(static_cast<unsigned char>(data[i])))
+            return false;
+    }
+
+    return true;
+}
 
