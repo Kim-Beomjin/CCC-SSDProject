@@ -26,16 +26,16 @@ bool FullWriteAndReadCompare::execute(ISsdApp* app, LBA lba, DATA data)
 	{
 		LBA startLba = loop * NUM_LBA_PER_LOOP;
 		LBA endLba = (loop + 1) * NUM_LBA_PER_LOOP;
-		const DATA inputData = loop;
+		const DATA writeData = loop;
 
-		for (int lba = startLba; lba < endLba; lba++)
+		for (LBA writeLba = startLba; writeLba < endLba; writeLba++)
 		{
-			writer->execute(app, lba, inputData);
+			writer->execute(app, writeLba, writeData);
 		}
 
-		for (int lba = startLba; lba < endLba; lba++)
+		for (LBA readLba = startLba; readLba < endLba; readLba++)
 		{
-			if (!ReadCompare(app, lba, inputData)) return false;
+			if (!ReadCompare(app, readLba, writeData)) return false;
 		}
 	}
 
@@ -45,22 +45,22 @@ bool FullWriteAndReadCompare::execute(ISsdApp* app, LBA lba, DATA data)
 
 bool PartialLBAWrite::execute(ISsdApp* app, LBA lba, DATA data)
 {
-	LBA writeLba[5] = { 4, 0, 3, 1, 2 };
+	LBA writeLbaRange[5] = { 4, 0, 3, 1, 2 };
 	LBA readStartLba = 0;
 	LBA readEndLba = NUM_LBA_PER_LOOP;
 
 	for (int loop = 0; loop < LOOP_COUNT; loop++)
 	{
-		const DATA inputData = loop;
+		const DATA writeData = loop;
 
-		for (auto lba : writeLba)
+		for (auto writeLba : writeLbaRange)
 		{
-			writer->execute(app, lba, inputData);
+			writer->execute(app, writeLba, writeData);
 		}
 
-		for (int lba = readStartLba; lba < readEndLba; lba++)
+		for (DATA readLba = readStartLba; readLba < readEndLba; readLba++)
 		{
-			if (!ReadCompare(app, lba, inputData)) return false;
+			if (!ReadCompare(app, readLba, writeData)) return false;
 		}
 	}
 
@@ -70,27 +70,27 @@ bool PartialLBAWrite::execute(ISsdApp* app, LBA lba, DATA data)
 
 bool WriteReadAging::execute(ISsdApp* app, LBA lba, DATA data)
 {
-	LBA ioLba[2] = { 0, 99 };
+	LBA lbaRange[2] = { 0, 99 };
 
 	for (int loop = 0; loop < LOOP_COUNT; loop++)
 	{
 
 #ifdef _DEBUG
-		DATA inputData[2] = { loop, LOOP_COUNT - loop };
+		DATA writeData[2] = { loop, LOOP_COUNT - loop };
 #else
-		DATA inputData[2];
-		inputData[0] = rand();
-		inputData[1] = rand();
+		DATA writeData[2];
+		writeData[0] = rand();
+		writeData[1] = rand();
 #endif
 
 		for (int index = 0; index < NUM_LBA_PER_LOOP; index++)
 		{
-			writer->execute(app, ioLba[index], inputData[index]);
+			writer->execute(app, lbaRange[index], writeData[index]);
 		}
 
 		for (int index = 0; index < NUM_LBA_PER_LOOP; index++)
 		{
-			if (!ReadCompare(app, ioLba[index], inputData[index])) return false;
+			if (!ReadCompare(app, lbaRange[index], writeData[index])) return false;
 		}
 	}
 
@@ -100,6 +100,33 @@ bool WriteReadAging::execute(ISsdApp* app, LBA lba, DATA data)
 
 bool EraseAndWriteAging::execute(ISsdApp* app, LBA lba, DATA data)
 {
-	return false;
+	const DATA erasedData = 0;
+	const LBA loopStartLBA = 2;
+	const LBA ssdMaxLBA = 99;
+	
+	eraser->execute(app, 0, 3);
+	for (int loop = 0; loop < LOOP_COUNT; loop++)
+	{
+		const DATA writeData = loop;
+		const DATA overWriteData = LOOP_COUNT - loop;
+
+		for (LBA testLba = loopStartLBA; testLba < ssdMaxLBA; testLba += (NUM_LBA_PER_LOOP - 1))
+		{
+			LBA startLba = testLba;
+			LBA endLba = testLba + NUM_LBA_PER_LOOP;
+
+			writer->execute(app, startLba, writeData);
+			writer->execute(app, startLba, overWriteData);
+			eraser->execute(app, startLba, NUM_LBA_PER_LOOP);
+
+			for (LBA readLba = startLba; readLba < endLba; readLba++)
+			{
+				if (!ReadCompare(app, readLba, erasedData)) return false;
+			}
+		}
+	}
+
+	cout << "PASS\n";
+	return true;
 }
 

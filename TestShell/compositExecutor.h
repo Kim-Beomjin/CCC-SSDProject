@@ -57,6 +57,7 @@ public:
 		CompositExecutor{ writer, comparer }, eraser { eraser } {}
 
 	static const int LOOP_COUNT = 30;
+	static const int NUM_LBA_PER_LOOP = 3;
 
 	bool execute(ISsdApp* app, LBA lba, DATA data) override;
 
