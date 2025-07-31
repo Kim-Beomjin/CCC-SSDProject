@@ -19,6 +19,9 @@ void Shell::RunShellLoop(void) {
         // Parse cmd
         bool ret = commandParser->ParseCommand(cmd);
 #ifdef _DEBUG
+        cout << cmd << "\n";
+#endif
+#ifdef _DEBUG
         if (ret)
             commandParser->ExecuteSsdUsingParsedCommand(app);
 #else
@@ -26,9 +29,7 @@ void Shell::RunShellLoop(void) {
             commandParser->ExecuteSsdUsingParsedCommand(SsdApp::getInstance());
 #endif
 
-#ifdef _DEBUG
-        cout << cmd << "\n";
-#endif
+
     } while (IsCmdExit(cmd) == false);
 }
 
