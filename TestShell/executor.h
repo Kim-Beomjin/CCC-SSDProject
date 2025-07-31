@@ -8,6 +8,12 @@ public:
 	bool execute(ISsdApp* app, LBA lba, DATA data) override;
 };
 
+class OuputDecoratedWriter : public Writer
+{
+public:
+	bool execute(ISsdApp* app, LBA lba, DATA data) override;
+};
+
 class FullWriter : public Writer
 {
 public:
@@ -24,7 +30,13 @@ private:
 	const string OUTPUT_NAME = "ssd_output.txt";
 };
 
-class FullReader : public Reader
+class OuputDecoratedReader : public Reader
+{
+public:
+	bool execute(ISsdApp* app, LBA lba, DATA data) override;
+};
+
+class FullReader : public OuputDecoratedReader
 {
 public:
 	bool execute(ISsdApp* app, LBA lba, DATA data) override;
@@ -56,12 +68,14 @@ private:
 		"exit: 필요 파라미터 NONE - 하려던 거 끝내고 바로 종료한다\n";
 };
 
-class Exiter : public IExecutor {
+class Exiter : public IExecutor
+{
 public:
 	bool execute(ISsdApp* app, LBA lba = 0, DATA data = 0) override;
 };
 
-class Eraser : public IExecutor {
+class Eraser : public IExecutor
+{
 public:
 	bool execute(ISsdApp* app, LBA lba = 0, SIZE size = 0) override;
 private:
@@ -69,12 +83,14 @@ private:
 	std::pair<LBA, SIZE> calculateStartLbaAndSize(LBA lba, SIZE size);
 };
 
-class RangeEraser : public Eraser {
+class RangeEraser : public Eraser
+{
 public:
 	bool execute(ISsdApp* app, LBA startLba = 0, LBA endLba = 0) override;
 };
 
-class Flusher : public IExecutor {
+class Flusher : public IExecutor
+{
 public:
 	bool execute(ISsdApp* app, LBA lba = 0, DATA data = 0) override;
 };

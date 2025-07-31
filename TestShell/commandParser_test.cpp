@@ -29,15 +29,15 @@ TEST_F(CommandParserFixture, HelpCommand) {
 TEST_F(CommandParserFixture, FullwriteCommand) {
     EXPECT_CALL(mock_app, Write)
         .Times(SSD_MAX_SIZE)
-        .WillOnce(Return(true));
+        .WillRepeatedly(Return(true));
 
     CheckParseCommand(FULL_WRITE_CMD, 0, TEST_DATA);
 }
 
-TEST_F(CommandParserFixture, fullreadCommand) {
+TEST_F(CommandParserFixture, FullreadCommand) {
     EXPECT_CALL(mock_app, Read)
         .Times(SSD_MAX_SIZE)
-        .WillOnce(Return(true));
+        .WillRepeatedly(Return(true));
 
     CheckParseCommand(FULL_READ_CMD);
 }
