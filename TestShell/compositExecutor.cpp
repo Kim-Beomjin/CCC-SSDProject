@@ -97,3 +97,9 @@ bool WriteReadAging::execute(ISsdApp* app, LBA lba, DATA data)
 	cout << "PASS\n";
 	return true;
 }
+
+bool EraseAndWriteAging::execute(ISsdApp* app, LBA lba, DATA data)
+{
+	return false;
+}
+
