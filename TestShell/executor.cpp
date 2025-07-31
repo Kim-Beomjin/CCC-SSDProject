@@ -11,8 +11,6 @@
 
 using namespace std;
 
-#define ABS(x) ((x) < 0 ? (x) * -1 : (x))
-
 IExecutor* ExecutorFactory::createExecutor(const string command)
 {
 	if (command == WRITE_CMD) return new Writer();
@@ -124,6 +122,10 @@ bool Exiter::execute(ISsdApp* app, LBA lba, DATA data)
 bool Eraser::execute(ISsdApp* app, LBA startLba, SIZE size)
 {
 	std::pair<LBA, SIZE> startLbaAndCalculatedSize = calculateStartLbaAndSize(startLba, size);
+	if (startLbaAndCalculatedSize.second == 0) {
+		cout << "[Eraser] failed because of 0 size\n";
+		return false;
+	}
 
 	if (sendEraseMessageWithCalculatedSize(app, startLbaAndCalculatedSize.first, startLbaAndCalculatedSize.second) == false) {
 		cout << "[Eraser] operation failed\n";
@@ -135,15 +137,15 @@ bool Eraser::execute(ISsdApp* app, LBA startLba, SIZE size)
 }
 
 std::pair<LBA, SIZE> Eraser::calculateStartLbaAndSize(LBA lba, SIZE size) {
-	int localSize = size;
+	int realSize = static_cast<int>(size);
+	if (realSize >= 0) return { lba, size };
+
 	LBA savedStartLba = lba;
 	SIZE calculatedSize = size;
-	if (localSize < 0) {
-		int calcLba = lba - ABS(localSize) + 1;
-		if (calcLba < 0) calcLba = 0;
-		lba = calcLba;
-		calculatedSize = savedStartLba - lba + 1;
-	}
+	int calcLba = lba - abs(realSize) + 1;
+	if (calcLba < 0) calcLba = 0;
+	lba = calcLba;
+	calculatedSize = savedStartLba - lba + 1;
 
 	return { lba, calculatedSize };
 }
