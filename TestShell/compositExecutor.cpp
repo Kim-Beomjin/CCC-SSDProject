@@ -8,15 +8,12 @@
 
 bool CompositExecutor::ReadCompare(ISsdApp* app, LBA lba, DATA expectedData)
 {
-	DATA ouputData = 0;
-	reader->execute(SCRIPT_READ_CMD, lba, ouputData, app);
+	bool result = reader->execute(SCRIPT_READ_CMD, lba, expectedData, app);
 
 #ifndef _DEBUG
-	if (ouputData != expectedData)
-	{
-		cout << "FAIL\n";
-		return false;
-	}
+	if (result == false) cout << "FAIL\n";
+
+	return result;
 #endif
 
 	return true;
