@@ -13,8 +13,30 @@ public:
     void SetLogFile(const std::string& filename);
 
     std::ofstream logFile;
-private:
 
+    void SetName(const std::string& filename);
+    string GetName(void);
+private:
+    string fileName;
+
+};
+
+class ZipUntilLogger : public LogFile {
+public:
+    void ZipUntilLogFile(const std::string& message);
+
+private:
+    string GetZipFileName(const std::string& old_filename);
+};
+
+class UntilLogger : public LogFile {
+public:
+    void SaveUntilLogger(const std::string& old_filename);
+
+private:
+    string GetUntilFileName(void);
+
+    ZipUntilLogger zipUntilLogger;
 };
 
 class Logger : public LogFile {
@@ -25,13 +47,17 @@ public:
 
     template <typename... Args>
     void Log(const string& func, Args&&... args) {
-        if (logFile.is_open() == false) {
-            SetLogFile(LATEST_LOG_NAME);
-        }
+        CheckManageUntilLogFile();
+
         LogImpl(func, std::forward<Args>(args)...);
     }
 private:
     const string LATEST_LOG_NAME = "latest.log";
+    const int MANAGE_FILE_SIZE = 10 * 1024; // 10KB
+
+    void CheckManageUntilLogFile();
+
+    int GetLatestLogSize();
 
     template <typename T>
     void AppendToStream(std::ostringstream& oss, T&& value) {
@@ -62,18 +88,5 @@ private:
         logFile << oss.str() << std::endl;
 #endif
     }
-};
-
-class UntilLogger : public LogFile {
-public:
-    void SaveUnillLogger(const std::string& message);
-
-private:
-};
-
-class ZipUntilLogger : public LogFile {
-public:
-    void ZipUnillLogger(const std::string& message);
-
-private:
+    UntilLogger untilLogger;
 };
