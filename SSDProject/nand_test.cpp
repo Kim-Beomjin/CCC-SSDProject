@@ -24,8 +24,7 @@ protected:
     DATA readData = 0;
     static const int TEST_SIZE = 5;
     const std::vector<int> VALID_LBA_ADDR_LIST = { 0, 50, 70, 90, 99 };
-    const std::vector<int> VALID_ERASE_LBA_ADDR_LIST = { 0, 50, 70, 90, 99 };
-    const std::vector<int> VALID_ERASE_SIZE_LIST = { 5, 2, 10, 9, 1 };
+    const std::vector<int> VALID_ERASE_SIZE_LIST = { 5, 0, 10, 9, 1 };
     const std::vector<int> INVALID_LBA_ADDR_LIST = { -100, -10, -1, 100, 10000 };
     const DATA WRITE_DATA = 0xFFFF;
     const DATA OVERWRITE_DATA = 0xCCCCC;
@@ -60,7 +59,7 @@ TEST_F(NandFixture, WRITE_INVALID_PARAMETER_TEST) {
 TEST_F(NandFixture, ERASE_VALID_PARAMETER_TEST) {
   for (int index = 0; index < TEST_SIZE; index++)
   {
-      EXPECT_EQ(nand.Erase(VALID_ERASE_LBA_ADDR_LIST[index], VALID_ERASE_SIZE_LIST[index]), true);
+      EXPECT_EQ(nand.Erase(VALID_LBA_ADDR_LIST[index], VALID_ERASE_SIZE_LIST[index]), true);
   }
 }
 
@@ -163,7 +162,7 @@ TEST_F(NandFixture, LARGE_ERASE_AFTER_WRITE)
 
   for (int index = 0; index < TEST_SIZE; index++)
   {
-    int startLba = VALID_ERASE_LBA_ADDR_LIST[index];
+    int startLba = VALID_LBA_ADDR_LIST[index];
     for (int lba = startLba; lba < startLba + VALID_ERASE_SIZE_LIST[index]; lba++)
     {
       nand.Write(lba, WRITE_DATA);
@@ -171,7 +170,7 @@ TEST_F(NandFixture, LARGE_ERASE_AFTER_WRITE)
   }
   for (int index = 0; index < TEST_SIZE; index++)
   {
-    int startLba = VALID_ERASE_LBA_ADDR_LIST[index];
+    int startLba = VALID_LBA_ADDR_LIST[index];
     for (int lba = startLba; lba < startLba + VALID_ERASE_SIZE_LIST[index]; lba++)
     {
       nand.Read(lba, readData);
@@ -180,11 +179,11 @@ TEST_F(NandFixture, LARGE_ERASE_AFTER_WRITE)
   }
   for (int index = 0; index < TEST_SIZE; index++)
   {
-    nand.Erase(VALID_ERASE_LBA_ADDR_LIST[index], VALID_ERASE_SIZE_LIST[index]);
+    nand.Erase(VALID_LBA_ADDR_LIST[index], VALID_ERASE_SIZE_LIST[index]);
   }
   for (int index = 0; index < TEST_SIZE; index++)
   {
-    int startLba = VALID_ERASE_LBA_ADDR_LIST[index];
+    int startLba = VALID_LBA_ADDR_LIST[index];
     for (int lba = startLba; lba < startLba + VALID_ERASE_SIZE_LIST[index]; lba++)
     {
       nand.Read(lba, readData);
