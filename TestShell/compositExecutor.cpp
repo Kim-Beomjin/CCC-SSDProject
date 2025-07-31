@@ -8,7 +8,7 @@
 
 bool CompositExecutor::ReadCompare(ISsdApp* app, LBA lba, DATA expectedData)
 {
-	bool result = reader->execute(SCRIPT_READ_CMD, lba, expectedData, app);
+	bool result = reader->execute(app, SCRIPT_READ_CMD, lba, expectedData);
 
 #ifndef _DEBUG
 	if (result == false) cout << "FAIL\n";
@@ -20,7 +20,7 @@ bool CompositExecutor::ReadCompare(ISsdApp* app, LBA lba, DATA expectedData)
 }
 
 
-bool FullWriteAndReadCompare::execute(const string& command, LBA lba, DATA data, ISsdApp* app)
+bool FullWriteAndReadCompare::execute(ISsdApp* app, const string& command, LBA lba, DATA data)
 {
 	for (int loop = 0; loop < LOOP_COUNT; loop++)
 	{
@@ -30,7 +30,7 @@ bool FullWriteAndReadCompare::execute(const string& command, LBA lba, DATA data,
 
 		for (int lba = startLba; lba < endLba; lba++)
 		{
-			writer->execute(SCRIPT_WRITE_CMD, lba, inputData, app);
+			writer->execute(app, SCRIPT_WRITE_CMD, lba, inputData);
 		}
 
 		for (int lba = startLba; lba < endLba; lba++)
@@ -43,7 +43,7 @@ bool FullWriteAndReadCompare::execute(const string& command, LBA lba, DATA data,
 	return true;
 }
 
-bool PartialLBAWrite::execute(const string& command, LBA lba, DATA data, ISsdApp* app)
+bool PartialLBAWrite::execute(ISsdApp* app, const string& command, LBA lba, DATA data)
 {
 	LBA writeLba[5] = { 4, 0, 3, 1, 2 };
 	LBA readStartLba = 0;
@@ -55,7 +55,7 @@ bool PartialLBAWrite::execute(const string& command, LBA lba, DATA data, ISsdApp
 
 		for (auto lba : writeLba)
 		{
-			writer->execute(SCRIPT_WRITE_CMD, lba, inputData, app);
+			writer->execute(app, SCRIPT_WRITE_CMD, lba, inputData);
 		}
 
 		for (int lba = readStartLba; lba < readEndLba; lba++)
@@ -68,7 +68,7 @@ bool PartialLBAWrite::execute(const string& command, LBA lba, DATA data, ISsdApp
 	return true;
 }
 
-bool WriteReadAging::execute(const string& command, LBA lba, DATA data, ISsdApp* app)
+bool WriteReadAging::execute(ISsdApp* app, const string& command, LBA lba, DATA data)
 {
 	LBA ioLba[2] = { 0, 99 };
 
@@ -85,7 +85,7 @@ bool WriteReadAging::execute(const string& command, LBA lba, DATA data, ISsdApp*
 
 		for (int index = 0; index < NUM_LBA_PER_LOOP; index++)
 		{
-			writer->execute(SCRIPT_WRITE_CMD, ioLba[index], inputData[index], app);
+			writer->execute(app, SCRIPT_WRITE_CMD, ioLba[index], inputData[index]);
 		}
 
 		for (int index = 0; index < NUM_LBA_PER_LOOP; index++)

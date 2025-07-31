@@ -17,7 +17,7 @@ public:
 	void checkExecute(string cmd = "", LBA lba = 0, DATA data = 0, DATA expect_data = 0) {
 		executor = ExecutorFactory().createExecutor(cmd);
 
-		bool ret = executor->execute(cmd, lba, data, &mock_app);
+		bool ret = executor->execute(&mock_app, cmd, lba, data);
 		EXPECT_TRUE(ret);
 	}
 
