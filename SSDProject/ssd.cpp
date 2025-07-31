@@ -18,6 +18,7 @@ bool SSD::Read(LBA lba)
   {
     return false;
   }
+  TEST_LOGGER(lba << ", " << readData);
 
   _UpdateOutputFile(_DataToHexString(readData));
 
@@ -33,6 +34,7 @@ bool SSD::Write(LBA lba, DATA writeData)
     return false;
   }
 
+  TEST_LOGGER(lba << ", " << writeData);
   return nand->Write(lba, writeData);
 }
 
@@ -40,6 +42,7 @@ bool SSD::_IsInvalidParameter(LBA lba)
 {
   if (lba >= LBA_END_ADDR)
   {
+    DEBUG_ASSERT(false, "INVALID PARAMETER");
     return true;
   }
 
