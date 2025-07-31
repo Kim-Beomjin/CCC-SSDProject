@@ -142,7 +142,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="commandParser.cpp" />
-    <ClCompile Include="commendParser_test.cpp" />
+    <ClCompile Include="commandParser_test.cpp" />
     <ClCompile Include="executor.cpp" />
     <ClCompile Include="executor_test.cpp" />
     <ClCompile Include="main.cpp">

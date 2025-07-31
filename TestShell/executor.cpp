@@ -21,42 +21,30 @@ IExecutor* ExecutorFactory::createExecutor(const string command)
 	return nullptr;
 }
 
-bool Writer::execute(ISsdApp* app, const string& command, LBA lba, DATA data)
+bool Writer::execute(ISsdApp* app, LBA lba, DATA data)
 {
-	if (command == FULL_WRITE_CMD)
-	{
-		for (LBA lba = 0; lba < SSD_MAX_SIZE; ++lba) app->Write(lba, data);
-		return true;
-	}
-
 	app->Write(lba, data);
-	if (command == SCRIPT_WRITE_CMD) return true;
 
 	cout << "[Write] Done\n";
 	return true;
 }
 
-bool Reader::execute(ISsdApp* app, const string& command, LBA lba, DATA data)
+bool FullWriter::execute(ISsdApp* app, LBA lba, DATA data)
 {
-	if (command == FULL_READ_CMD)
+	bool ret = false;
+	for (LBA lba = 0; lba < SSD_MAX_SIZE; ++lba)
 	{
-		for (LBA lba = 0; lba < SSD_MAX_SIZE; ++lba) app->Read(lba);
-		return true;
+		ret = Writer::execute(app, lba, data);
+		if (ret == false) return ret;
 	}
 
+	return ret;
+}
+
+bool Reader::execute(ISsdApp* app, LBA lba, DATA data)
+{
 	app->Read(lba);
 	string result = GetResultFromFile();
-
-	if (command == SCRIPT_READ_CMD)
-	{
-		string expected = DataToHexString(data);
-		if (result == expected) return true;
-#if (FIX_ME_LATER == 1)
-		cout << "[Read] Expected LBA " << lba << " : " << expected << "\n";
-		cout << "[Read] Real LBA " << lba << " : " << result << "\n";
-#endif
-		return false;
-	}
 
 	cout << "[Read] LBA " << lba << " : " << result << "\n";
 	return true;
@@ -80,14 +68,26 @@ string Reader::GetResultFromFile(void)
 	return result;
 }
 
-bool Helper::execute(ISsdApp* app, const string& command, LBA lba, DATA data)
+bool FullReader::execute(ISsdApp* app, LBA lba, DATA data)
+{
+	bool ret = false;
+	for (LBA lba = 0; lba < SSD_MAX_SIZE; ++lba)
+	{
+		ret = Reader::execute(app, lba, data);
+		if (ret == false) return ret;
+	}
+
+	return ret;
+}
+
+bool Helper::execute(ISsdApp* app, LBA lba, DATA data)
 {
 	cout << this->HELP_DESCRIPTION;
 
 	return true;
 }
 
-bool Exiter::execute(ISsdApp* app, const string& command, LBA lba, DATA data)
+bool Exiter::execute(ISsdApp* app, LBA lba, DATA data)
 {
 	return true;
 }

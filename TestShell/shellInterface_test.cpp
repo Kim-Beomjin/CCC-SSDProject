@@ -41,7 +41,7 @@ public:
         shell->setSsdApp(&mock_app);
 
         istringstream iss(cmd);
-        ostringstream oss;
+        ostringstream oss = {};
 
         auto* oldInputBuf = cin.rdbuf();
         streambuf* oldOutputBuf = cout.rdbuf();
