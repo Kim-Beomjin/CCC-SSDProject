@@ -17,7 +17,7 @@ class MockNand : public NandInterface
 public:
   MOCK_METHOD(bool, Read, (const LBA lba, DATA& readData), (override));
   MOCK_METHOD(bool, Write, (const LBA lba, const DATA writeData), (override));
-  MOCK_METHOD(bool, Erase, (const LBA lba, const int size), (override));
+  MOCK_METHOD(bool, Erase, (const LBA lba, const ERASE_SIZE erase_size), (override));
 };
 
 class MockNandSSDFixture : public Test
@@ -28,8 +28,8 @@ public:
 
   const LBA VALID_LBA = 5;
   const LBA INVALID_LBA = 101;
-  const std::string WRITE_DATA = "0x001F2DC0";
-  const std::string INVALID_DATA = "0x00000000";
+  const std::string WRITE_DATA_STRING = "0x001F2DC0";
+  const std::string EMPTY_DATA_STRING = "0x00000000";
 
   void SetUp() override
   {
@@ -74,28 +74,28 @@ private:
 
 TEST_F(MockNandSSDFixture, ReadAfterWrite)
 {
-  ssd.Write(VALID_LBA, stoul(WRITE_DATA, nullptr, 16));
-  ReadAndUpdateOutputFile(VALID_LBA, WRITE_DATA);
+  ssd.Write(VALID_LBA, stoul(WRITE_DATA_STRING, nullptr, 16));
+  ReadAndUpdateOutputFile(VALID_LBA, WRITE_DATA_STRING);
 
-  ValidateOutputDataWith(WRITE_DATA);
+  ValidateOutputDataWith(WRITE_DATA_STRING);
 }
 
 TEST_F(MockNandSSDFixture, ReadWithoutWrite)
 {
-  ReadAndUpdateOutputFile(VALID_LBA, INVALID_DATA);
+  ReadAndUpdateOutputFile(VALID_LBA, EMPTY_DATA_STRING);
 
-  ValidateOutputDataWith(INVALID_DATA);
+  ValidateOutputDataWith(EMPTY_DATA_STRING);
 }
 
 TEST_F(MockNandSSDFixture, EraseLba)
 {
-  ssd.Write(VALID_LBA, stoul(WRITE_DATA, nullptr, 16));
-  ReadAndUpdateOutputFile(VALID_LBA, WRITE_DATA);
-  //ValidateOutputDataWith(WRITE_DATA);
+  ssd.Write(VALID_LBA, stoul(WRITE_DATA_STRING, nullptr, 16));
+  ReadAndUpdateOutputFile(VALID_LBA, WRITE_DATA_STRING);
+  //ValidateOutputDataWith(WRITE_DATA_STRING);
 
   ssd.Erase(VALID_LBA, 1);
-  ReadAndUpdateOutputFile(VALID_LBA, "0x00000000" /*No_data*/);
-  ValidateOutputDataWith("0x00000000" /*No_data*/);
+  ReadAndUpdateOutputFile(VALID_LBA, EMPTY_DATA_STRING);
+  ValidateOutputDataWith(EMPTY_DATA_STRING);
 }
 
 TEST_F(MockNandSSDFixture, ReadInvalidParam)
@@ -107,7 +107,7 @@ TEST_F(MockNandSSDFixture, ReadInvalidParam)
 
 TEST_F(MockNandSSDFixture, WriteInvalidParam)
 {
-  ssd.Write(INVALID_LBA, stoul(WRITE_DATA, nullptr, 16));
+  ssd.Write(INVALID_LBA, stoul(WRITE_DATA_STRING, nullptr, 16));
 
   ValidateOutputDataWith(ERROR_MSG);
 }
