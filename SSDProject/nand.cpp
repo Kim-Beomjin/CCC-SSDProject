@@ -28,6 +28,10 @@ bool Nand::Write(const LBA lba, const DATA writeData)
 	return true;
 }
 
+bool Nand::Erase(const LBA lba, const int size)
+{
+	return true;
+}
 
 bool Nand::IsInvalidParameter(const LBA lba)
 {

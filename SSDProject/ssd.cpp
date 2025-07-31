@@ -38,9 +38,22 @@ bool SSD::Write(LBA lba, DATA writeData)
   return nand->Write(lba, writeData);
 }
 
-bool SSD::_IsInvalidParameter(LBA lba)
+bool SSD::Erase(LBA lba, int size)
 {
-  if (lba >= LBA_END_ADDR)
+  if (_IsInvalidParameter(lba, size))
+  {
+    _UpdateOutputFile(ERROR_MSG);
+
+    return false;
+  }
+
+  TEST_LOGGER(lba << ", " << size);
+  return nand->Erase(lba, size);
+}
+
+bool SSD::_IsInvalidParameter(LBA lba, int size)
+{
+  if (lba >= LBA_END_ADDR || size > 10)
   {
     TEST_LOGGER("INVALID PARAMETER");
     return true;
