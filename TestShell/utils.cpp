@@ -15,7 +15,9 @@ const string makeExecuteCmd(string cmd, LBA lba, DATA data) {
 		oss << " " << DataToHexString(data);
 	}
 	string commandStr = oss.str();
+#ifdef _DEBUG
 	cout << commandStr << endl;
+#endif
 	return commandStr;
 }
 

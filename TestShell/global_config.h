@@ -17,8 +17,6 @@ const string FULL_WRITE_CMD = "fullwrite";
 const string HELP_CMD = "help";
 const string EXIT_CMD = "exit";
 
-const string SCRIPT_READ_CMD = "scriptread";
-const string SCRIPT_WRITE_CMD = "scriptwrite";
 const string FIRST_SCRIPT_SHORT_NAME = "1_";
 const string FIRST_SCRIPT_FULL_NAME = "1_FullWriteAndReadCompare";
 const string SECOND_SCRIPT_SHORT_NAME = "2_";

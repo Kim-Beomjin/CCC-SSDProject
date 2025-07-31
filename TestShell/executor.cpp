@@ -10,8 +10,10 @@ using namespace std;
 
 IExecutor* ExecutorFactory::createExecutor(const string command)
 {
-	if (command == WRITE_CMD || command == FULL_WRITE_CMD) return new Writer();
-	if (command == READ_CMD || command == FULL_READ_CMD) return new Reader();
+	if (command == WRITE_CMD) return new Writer();
+	if (command == FULL_WRITE_CMD) return new FullWriter();
+	if (command == READ_CMD) return new Reader();
+	if (command == FULL_READ_CMD) return new FullReader();
 	if (command == HELP_CMD) return new Helper();
 	if (command == EXIT_CMD) return new Exiter();
 	if (command == FIRST_SCRIPT_SHORT_NAME || command == FIRST_SCRIPT_FULL_NAME)return new FullWriteAndReadCompare(new Writer(), new Reader());

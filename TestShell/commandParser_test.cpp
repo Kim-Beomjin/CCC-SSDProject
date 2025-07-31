@@ -26,7 +26,7 @@ TEST_F(CommandParserFixture, HelpCommand) {
 
 TEST_F(CommandParserFixture, FullwriteCommand) {
     EXPECT_CALL(mock_app, Write)
-        .Times(1)
+        .Times(SSD_MAX_SIZE)
         .WillOnce(Return(true));
 
     CheckParseCommand(FULL_WRITE_CMD, 0, TEST_DATA);
@@ -34,7 +34,7 @@ TEST_F(CommandParserFixture, FullwriteCommand) {
 
 TEST_F(CommandParserFixture, fullreadCommand) {
     EXPECT_CALL(mock_app, Read)
-        .Times(1)
+        .Times(SSD_MAX_SIZE)
         .WillOnce(Return(true));
 
     CheckParseCommand(FULL_READ_CMD);
