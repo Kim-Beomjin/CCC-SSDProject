@@ -1,7 +1,7 @@
 #include "hostInterface.h"
 #include <stdexcept>
 #include <iostream>
-
+#include <fstream>
 
 void HostInterface::Execute(int argc, char* argv[])
 {
@@ -9,6 +9,11 @@ void HostInterface::Execute(int argc, char* argv[])
 	{
 		if (_LoadWriteParameterAndCheckInvalid(argv[ARGV::LBA_IDX], argv[ARGV::DATA_IDX])) {
 			std::cout << "INVALID_PARAMETER";
+			return;
+		}
+		if (lba < LBA_END_ADDR)
+		{
+			bufferManager->WriteBuffer(argv[ARGV::CMD_IDX], argv[ARGV::LBA_IDX], argv[ARGV::DATA_IDX]);
 			return;
 		}
 		ssd->Write(lba, data);
@@ -19,6 +24,11 @@ void HostInterface::Execute(int argc, char* argv[])
 			std::cout << "INVALID_PARAMETER";
 			return;
 		}
+		if (lba < LBA_END_ADDR && bufferManager->CheckAndReadBuffer(lba, data))
+		{
+			ssd->UpdateOutputFileUsingData(data);
+			return;
+		}
 		ssd->Read(lba);
 	}
 	else if (_EraseCondition(argc, argv))
@@ -27,6 +37,12 @@ void HostInterface::Execute(int argc, char* argv[])
 			std::cout << "INVALID_PARAMETER";
 			return;
 		}
+		if (lba + length <= LBA_END_ADDR && length <= 10)
+		{
+			bufferManager->WriteBuffer(argv[ARGV::CMD_IDX], argv[ARGV::LBA_IDX], argv[ARGV::LENGTH_IDX]);
+			return;
+		}
+		ssd->Erase(lba, length);
 	}
 	else if (_FlushCondition(argc, argv))
 	{
@@ -34,6 +50,7 @@ void HostInterface::Execute(int argc, char* argv[])
 			std::cout << "INVALID_PARAMETER";
 			return;
 		}
+		bufferManager->Flush();
 	}
 	else {
 		std::cout << "INVALID_PARAMETER";
@@ -110,7 +127,7 @@ bool HostInterface::_LoadEraseParameterAndCheckInvalid(char* lbaStr, char* lengt
 	try {
 
 		lba = _SafeStoul(lbaStr, 10);
-		data = _SafeStoul(lengthStr, 10);
+		length = _SafeStoul(lengthStr, 10);
 	}
 	catch (std::exception)
 	{

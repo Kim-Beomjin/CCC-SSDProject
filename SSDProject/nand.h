@@ -30,6 +30,6 @@ private:
 	void _CreateFile(const std::string& filename);
 	void _ReadFile(const std::string& filename);
 	static const unsigned long long FILE_SIZE = (LBA_END_ADDR - LBA_START_ADDR) * sizeof(int);
-	int nandData[LBA_END_ADDR - LBA_START_ADDR];
+	int nandData[LBA_END_ADDR - LBA_START_ADDR] = { 0 };
 	
 };
