@@ -92,7 +92,7 @@ void BufferManager::Flush()
 			else if (command[0] == "E") {
 				LBA lba = std::stoul(command[1]);
 				int size = std::stoul(command[2]);
-				//ssd->Erase(lba, size);
+				ssd->Erase(lba, size);
 			}
 			if (std::remove((BUFFER_DIRECTORY + filename).c_str()) != 0) {
 				DEBUG_ASSERT(false, "delete file fail");
