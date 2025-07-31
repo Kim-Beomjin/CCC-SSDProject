@@ -145,6 +145,7 @@
     <ClCompile Include="commandParser_test.cpp" />
     <ClCompile Include="executor.cpp" />
     <ClCompile Include="executor_test.cpp" />
+    <ClCompile Include="logger.cpp" />
     <ClCompile Include="main.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"> %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'"> %(AdditionalOptions)</AdditionalOptions>
@@ -167,6 +168,7 @@
     <ClInclude Include="executor.h" />
     <ClInclude Include="global_config.h" />
     <ClInclude Include="interface.h" />
+    <ClInclude Include="logger.h" />
     <ClInclude Include="shell.h" />
     <ClInclude Include="ssdApp.h" />
     <ClInclude Include="compositExecutor.h" />
