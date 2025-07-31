@@ -1,6 +1,6 @@
 #pragma once
 #include "ssd.h"
-
+#include "BufferManager.h"
 enum ARGV
 {
     PGM_IDX = 0,
@@ -28,7 +28,7 @@ public:
 #endif
 
 private:
-    HostInterface() : ssd{ new SSD() }, lba{ 0 }, data{ 0 } {};
+    HostInterface() : ssd{ new SSD() }, bufferManager{ new BufferManager(ssd) }, lba{0}, data{0} {};
     bool _WriteCondition(int argc, char* argv[]);
     bool _ReadCondition(int argc, char* argv[]);
     bool _EraseCondition(int argc, char* argv[]);
@@ -44,7 +44,9 @@ private:
     unsigned int _SafeStoul(char* str, int base);
     LBA lba;
     DATA data;
+    unsigned int length;
     SSD* ssd;
+    BufferManager* bufferManager;
 
     const int WRITE_COMMAND_ARG_COUNT = 4;
     const int READ_COMMAND_ARG_COUNT = 3;

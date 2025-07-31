@@ -6,19 +6,104 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <cstdio> 
 
 
 bool BufferManager::CheckAndReadBuffer(int lba, DATA& readData) {
-	// first Load File
-	return false;
+	if (_CheckDirectoryInvalid()) //if we dont have a buffer directory 
+	{
+		_CreateDirectory();
+	}
+	_LoadBuffer();
+	if (dataBuffer[lba].type == BUF_TYPE::NONE)
+	{
+		return false;
+	}
+	readData = dataBuffer[lba].data;
+	return true;
 }
 
-void BufferManager::WriteBuffer(int lba, DATA writeData)
+void BufferManager::WriteBuffer(std::string cmd, std::string lba, std::string data)  //first i implement dumb (just want to simple I/O test)
 {
 	//need save Algorithm
+	if (_CheckDirectoryInvalid()) //if we dont have a buffer directory 
+	{
+		_CreateDirectory();
+	}
+	if (_NeedFlush())
+	{
+		Flush();
+	}
+	WIN32_FIND_DATAA findFileData;
+	HANDLE hFind = FindFirstFileA(SEARCH_BUFFER_DIRECTORY.c_str(), &findFileData);
+	std::string filename, parsedFilename;
+	int next_file_index = 1;
+	int valid_file_index = 1;
+	do {
+		filename = findFileData.cFileName;
+		if (_CheckFileValid(filename))
+		{
+			next_file_index = filename[0] - '0';
+			if (filename.substr(2) == "empty.txt")
+			{
+				std::string full_path = BUFFER_DIRECTORY + filename;
+				{
+					if (std::remove(full_path.c_str()) != 0) {
+						DEBUG_ASSERT(false, "delete file fail");
+					}
+				}
+				break;
+			}
+		}
+	} while (FindNextFileA(hFind, &findFileData) != 0);
+	
+	std::string newFilename = BUFFER_DIRECTORY + filename[0] + "_" + cmd + "_" + lba + "_" + data + ".txt";
+	std::ofstream outFile(newFilename);
+	if (outFile.is_open()) {
+		outFile.close();
+	}
 }
 
 void BufferManager::Flush()
+{
+	if (_CheckDirectoryInvalid()) //if we dont have a buffer directory 
+	{
+		return;
+	}
+	WIN32_FIND_DATAA findFileData;
+	HANDLE hFind = FindFirstFileA(SEARCH_BUFFER_DIRECTORY.c_str(), &findFileData);
+	int valid_file_count = 0;
+	std::string filename;
+	std::string parsedFilename;
+	std::vector<std::string> command;
+	do {
+		filename = findFileData.cFileName;
+		if (_CheckFileValid(filename))
+		{
+			parsedFilename = filename.substr(2);
+			command = _Split(parsedFilename, '_');
+			command[command.size() - 1] = _Split(command[command.size() - 1], '.')[0];
+			size_t idx;
+			if (command[0] == "W") {
+				LBA lba = std::stoul(command[1], &idx, 10);
+				DATA data = std::stoul(command[2], &idx, 16);
+				ssd->Write(lba, data);
+			}
+			else if (command[0] == "E") {
+				LBA lba = std::stoul(command[1]);
+				int size = std::stoul(command[2]);
+				//ssd->Erase(lba, size);
+			}
+			if (std::remove((BUFFER_DIRECTORY + filename).c_str()) != 0) {
+				DEBUG_ASSERT(false, "delete file fail");
+			}
+		}
+	} while (FindNextFileA(hFind, &findFileData) != 0);
+
+	_CreateDirectory();
+}
+
+void BufferManager::_LoadBuffer()
 {
 	if (_CheckDirectoryInvalid()) //if we dont have a buffer directory 
 	{
@@ -40,20 +125,18 @@ void BufferManager::Flush()
 			if (command[0] == "W") {
 				LBA lba = std::stoul(command[1], &idx, 10);
 				DATA data = std::stoul(command[2], &idx, 16);
-				ssd->Write(lba, data);
+				dataBuffer[lba] = { BUF_TYPE::WRITE, data };
+				std::cout << lba << " " << data << " ";
 			}
 			else if (command[0] == "E") {
 				LBA lba = std::stoul(command[1]);
-				int length = std::stoul(command[2]);
-				//ssd->Erase(lba, length);
+				unsigned int length = std::stoul(command[2]);
+				for (LBA i = lba; i < lba + length; i++) {
+					dataBuffer[i] = { BUF_TYPE::ERASE, 0 };
+				}
 			}
 		}
 	} while (FindNextFileA(hFind, &findFileData) != 0);
-}
-
-void BufferManager::_LoadBuffer()
-{
-	//TODO
 }
 
 bool BufferManager::_NeedFlush()
@@ -83,7 +166,7 @@ bool BufferManager::_NeedFlush()
 
 bool BufferManager::_CheckFileValid(const std::string& filename)
 {
-	return (filename != "." && filename != ".." && filename[0] >= '1' && filename[0] <= '5' && filename[1] == '_');
+	return (filename[0] >= '1' && filename[0] <= '5' && filename[1] == '_');
 }
 
 bool BufferManager::_CheckDirectoryInvalid()

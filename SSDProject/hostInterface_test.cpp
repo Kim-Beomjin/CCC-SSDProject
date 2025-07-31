@@ -34,11 +34,17 @@ protected:
     };
 
     const std::vector<std::array<char*, 4>> VALID_WRITE_ARGV_LIST = {
-        { (char*)"SSD.exe", (char*)"W", (char*)"123", (char*)"0x12345678" },
-        { (char*)"SSD.exe", (char*)"W", (char*)"11523", (char*)"0x55565678" },
-        { (char*)"SSD.exe", (char*)"W", (char*)"224", (char*)"0x12335678" },
+        { (char*)"SSD.exe", (char*)"W", (char*)"13", (char*)"0x12345678" },
+        { (char*)"SSD.exe", (char*)"W", (char*)"13", (char*)"0x55565678" },
+        { (char*)"SSD.exe", (char*)"W", (char*)"24", (char*)"0x12335678" },
         { (char*)"SSD.exe", (char*)"W", (char*)"12", (char*)"0XDEADBeeF" },
         { (char*)"SSD.exe", (char*)"W", (char*)"23", (char*)"0xDeaDBEE1" },
+        { (char*)"SSD.exe", (char*)"W", (char*)"24", (char*)"0xDeaDBEE1" },
+        { (char*)"SSD.exe", (char*)"W", (char*)"25", (char*)"0xDeaDBEE1" },
+        { (char*)"SSD.exe", (char*)"W", (char*)"26", (char*)"0xDeaDBEE1" },
+        { (char*)"SSD.exe", (char*)"W", (char*)"27", (char*)"0xDeaDBEE1" },
+        { (char*)"SSD.exe", (char*)"W", (char*)"28", (char*)"0xDeaDBEE1" },
+        { (char*)"SSD.exe", (char*)"W", (char*)"28", (char*)"0xDeaDBEE1" },
     };
 
     const std::vector<std::array<char*, 4>> INVALID_WRITE_ARGV_LIST = {
