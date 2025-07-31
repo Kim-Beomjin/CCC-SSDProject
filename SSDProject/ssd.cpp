@@ -53,7 +53,7 @@ bool SSD::Erase(LBA lba, int size)
 
 bool SSD::_IsInvalidParameter(LBA lba, int size)
 {
-  if (lba >= LBA_END_ADDR || size > 10)
+  if (lba >= LBA_END_ADDR || lba + size > LBA_END_ADDR || size > 10)
   {
     TEST_LOGGER("INVALID PARAMETER");
     return true;
