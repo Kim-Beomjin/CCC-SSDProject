@@ -8,7 +8,6 @@ void HostInterface::Execute(int argc, char* argv[])
 	if (_WriteCondition(argc,argv))
 	{
 		if (_LoadWriteParameterAndCheckInvalid(argv[ARGV::LBA_IDX], argv[ARGV::DATA_IDX])) {
-			std::cout << "INVALID_PARAMETER";
 			return;
 		}
 		if (lba < LBA_END_ADDR)
@@ -21,7 +20,6 @@ void HostInterface::Execute(int argc, char* argv[])
 	else if (_ReadCondition(argc, argv))
 	{
 		if (_LoadReadParameterAndCheckInvalid(argv[ARGV::LBA_IDX], argv[ARGV::DATA_IDX])) {
-			std::cout << "INVALID_PARAMETER";
 			return;
 		}
 		if (lba < LBA_END_ADDR && bufferManager->CheckAndReadBuffer(lba, data))
@@ -34,7 +32,6 @@ void HostInterface::Execute(int argc, char* argv[])
 	else if (_EraseCondition(argc, argv))
 	{
 		if (_LoadEraseParameterAndCheckInvalid(argv[ARGV::LBA_IDX], argv[ARGV::LENGTH_IDX])) {
-			std::cout << "INVALID_PARAMETER";
 			return;
 		}
 		if (lba + length <= LBA_END_ADDR && length <= 10)
@@ -47,13 +44,11 @@ void HostInterface::Execute(int argc, char* argv[])
 	else if (_FlushCondition(argc, argv))
 	{
 		if (_LoadFlushParameterAndCheckInvalid(argv[ARGV::LBA_IDX], argv[ARGV::DATA_IDX])) {
-			std::cout << "INVALID_PARAMETER";
 			return;
 		}
 		bufferManager->Flush();
 	}
 	else {
-		std::cout << "INVALID_PARAMETER";
 		DEBUG_ASSERT(false, "INVALID INPUT PARAMETERS");
 	}
 }
