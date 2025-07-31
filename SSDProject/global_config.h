@@ -8,6 +8,7 @@ using DATA = unsigned int;
 #define LBA_END_ADDR    (100)
 #define EMPTY_DATA      (0)
 #define DATA_NUM_DIGIT  (8)
+#define MAX_ERASE_SIZE  (10)
 
 const std::string ERROR_MSG = "ERROR";
 const std::string HEXA_PREFIX = "0x";
