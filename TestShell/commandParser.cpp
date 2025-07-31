@@ -18,7 +18,7 @@ bool CommandParser::ParseCommand(const string& fullCmd) {
 
 bool CommandParser::ExecuteSsdUsingParsedCommand(ISsdApp* app) {
     if (app == nullptr) return false;
-    return executor->execute(command, lba, data, app);
+    return executor->execute(app, command, lba, data);
 }
 
 bool CommandParser::IsVaildCommand(const string& cmd, size_t tokenSize) {

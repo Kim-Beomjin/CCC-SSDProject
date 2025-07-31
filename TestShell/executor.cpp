@@ -21,7 +21,7 @@ IExecutor* ExecutorFactory::createExecutor(const string command)
 	return nullptr;
 }
 
-bool Writer::execute(const string& command, LBA lba, DATA data, ISsdApp * app)
+bool Writer::execute(ISsdApp* app, const string& command, LBA lba, DATA data)
 {
 	if (command == FULL_WRITE_CMD)
 	{
@@ -36,7 +36,7 @@ bool Writer::execute(const string& command, LBA lba, DATA data, ISsdApp * app)
 	return true;
 }
 
-bool Reader::execute(const string& command, LBA lba, DATA data, ISsdApp * app)
+bool Reader::execute(ISsdApp* app, const string& command, LBA lba, DATA data)
 {
 	if (command == FULL_READ_CMD)
 	{
@@ -80,14 +80,14 @@ string Reader::GetResultFromFile(void)
 	return result;
 }
 
-bool Helper::execute(const string& command, LBA lba, DATA data, ISsdApp *app)
+bool Helper::execute(ISsdApp* app, const string& command, LBA lba, DATA data)
 {
 	cout << this->HELP_DESCRIPTION;
 
 	return true;
 }
 
-bool Exiter::execute(const string& command, LBA lba, DATA data, ISsdApp *app)
+bool Exiter::execute(ISsdApp* app, const string& command, LBA lba, DATA data)
 {
 	return true;
 }
