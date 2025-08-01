@@ -6,10 +6,11 @@
 void HostInterface::Execute(int argc, char* argv[])
 {
 	IProcessor* processor = ProcessorFactory::GetInstance()->CreateProcessor(argc, argv, ssd, bufferManager);
-	if (processor != nullptr && processor->LoadParameterAndCheckInvalid(argv[ARGV::LBA_IDX], argv[ARGV::DATA_IDX]))
+	if (processor == nullptr || processor->LoadParameterAndCheckInvalid(argv[ARGV::LBA_IDX], argv[ARGV::DATA_IDX]))
 	{
-		processor->Process();
+		return;
 	}
+	processor->Process();
 }
 
 //------------------------------ Processor Factory ----------------------------------//
