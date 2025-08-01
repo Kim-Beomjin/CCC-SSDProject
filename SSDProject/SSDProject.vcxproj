@@ -159,6 +159,7 @@
     <ClCompile Include="nand.cpp" />
     <ClCompile Include="nand_test.cpp" />
     <ClCompile Include="ssd.cpp" />
+    <ClCompile Include="SSD_integration_test.cpp" />
     <ClCompile Include="ssd_test.cpp" />
   </ItemGroup>
   <ItemGroup>
