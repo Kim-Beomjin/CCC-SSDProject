@@ -10,7 +10,7 @@ class CompositExecutor : public IExecutor
 public:
 	CompositExecutor() = default;
 	CompositExecutor(Writer* writer, Comparer* comparer) : writer{ writer }, comparer { comparer } {}
-	bool IsValidCommand(const vector<string>& tokens) override { return true; }
+
 protected:
 	static bool PrintPass(void);
 	static bool PrintFail(void);
@@ -23,6 +23,7 @@ class FullWriteAndReadCompare : public CompositExecutor {
 public:
 	FullWriteAndReadCompare() = default;
 	FullWriteAndReadCompare(Writer* writer, Comparer* comparer) : CompositExecutor{ writer, comparer } {}
+	bool IsValidCommand(const vector<string>& tokens) override;
 
 	static const int LOOP_COUNT = 20;
 	static const int NUM_LBA_PER_LOOP = 5;
@@ -34,6 +35,7 @@ class PartialLBAWrite : public CompositExecutor {
 public:
 	PartialLBAWrite() = default;
 	PartialLBAWrite(Writer* writer, Comparer* comparer) : CompositExecutor{ writer, comparer } {}
+	bool IsValidCommand(const vector<string>& tokens) override;
 
 	static const int LOOP_COUNT = 30;
 	static const int NUM_LBA_PER_LOOP = 5;
@@ -45,6 +47,7 @@ class WriteReadAging : public CompositExecutor {
 public:
 	WriteReadAging() = default;
 	WriteReadAging(Writer* writer, Comparer* comparer) : CompositExecutor{ writer, comparer } {}
+	bool IsValidCommand(const vector<string>& tokens) override;
 
 	static const int LOOP_COUNT = 200;
 	static const int NUM_LBA_PER_LOOP = 2;
@@ -57,6 +60,7 @@ public:
 	EraseAndWriteAging() = default;
 	EraseAndWriteAging(Writer* writer, Comparer* comparer, Eraser* eraser) :
 		CompositExecutor{ writer, comparer }, eraser { eraser } {}
+	bool IsValidCommand(const vector<string>& tokens) override;
 
 	static const int LOOP_COUNT = 30;
 	static const int NUM_LBA_PER_LOOP = 3;
