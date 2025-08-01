@@ -8,9 +8,22 @@
 using std::cout;
 using std::endl;
 
+bool fileExists(const std::string& filename) {
+	std::ifstream file(filename);
+	return file.is_open();
+}
+
 const string makeExecuteCmd(string cmd, LBA lba, DATA data) {
+	string appFile = EXE_FILE_NAME_RELEASE_PATH;
+
+	if (!fileExists(EXE_FILE_NAME_RELEASE_PATH))
+	{
+		appFile = EXE_FILE_NAME_BUILD_PATH;
+	}
+
 	std::ostringstream oss;
-	oss << EXE_FILE_NAME << " " << cmd;
+	oss << appFile << " " << cmd;
+
 	if (cmd == SEND_FLUSH_CMD) return oss.str();
 	
 	oss << " " << lba;
