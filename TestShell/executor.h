@@ -101,11 +101,19 @@ private:
 class Eraser : public IExecutor
 {
 public:
+	bool execute(ISsdApp* app, LBA lba = 0, SIZE size = 0) override;
+
+private:
+	bool ExecuteChunkedErase(ISsdApp* app, LBA startLba, SIZE size);
+};
+
+class SizeEraser : public Eraser
+{
+public:
 	bool IsValidCommand(const vector<string>& tokens) override;
 	bool execute(ISsdApp* app, LBA lba = 0, SIZE size = 0) override;
 private:
-	bool sendEraseMessageWithCalculatedSize(ISsdApp* app, LBA startLba, SIZE size);
-	std::pair<LBA, SIZE> calculateStartLbaAndSize(LBA lba, SIZE size);
+	std::pair<LBA, SIZE> CalculateStartLbaAndSize(const LBA lba, const SIZE size);
 	const string CMD = ERASE_CMD;
 	const int NEEDED_TOKEN_COUNT = 3;
 };
@@ -116,6 +124,7 @@ public:
 	bool IsValidCommand(const vector<string>& tokens) override;
 	bool execute(ISsdApp* app, LBA startLba = 0, LBA endLba = 0) override;
 private:
+	std::pair<LBA, SIZE> GetOrderedLbaRange(const LBA startLba, const LBA endLba);
 	const string CMD = ERASE_RANGE_CMD;
 	const int NEEDED_TOKEN_COUNT = 3;
 };

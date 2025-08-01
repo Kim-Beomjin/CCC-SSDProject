@@ -17,7 +17,7 @@ IExecutor* ExecutorFactory::createExecutor(const string command)
 	if (command == FULL_WRITE_CMD) return new FullWriter();
 	if (command == READ_CMD) return new OuputDecoratedReader();
 	if (command == FULL_READ_CMD) return new FullReader();
-	if (command == ERASE_CMD) return new Eraser();
+	if (command == ERASE_CMD) return new SizeEraser();
 	if (command == ERASE_RANGE_CMD) return new RangeEraser();
 	if (command == HELP_CMD) return new Helper();
 	if (command == EXIT_CMD) return new Exiter();
@@ -173,75 +173,94 @@ bool Exiter::execute(ISsdApp* app, LBA lba, DATA data)
 	return true;
 }
 
-bool Eraser::IsValidCommand(const vector<string>& tokens) {
+bool Eraser::execute(ISsdApp* app, LBA lba, SIZE size)
+{
+	if (!ExecuteChunkedErase(app, lba, size)) return false;
+	SHELL_LOG("[Erase] Done", lba, size);
+	return true;
+}
+
+bool Eraser::ExecuteChunkedErase(ISsdApp* app, LBA startLba, SIZE size)
+{
+	SIZE maxEndLba = min(startLba + size, SSD_MAX_SIZE);
+
+	LBA currentLba = startLba;
+	while (currentLba < maxEndLba) {
+		SIZE eraseSize = min(maxEndLba - currentLba, SSD_ERASE_MAX_SIZE);
+
+		if (!app->Erase(currentLba, eraseSize)) return false;
+		SHELL_LOG("[Chuck Erase] Done", currentLba, eraseSize);
+
+		currentLba += eraseSize;
+	}
+	return true;
+}
+
+bool SizeEraser::IsValidCommand(const vector<string>& tokens)
+{
 	if (tokens[CMD_IDX] == CMD && tokens.size() == NEEDED_TOKEN_COUNT) return true;
 	return false;
 }
 
-bool Eraser::execute(ISsdApp* app, LBA startLba, SIZE size)
+bool SizeEraser::execute(ISsdApp* app, LBA startLba, SIZE size)
 {
-	std::pair<LBA, SIZE> startLbaAndCalculatedSize = calculateStartLbaAndSize(startLba, size);
-	if (startLbaAndCalculatedSize.second == 0) {
-		cout << "[Eraser] failed because of 0 size\n";
+	if (size == 0) return true;
+
+	pair<LBA, SIZE> eraseRange = CalculateStartLbaAndSize(startLba, size);
+
+	if (!Eraser::execute(app, eraseRange.first, eraseRange.second))
+	{
+		cout << "[Erase] Fail\n";
 		return false;
 	}
 
-	if (sendEraseMessageWithCalculatedSize(app, startLbaAndCalculatedSize.first, startLbaAndCalculatedSize.second) == false) {
-		cout << "[Eraser] operation failed\n";
-		return false;
-	}
-
-	cout << "[Eraser] Done\n";
+	cout << "[Erase] Done\n";
 	return true;
 }
 
-std::pair<LBA, SIZE> Eraser::calculateStartLbaAndSize(LBA lba, SIZE size) {
+pair<LBA, SIZE> SizeEraser::CalculateStartLbaAndSize(LBA lba, SIZE size)
+{
 	int realSize = static_cast<int>(size);
 	if (realSize >= 0) return { lba, size };
 
-	LBA savedStartLba = lba;
-	SIZE calculatedSize = size;
-	int calcLba = lba - abs(realSize) + 1;
-	if (calcLba < 0) calcLba = 0;
-	lba = calcLba;
-	calculatedSize = savedStartLba - lba + 1;
+	int savedStartLba = static_cast<int>(lba);
+	LBA newStartLba = static_cast<LBA>(max(savedStartLba + realSize + 1, 0));
+	SIZE newSize = static_cast<SIZE>(savedStartLba - newStartLba + 1);
 
-	return { lba, calculatedSize };
+	return { newStartLba, newSize };
 }
 
-bool Eraser::sendEraseMessageWithCalculatedSize(ISsdApp* app, LBA startLba, SIZE size) {
-	for (int remainedSize = size; remainedSize >= 0; remainedSize -= MAX_SEND_ERASE_SIZE_FOR_ONE_TIME) {
-		if (remainedSize <= MAX_SEND_ERASE_SIZE_FOR_ONE_TIME) {
-			SIZE lastSize = remainedSize;
-			if (app->Erase(startLba, lastSize) == false) return false;
-			break;
-		}
-
-		if (app->Erase(startLba, MAX_SEND_ERASE_SIZE_FOR_ONE_TIME) == false) return false;
-		startLba += MAX_SEND_ERASE_SIZE_FOR_ONE_TIME;
-		if (startLba + MAX_SEND_ERASE_SIZE_FOR_ONE_TIME >= SSD_MAX_SIZE) {
-			SIZE lastRemainedSize = SSD_MAX_SIZE - startLba - 1;
-			if (app->Erase(startLba, lastRemainedSize) == false) return false;
-			break;
-		}
-	}
-
-	return true;
-}
-
-bool RangeEraser::IsValidCommand(const vector<string>& tokens) {
+bool RangeEraser::IsValidCommand(const vector<string>& tokens)
+{
 	if (tokens[CMD_IDX] == CMD && tokens.size() == NEEDED_TOKEN_COUNT) return true;
 	return false;
 }
 
 bool RangeEraser::execute(ISsdApp* app, LBA startLba, LBA endLba)
 {
+	int realEndLba = static_cast<int>(endLba);
+	if (realEndLba < 0) return false;
+
+	pair<LBA, SIZE> eraseRange = GetOrderedLbaRange(startLba, endLba);
+
+	if (!Eraser::execute(app, eraseRange.first, eraseRange.second))
+	{
+		cout << "[Erase Range] Fail\n";
+		return false;
+	}
+
+	cout << "[Erase Range] Done\n";
+	return true;
+}
+
+pair<LBA, SIZE> RangeEraser::GetOrderedLbaRange(LBA startLba, LBA endLba)
+{
 	LBA changedStartLba, changedEndLba;
 	std::tie(changedStartLba, changedEndLba) = std::minmax(startLba, endLba);
 
 	SIZE size = changedEndLba - changedStartLba + 1;
-	Eraser::execute(app, changedStartLba, size);
-	return true;
+
+	return { changedStartLba, size };
 }
 
 bool Flusher::IsValidCommand(const vector<string>& tokens) {

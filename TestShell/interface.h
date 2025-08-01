@@ -7,8 +7,6 @@ using std::vector;
 
 #define interface struct
 
-const int SSD_MAX_SIZE = 100;
-
 typedef unsigned int u32;
 
 interface ISsdApp {
