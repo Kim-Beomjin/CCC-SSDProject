@@ -37,28 +37,23 @@ protected:
 	using Creator = std::function<IExecutor* ()>;
 	unordered_map<string, std::unique_ptr<IExecutor>> executorCache;
 
-	virtual IExecutor* getExecutorFromCache(const string& command);
-	virtual IExecutor* getExecutorFromMap(const string& command);
+	IExecutor* getExecutorFromCache(const string& command);
 };
 
 class CompositExecutorFactory : public IExecutorFactory {
 public:
 	IExecutor* createExecutor(const string& command) override;
-protected:
-	IExecutor* getExecutorFromCache(const string& command) override;
-	IExecutor* getExecutorFromMap(const string& command) override;
 private:
 	static const unordered_map<string, Creator> factoryMap;
+	IExecutor* getExecutorFromMap(const string& command);
 };
 
 class ExecutorFactory : public IExecutorFactory {
 public:
 	IExecutor* createExecutor(const string& command);
-protected:
-	IExecutor* getExecutorFromCache(const string& command) override;
-	IExecutor* getExecutorFromMap(const string& command) override;
 private:
 	static const unordered_map<string, Creator> factoryMap;
+	IExecutor* getExecutorFromMap(const string& command);
 };
 
 
