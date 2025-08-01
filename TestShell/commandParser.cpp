@@ -31,7 +31,7 @@ bool CommandParser::doParse(const vector<string>& tokens) {
     if (tokens.size() > LBA_IDX) {
         if (setLbaFromToken(tokens[LBA_IDX]) == false) return false;
         if (IsLbaRangeValid() == false) {
-            print("LBA is out of range - LBA" + std::to_string(lba));
+            dbgPring("LBA is out of range - LBA" + std::to_string(lba));
             return false;
         }
     }
@@ -49,7 +49,7 @@ bool CommandParser::setLbaFromToken(const string& strLba) {
         return true;
     }
     catch (const std::exception& e) {
-        print(e.what());
+        dbgPring(e.what());
         return false;
     }
 }
@@ -60,7 +60,7 @@ bool CommandParser::setDataFromToken(const string& strData) {
         return true;
     }
     catch (const std::exception& e) {
-        print(e.what());
+        dbgPring(e.what());
         return false;
     }
 }
