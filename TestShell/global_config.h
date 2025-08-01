@@ -54,5 +54,4 @@ const SIZE SSD_MAX_SIZE = 100;
 const SIZE WRITE_DATA_SIZE = 10;
 const SIZE SSD_ERASE_MAX_SIZE = 10;
 
-const string EXE_FILE_NAME_RELEASE_PATH = "SSD.exe";
-const string EXE_FILE_NAME_BUILD_PATH = "SSD.exe";
+const string SSD_EXE_FILE = "SSD.exe";

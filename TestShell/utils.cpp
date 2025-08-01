@@ -14,7 +14,7 @@ bool TestShellUtils::fileExists(const std::string& filename) {
 }
 
 const string TestShellUtils::makeExecuteCmd(string cmd, LBA lba, DATA data) {
-	string appFile = EXE_FILE_NAME_RELEASE_PATH;
+	string appFile = SSD_EXE_FILE;
 
 	std::ostringstream oss;
 	oss << appFile << " " << cmd;
