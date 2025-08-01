@@ -24,6 +24,10 @@ public:
 	void BufferErase(LBA lba, unsigned int size);
 	void BufferFlush();
 
+#ifdef _DEBUG
+	int GetCmdCnt();
+#endif
+
 private:
 	bool _NeedFlush();
 	void _LoadBuffer(bool need_delete);

@@ -90,6 +90,12 @@ void BufferManager::BufferFlush()
 	_DumpCommand();
 }
 
+#ifdef _DEBUG
+int BufferManager::GetCmdCnt(void)
+{
+	return _GetCmdCnt();
+}
+#endif
 
 void BufferManager::_LoadBuffer(bool need_delete)
 {
