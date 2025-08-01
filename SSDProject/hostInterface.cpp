@@ -12,7 +12,7 @@ void HostInterface::Execute(int argc, char* argv[])
 		}
 		if (lba < LBA_END_ADDR)
 		{
-			bufferManager->WriteBuffer(argv[ARGV::CMD_IDX], argv[ARGV::LBA_IDX], argv[ARGV::DATA_IDX]);
+			bufferManager->BufferWrite(argv[ARGV::CMD_IDX], argv[ARGV::LBA_IDX], argv[ARGV::DATA_IDX]);
 			return;
 		}
 		ssd->Write(lba, data);
@@ -22,7 +22,7 @@ void HostInterface::Execute(int argc, char* argv[])
 		if (_LoadReadParameterAndCheckInvalid(argv[ARGV::LBA_IDX], argv[ARGV::DATA_IDX])) {
 			return;
 		}
-		if (lba < LBA_END_ADDR && bufferManager->CheckAndReadBuffer(lba, data))
+		if (lba < LBA_END_ADDR && bufferManager->BufferRead(lba, data))
 		{
 			ssd->UpdateOutputFileUsingData(data);
 			return;
@@ -36,7 +36,7 @@ void HostInterface::Execute(int argc, char* argv[])
 		}
 		if (lba + length <= LBA_END_ADDR && length <= 10)
 		{
-			bufferManager->WriteBuffer(argv[ARGV::CMD_IDX], argv[ARGV::LBA_IDX], argv[ARGV::LENGTH_IDX]);
+			bufferManager->BufferWrite(argv[ARGV::CMD_IDX], argv[ARGV::LBA_IDX], argv[ARGV::LENGTH_IDX]);
 			return;
 		}
 		ssd->Erase(lba, length);

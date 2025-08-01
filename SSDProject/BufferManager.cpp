@@ -6,15 +6,20 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
-#include <cstdio> 
+#include <iomanip>
 
-
-bool BufferManager::CheckAndReadBuffer(int lba, DATA& readData) {
-	if (_CheckDirectoryInvalid()) //if we dont have a buffer directory 
+BufferManager::BufferManager(SSD* ssd) : ssd{ ssd } {
+	_ResetBuffer();
+	if (_access(BUFFER_DIRECTORY.c_str(), 0) != 0)
 	{
-		_CreateDirectory();
+		int ret = _mkdir(BUFFER_DIRECTORY.c_str());
+		DEBUG_ASSERT(ret, "CANNOT MAKE BUFFER DIRECTORY");
+		_DumpCommand();
 	}
-	_LoadBuffer();
+}
+
+bool BufferManager::BufferRead(int lba, DATA& readData) {
+	_LoadBuffer(false /*need_delete*/);
 	if (dataBuffer[lba].type == BUF_TYPE::NONE)
 	{
 		return false;
@@ -23,53 +28,21 @@ bool BufferManager::CheckAndReadBuffer(int lba, DATA& readData) {
 	return true;
 }
 
-void BufferManager::WriteBuffer(std::string cmd, std::string lba, std::string data)  //first i implement dumb (just want to simple I/O test)
+void BufferManager::BufferWrite(std::string cmd, std::string lba, std::string data)  //first i implement dumb (just want to simple I/O test)
 {
-	//need save Algorithm
-	if (_CheckDirectoryInvalid()) //if we dont have a buffer directory 
-	{
-		_CreateDirectory();
-	}
 	if (_NeedFlush())
 	{
 		Flush();
 	}
-	WIN32_FIND_DATAA findFileData;
-	HANDLE hFind = FindFirstFileA(SEARCH_BUFFER_DIRECTORY.c_str(), &findFileData);
-	std::string filename, parsedFilename;
-	int next_file_index = 1;
-	int valid_file_index = 1;
-	do {
-		filename = findFileData.cFileName;
-		if (_CheckFileValid(filename))
-		{
-			next_file_index = filename[0] - '0';
-			if (filename.substr(2) == "empty.txt")
-			{
-				std::string full_path = BUFFER_DIRECTORY + filename;
-				{
-					if (std::remove(full_path.c_str()) != 0) {
-						DEBUG_ASSERT(false, "delete file fail");
-					}
-				}
-				break;
-			}
-		}
-	} while (FindNextFileA(hFind, &findFileData) != 0);
+	_LoadBuffer(true /*need_delete*/);
+	_ConvertCmdToBuf(cmd, lba, data);
+	_ConvertBufToCmd();
+	_DumpCommand();
 	
-	std::string newFilename = BUFFER_DIRECTORY + filename[0] + "_" + cmd + "_" + lba + "_" + data + ".txt";
-	std::ofstream outFile(newFilename);
-	if (outFile.is_open()) {
-		outFile.close();
-	}
 }
 
 void BufferManager::Flush()
 {
-	if (_CheckDirectoryInvalid()) //if we dont have a buffer directory 
-	{
-		return;
-	}
 	WIN32_FIND_DATAA findFileData;
 	HANDLE hFind = FindFirstFileA(SEARCH_BUFFER_DIRECTORY.c_str(), &findFileData);
 	int valid_file_count = 0;
@@ -100,50 +73,42 @@ void BufferManager::Flush()
 		}
 	} while (FindNextFileA(hFind, &findFileData) != 0);
 
-	_CreateDirectory();
+	_ResetBuffer();
 }
 
-void BufferManager::_LoadBuffer()
+void BufferManager::_LoadBuffer(bool need_delete)
 {
-	if (_CheckDirectoryInvalid()) //if we dont have a buffer directory 
-	{
-		return;
-	}
 	WIN32_FIND_DATAA findFileData;
 	HANDLE hFind = FindFirstFileA(SEARCH_BUFFER_DIRECTORY.c_str(), &findFileData);
 	int valid_file_count = 0;
 	std::string filename;
+	std::string fullpath;
 	std::vector<std::string> command;
 	do {
 		filename = findFileData.cFileName;
 		if (_CheckFileValid(filename))
 		{
+			fullpath = BUFFER_DIRECTORY + filename;
 			filename = filename.substr(2);
 			command = _Split(filename, '_');
 			command[command.size() - 1] = _Split(command[command.size() - 1], '.')[0];
-			size_t idx;
-			if (command[0] == "W") {
-				LBA lba = std::stoul(command[1], &idx, 10);
-				DATA data = std::stoul(command[2], &idx, 16);
-				dataBuffer[lba] = { BUF_TYPE::WRITE, data };
+			if (command.size() == 3) {
+				_ConvertCmdToBuf(command[0], command[1], command[2]);
 			}
-			else if (command[0] == "E") {
-				LBA lba = std::stoul(command[1]);
-				unsigned int length = std::stoul(command[2]);
-				for (LBA i = lba; i < lba + length; i++) {
-					dataBuffer[i] = { BUF_TYPE::ERASE, 0 };
-				}
+			if (need_delete && std::remove(fullpath.c_str()) != 0) {
+				DEBUG_ASSERT(false, "delete file fail");
 			}
 		}
 	} while (FindNextFileA(hFind, &findFileData) != 0);
 }
 
 bool BufferManager::_NeedFlush()
+{	
+	return (_GetCmdCnt() == 5);
+}
+
+int BufferManager::_GetCmdCnt()
 {
-	if (_CheckDirectoryInvalid()) //if we dont have a directory 
-	{
-		return false;
-	}
 	WIN32_FIND_DATAA findFileData;
 	HANDLE hFind = FindFirstFileA(SEARCH_BUFFER_DIRECTORY.c_str(), &findFileData);
 	int valid_file_count = 0;
@@ -159,32 +124,127 @@ bool BufferManager::_NeedFlush()
 			valid_file_count++;
 		}
 	} while (FindNextFileA(hFind, &findFileData) != 0);
-	
-	return (valid_file_count == 5);
+	return valid_file_count;
 }
 
-bool BufferManager::_CheckFileValid(const std::string& filename)
+void BufferManager::_ResetBuffer()
 {
-	return (filename[0] >= '1' && filename[0] <= '5' && filename[1] == '_');
-}
-
-bool BufferManager::_CheckDirectoryInvalid()
-{
-	return (_access(BUFFER_DIRECTORY.c_str(), 0) != 0);
-	
-}
-
-void BufferManager::_CreateDirectory()
-{
-	int ret = _mkdir(BUFFER_DIRECTORY.c_str());
-
 	for (int i = 1; i <= 5; ++i) {
-		std::string filename = BUFFER_DIRECTORY + "/" + std::to_string(i) + "_empty.txt";
-		std::ofstream outFile(filename);
+		std::string filename = BUFFER_DIRECTORY + std::to_string(i) + "_empty.txt";
+		cmdList[i - 1] = filename;
+	}
+}
+
+void BufferManager::_DumpCommand()
+{
+	for (int i = 0; i < 5; ++i) {
+		std::ofstream outFile(cmdList[i]);
 		if (outFile.is_open()) {
 			outFile.close();
 		}
 	}
+}
+
+void BufferManager::_ConvertCmdToBuf(std::string cmdStr, std::string lbaStr, std::string dataStr)
+{
+	size_t idx;
+	if (cmdStr == "W") {
+		LBA lba = std::stoul(lbaStr, &idx, 10);
+		DATA data = std::stoul(dataStr, &idx, 16);
+		dataBuffer[lba] = { BUF_TYPE::WRITE, data };
+	}
+	else if (cmdStr == "E") {
+		LBA lba = std::stoul(lbaStr);
+		unsigned int length = std::stoul(dataStr);
+		for (LBA i = lba; i < lba + length; i++) {
+			dataBuffer[i] = { BUF_TYPE::ERASE, 0 };
+		}
+	}
+}
+
+void BufferManager::_ConvertBufToCmd()
+{
+	//erase check
+	int write_start_idx = -1;
+	int erase_start_idx = -1;
+	int erase_end_idx = -1;
+	int cmd_buf_idx = 0;
+	std::string filename;
+	int erase_size;
+	for (int i = LBA_START_ADDR; i < LBA_END_ADDR; i++) {
+		if (dataBuffer[i].type == BUF_TYPE::NONE)
+		{
+			if (erase_start_idx != -1 && erase_end_idx != -1)
+			{
+				erase_end_idx += 1;
+				while (erase_start_idx < erase_end_idx) {
+					erase_size = ((erase_end_idx - erase_start_idx) > 10) ? 10 : erase_end_idx - erase_start_idx;
+					_DumpEraseCmd(cmd_buf_idx++, erase_start_idx, erase_size);
+					erase_start_idx += erase_size;
+				}
+				erase_start_idx = -1; erase_end_idx = -1;
+			}
+		}
+		else if (dataBuffer[i].type == BUF_TYPE::ERASE)
+		{
+			if (erase_start_idx == -1) {
+				erase_start_idx = i;
+			}
+			erase_end_idx = i;
+		}
+		else if (dataBuffer[i].type == BUF_TYPE::WRITE)
+		{
+			if (((erase_end_idx - erase_start_idx + 1) % 10) == 0)
+			{
+				erase_end_idx += 1;
+				while (erase_start_idx + 10 < erase_end_idx) {
+					erase_size = ((erase_end_idx - erase_start_idx) > 10) ? 10 : erase_end_idx - erase_start_idx;
+					_DumpEraseCmd(cmd_buf_idx++, erase_start_idx, erase_size);
+					erase_start_idx += erase_size;
+				}
+				erase_start_idx = -1; erase_end_idx = -1;
+			}
+		}
+	}
+
+	if (erase_start_idx != -1 && erase_end_idx != -1)
+	{
+		erase_end_idx += 1;
+		while (erase_start_idx < erase_end_idx) {
+			erase_size = ((erase_end_idx - erase_start_idx) > 10) ? 10 : erase_end_idx - erase_start_idx;
+			_DumpEraseCmd(cmd_buf_idx++, erase_start_idx, erase_size);
+			erase_start_idx += erase_size;
+		}
+		erase_start_idx = -1; erase_end_idx = -1;
+	}
+
+	for (int i = LBA_START_ADDR; i < LBA_END_ADDR; i++) {
+		if (dataBuffer[i].type == BUF_TYPE::WRITE)
+		{
+			_DumpWriteCmd(cmd_buf_idx++, i, dataBuffer[i].data);
+		}
+	}
+	DEBUG_ASSERT(cmd_buf_idx <= 5, "ALGORITHM ERROR!!");
+}
+
+void BufferManager::_DumpEraseCmd(int cmdIdx, LBA lba, int eraseSize)
+{
+	std::string filename = BUFFER_DIRECTORY + std::to_string(cmdIdx + 1) + "_" + "E" + "_" +
+		std::to_string(lba) + "_" + std::to_string(eraseSize) + ".txt";
+	cmdList[cmdIdx] = filename;
+}
+
+void BufferManager::_DumpWriteCmd(int cmdIdx, LBA lba, DATA data)
+{
+	std::string filename = BUFFER_DIRECTORY + std::to_string(cmdIdx + 1) + "_" + "W" + "_" +
+		std::to_string(lba) + "_" + _DataToHexString(data) + ".txt";
+	cmdList[cmdIdx] = filename;
+}
+
+
+bool BufferManager::_CheckFileValid(const std::string& filename)
+{
+	return (filename[0] >= '1' && filename[0] <= '5' && filename[1] == '_');
 }
 
 std::vector<std::string> BufferManager::_Split(const std::string& str, const char delimiter) {
@@ -196,5 +256,17 @@ std::vector<std::string> BufferManager::_Split(const std::string& str, const cha
 		result.push_back(item);
 	}
 	return result;
+}
+
+std::string BufferManager::_DataToHexString(const DATA data)
+{
+	std::stringstream hexString;
+	hexString << HEXA_PREFIX
+		<< std::setw(DATA_NUM_DIGIT) << std::setfill('0')
+		<< std::hex << std::uppercase
+		<< data;
+	std::string hexStringData = hexString.str();
+
+	return hexStringData;
 }
 
