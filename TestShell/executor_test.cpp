@@ -16,12 +16,20 @@ public:
 
 class ExecutorTestFixture : public Test {
 public:
-	void checkExecute(string cmd = "", LBA lba = 0, DATA data = 0, DATA expect_data = 0) {
-		executor = ExecutorFactory().createExecutor(cmd);
+	void SetUp() override {
+		factory = new ExecutorFactory();
+	}
 
+	void TearDown() override {
+		delete factory;
+	}
+
+	void checkExecute(string cmd = "", LBA lba = 0, DATA data = 0, DATA expect_data = 0) {
+		executor = factory->createExecutor(cmd);
 		EXPECT_TRUE(executor->execute(&mock_app, lba, data));
 	}
 
+	IExecutorFactory* factory;
 	MockSsdApp mock_app;
 	IExecutor* executor;
 };

@@ -15,11 +15,11 @@ public:
 
 class CommandParserFixture : public Test {
 public:
-    class CommandParser parser;
+    class CommandParser *parser = new CommandParser(new ExecutorFactory());
     MockSsdApp mock_app;
     void CheckParseCommand(const string& cmd) {
-        EXPECT_TRUE(parser.ParseCommand(cmd));
-        EXPECT_TRUE(parser.ExecuteSsdUsingParsedCommand(&mock_app));
+        EXPECT_TRUE(parser->ParseCommand(cmd));
+        EXPECT_TRUE(parser->ExecuteSsdUsingParsedCommand(&mock_app));
     }
 };
 
