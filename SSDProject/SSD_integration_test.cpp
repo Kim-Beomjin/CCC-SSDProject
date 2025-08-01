@@ -137,15 +137,16 @@ TEST_F(SSD_IT_Fixture, SSD_IT_ERASE_INVALID_ARGV)
     EXPECT_THROW(host->Execute(VALID_ERASE_ARGC, argv), std::exception);
   }
 }
-//
-//TEST_F(SSD_IT_Fixture, SSD_IT_ERASE_ERROR_ARGV)
-//{
-//  for (auto testcase : INVALID_ERASE_ARGV_LIST)
-//  {
-//    char** argv = const_cast<char**>(testcase.data());
-//    EXPECT_EQ(false, host->Execute(VALID_ERASE_ARGC, argv));
-//  }
-//}
+
+TEST_F(SSD_IT_Fixture, SSD_IT_ERASE_ERROR_ARGV)
+{
+  for (auto testcase : ERROR_OUTPUT_ERASE_ARGV_LIST)
+  {
+    char** argv = const_cast<char**>(testcase.data());
+    EXPECT_NO_THROW(host->Execute(VALID_ERASE_ARGC, argv));
+    GlobalUtil::ValidateOutputDataWith(ERROR_MSG);
+  }
+}
 
 TEST_F(SSD_IT_Fixture, SSD_IT_READ_VALID_ARGV)
 {
