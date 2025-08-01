@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 
+#define _FULL_TEST_RUN
+
 #define FIX_ME_LATER (1)
 
 using DATA = unsigned int;
@@ -33,6 +35,11 @@ const string FOURTH_SCRIPT_SHORT_NAME = "4_";
 const string FOURTH_SCRIPT_FULL_NAME = "4_EraseAndWriteAging";
 
 const LBA TEST_LBA = 2;
+const LBA TEST_START_LBA = 0;
+const LBA TEST_START_LBA_VER_2 = 50;
+const LBA TEST_END_LBA = 16;
+const SIZE TEST_SIZE = 10;
+const SIZE TEST_MINUS_SIZE = -20;
 const DATA TEST_DATA = 0x12345678;
 const DATA NO_DATA = 0x00000000;
 
