@@ -1,12 +1,12 @@
 #pragma once
 
 #include "global_config.h"
-
-#ifdef _DEBUG
-#include "gmock/gmock.h"
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+
+#ifdef _DEBUG
+#include "gmock/gmock.h"
 #endif
 
 class GlobalUtil
