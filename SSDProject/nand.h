@@ -1,6 +1,7 @@
 #pragma once
 
 #include "global_config.h"
+#include "global_util.h"
 
 #define NAND_FILE_NAME ("./ssd_nand.txt")
 

@@ -161,6 +161,7 @@
     <ClCompile Include="ssd.cpp" />
     <ClCompile Include="SSD_integration_test.cpp" />
     <ClCompile Include="ssd_test.cpp" />
+    <ClCompile Include="global_util.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BufferManager.h" />

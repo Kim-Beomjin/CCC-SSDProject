@@ -33,16 +33,7 @@ public:
 
   void SetUp() override
   {
-    _RemoveOutputFile();
-  }
-
-  std::string GetDataFromOutputFile(void)
-  {
-    std::ifstream ifs(OUTPUT_FILE);
-    std::string readData((std::istreambuf_iterator<char>(ifs)),
-      std::istreambuf_iterator<char>());
-
-    return readData;
+    GlobalUtil::DBG_RemoveOutputFile();
   }
 
   void ReadAndUpdateOutputFile(LBA lba, const std::string writeData)
@@ -58,17 +49,8 @@ public:
   }
   void ValidateOutputDataWith(const std::string expectedData)
   {
-    std::string outputData = GetDataFromOutputFile();
+    std::string outputData = GlobalUtil::DBG_GetDataFromOutputFile();
     EXPECT_EQ(expectedData, outputData);
-  }
-private:
-  void _RemoveOutputFile(void)
-  {
-    int result = std::remove(OUTPUT_FILE.c_str());
-    if (result != 0)
-    {
-      std::perror("file remove fail");
-    }
   }
 };
 

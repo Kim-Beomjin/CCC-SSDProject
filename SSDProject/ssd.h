@@ -2,6 +2,7 @@
 
 #include "nand.h"
 #include "global_config.h"
+#include "global_util.h"
 
 class SSD
 {
