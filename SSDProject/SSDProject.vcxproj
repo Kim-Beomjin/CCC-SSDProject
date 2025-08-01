@@ -152,7 +152,7 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BufferedSSDcpp" />
+    <ClCompile Include="BufferedSSD.cpp" />
     <ClCompile Include="hostInterface.cpp" />
     <ClCompile Include="hostInterface_test.cpp" />
     <ClCompile Include="main.cpp" />

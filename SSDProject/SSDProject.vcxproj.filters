@@ -42,7 +42,7 @@
     <ClCompile Include="hostInterface.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="BufferedSSDcpp">
+    <ClCompile Include="BufferedSSD.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSD_integration_test.cpp">
