@@ -48,7 +48,9 @@ const int LBA_IDX = 1;
 const int DATA_IDX = 2;
 
 const int DATA_NUM_DIGIT = 8;
-const int MAX_SEND_ERASE_SIZE_FOR_ONE_TIME = 10;
+
+const SIZE SSD_MAX_SIZE = 100;
+const SIZE SSD_ERASE_MAX_SIZE = 10;
 
 const string EXE_FILE_NAME_RELEASE_PATH = "SSD.exe";
 const string EXE_FILE_NAME_BUILD_PATH = "SSD.exe";
