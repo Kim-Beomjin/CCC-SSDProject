@@ -28,8 +28,7 @@ public:
 #endif
 
 private:
-    HostInterface() : ssd{ new SSD() }, bufferedSSD{ new BufferedSSD(ssd) } {};
-    SSD* ssd;
+    HostInterface() :bufferedSSD{ new BufferedSSD() } {};
     BufferedSSD* bufferedSSD;
 };
 
@@ -68,7 +67,7 @@ public:
         static ProcessorFactory processorFactory;
         return &processorFactory;
     }
-    IProcessor* CreateProcessor(int argc, char* argv[], SSD* ssd, BufferedSSD* bufferedSSD);
+    IProcessor* CreateProcessor(int argc, char* argv[], BufferedSSD* bufferedSSD);
 private:
     ProcessorFactory() {};
     bool _WriteCondition(int argc, char* argv[]);
@@ -91,37 +90,35 @@ private:
 class WriteProcessor : public IProcessor
 {
 public:
-    WriteProcessor(SSD* ssd, BufferedSSD* bufferedSSD) : 
-        ssd{ ssd }, bufferedSSD{ bufferedSSD }, lba{ 0 }, data{ 0 } {}
+    WriteProcessor(BufferedSSD* bufferedSSD) : 
+        bufferedSSD{ bufferedSSD }, lba{ 0 }, data{ 0 } {}
     bool LoadParameterAndCheckInvalid(char* lbaStr, char* dataStr) override;
     void Process() override;
 private:
     LBA lba;
     DATA data;
-    HostInterfaceUtil hostUtil;
+    GlobalUtil hostUtil;
     BufferedSSD* bufferedSSD;
-    SSD* ssd;
 };
 
 class ReadProcessor : public IProcessor
 {
 public:
-    ReadProcessor(SSD* ssd, BufferedSSD* bufferedSSD) : 
-        ssd{ ssd }, bufferedSSD{ bufferedSSD }, lba{ 0 } {}
+    ReadProcessor(BufferedSSD* bufferedSSD) : 
+        bufferedSSD{ bufferedSSD }, lba{ 0 } {}
     bool LoadParameterAndCheckInvalid(char* lbaStr, char*) override;
     void Process() override;
 private:
     LBA lba;
     HostInterfaceUtil hostUtil;
     BufferedSSD* bufferedSSD;
-    SSD* ssd;
 };
 
 class EraseProcessor : public IProcessor
 {
 public:
-    EraseProcessor(SSD* ssd, BufferedSSD* bufferedSSD) :
-        ssd{ ssd }, bufferedSSD{ bufferedSSD }, lba{ 0 }, size{ 0 } {}
+    EraseProcessor(BufferedSSD* bufferedSSD) :
+        bufferedSSD{ bufferedSSD }, lba{ 0 }, size{ 0 } {}
     bool LoadParameterAndCheckInvalid(char* lbaStr, char* sizeStr) override;
     void Process() override;
 private:
@@ -129,18 +126,16 @@ private:
     unsigned int size;
     HostInterfaceUtil hostUtil;
     BufferedSSD* bufferedSSD;
-    SSD* ssd;
 };
 
 class FlushProcessor : public IProcessor
 {
 public:
-    FlushProcessor(SSD* ssd, BufferedSSD* bufferedSSD) :
-        ssd{ ssd }, bufferedSSD{ bufferedSSD } {}
+    FlushProcessor(BufferedSSD* bufferedSSD) :
+        bufferedSSD{ bufferedSSD } {}
     bool LoadParameterAndCheckInvalid(char*, char*) override;
     void Process() override;
 private:
     HostInterfaceUtil hostUtil;
     BufferedSSD* bufferedSSD;
-    SSD* ssd;
 };

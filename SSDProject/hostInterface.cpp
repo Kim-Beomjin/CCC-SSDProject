@@ -5,7 +5,7 @@
 
 void HostInterface::Execute(int argc, char* argv[])
 {
-	IProcessor* processor = ProcessorFactory::GetInstance()->CreateProcessor(argc, argv, ssd, bufferedSSD);
+	IProcessor* processor = ProcessorFactory::GetInstance()->CreateProcessor(argc, argv, bufferedSSD);
 	if (processor == nullptr || processor->LoadParameterAndCheckInvalid(argv[ARGV::LBA_IDX], argv[ARGV::DATA_IDX]))
 	{
 		return;
@@ -15,12 +15,12 @@ void HostInterface::Execute(int argc, char* argv[])
 
 //------------------------------ Processor Factory ----------------------------------//
 
-IProcessor* ProcessorFactory::CreateProcessor(int argc, char* argv[], SSD* ssd, BufferedSSD* bufferedSSD)
+IProcessor* ProcessorFactory::CreateProcessor(int argc, char* argv[], BufferedSSD* bufferedSSD)
 {
-	if (_WriteCondition(argc, argv)) return new WriteProcessor(ssd, bufferedSSD);
-	if (_ReadCondition(argc, argv)) return new ReadProcessor(ssd, bufferedSSD);
-	if (_EraseCondition(argc, argv)) return new EraseProcessor(ssd, bufferedSSD);
-	if (_FlushCondition(argc, argv)) return new FlushProcessor(ssd, bufferedSSD);
+	if (_WriteCondition(argc, argv)) return new WriteProcessor(bufferedSSD);
+	if (_ReadCondition(argc, argv)) return new ReadProcessor(bufferedSSD);
+	if (_EraseCondition(argc, argv)) return new EraseProcessor(bufferedSSD);
+	if (_FlushCondition(argc, argv)) return new FlushProcessor(bufferedSSD);
 	DEBUG_ASSERT(false, "INVALID_PARAMETER");
 	std::cout << "SSD GET INVALID PARAMETER!!!!" << "\n";
 	return nullptr;
@@ -115,12 +115,7 @@ bool EraseProcessor::LoadParameterAndCheckInvalid(char* lbaStr, char* sizeStr)
 }
 void EraseProcessor::Process()
 {
-	if (lba + size <= LBA_END_ADDR && size <= MAX_ERASE_SIZE)
-	{
-		bufferedSSD->Erase(lba, size);
-		return;
-	}
-	ssd->Erase(lba, size);
+	bufferedSSD->Erase(lba, size);
 }
 
 bool FlushProcessor::LoadParameterAndCheckInvalid(char* , char* )
