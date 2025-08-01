@@ -10,7 +10,7 @@ class SSD_IT_Fixture : public testing::Test
 public:
   void SetUp()
   {
-    host->SetSSD(new SSD(new Nand()));
+    host->SetSSD(new BufferedSSD());
   }
 
 protected:

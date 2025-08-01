@@ -152,7 +152,7 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BufferManager.cpp" />
+    <ClCompile Include="BufferedSSDcpp" />
     <ClCompile Include="hostInterface.cpp" />
     <ClCompile Include="hostInterface_test.cpp" />
     <ClCompile Include="main.cpp" />
@@ -164,7 +164,7 @@
     <ClCompile Include="global_util.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BufferManager.h" />
+    <ClInclude Include="BufferedSSD.h" />
     <ClInclude Include="global_config.h" />
     <ClInclude Include="hostInterface.h" />
     <ClInclude Include="Interface.h" />

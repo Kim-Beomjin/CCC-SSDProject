@@ -15,14 +15,14 @@ struct Buffer
 	DATA data;
 };
 
-class BufferedSSD : SSD
+class BufferedSSD : public SSD
 {
 public:
 	BufferedSSD();
-	bool Read(LBA lba); //for read  
-	void Write(LBA lba, DATA data);
-	void Erase(LBA lba, unsigned int size);
-	void Flush();
+	bool Read(LBA lba) override; //for read  
+	bool Write(LBA lba, DATA data) override;
+	bool Erase(LBA lba, unsigned int size) override;
+	void Flush() override;
 
 private:
 	bool _NeedFlush();
