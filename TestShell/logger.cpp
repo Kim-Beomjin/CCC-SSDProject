@@ -51,7 +51,7 @@ ofstream& LogFile::GetFile(void) {
     return logFile;
 }
 
-string ZipUntilLogState::GetZipFileName(const std::string& old_filename) {
+string ZipUntilLogState::MakeZipFileName(const std::string& old_filename) {
     string zipName = old_filename;
     const string target = ".log";
     const string replacement = ".zip";
@@ -64,30 +64,20 @@ string ZipUntilLogState::GetZipFileName(const std::string& old_filename) {
 }
 
 void ZipUntilLogState::ZipUntilLogFile(const std::string& old_filename) {
-    /*
-    string newName = GetZipFileName(old_filename);
-
-    if (logFile.is_open())
-        logFile.close();
+    string newName = MakeZipFileName(old_filename);
 
     if (std::rename(old_filename.c_str(), newName.c_str()) != 0) {
-        cout << "Rename Error" << endl;
+        //cout << "Rename Error" << endl;
         return;
     }
-
-    SetName(newName);
-
-    logFile.open(GetName(), ios::out | ios::app);
-    */
 }
 
 void ZipUntilLogState::SaveLog(LogFile& logfile, const std::string& message)
 {
-    ofstream& logFile = logfile.GetFile();
-
+    ZipUntilLogFile(logfile.GetUntilName());
 }
 
-string UntilLogState::GetUntilFileName(void) {
+string UntilLogState::MakeUntilFileName(void) {
     time_t now = time(nullptr);
     tm localTime{};
 
@@ -119,6 +109,9 @@ void UntilLogState::SaveLog(LogFile& logfile, const std::string& message)
     ofstream& logFile = logfile.GetFile();
     bool needStateChange = 0;
 
+    if (logFile.is_open())
+        logFile.close();
+
     needStateChange = CheckChangeZip(logfile);
     if (needStateChange) {
         /* Change oldUntilName.log -> newZipUntilName.log */
@@ -127,11 +120,8 @@ void UntilLogState::SaveLog(LogFile& logfile, const std::string& message)
         logfile.SaveLog(message);
     }
 
-    if (logFile.is_open())
-        logFile.close();
-
     /* Change latest.log -> newUntilName.log */
-    SaveUntilLogger(logfile, GetUntilFileName());
+    SaveUntilLogger(logfile, MakeUntilFileName());
 }
 
 bool UntilLogState::CheckChangeZip(LogFile& logfile) {
