@@ -10,16 +10,13 @@ bool SSD::Read(LBA lba)
   {
     return false;
   }
-
   DATA readData;
   if (nand->Read(lba, readData) == false)
   {
     return false;
   }
   TEST_READ_WRITE_LOGGER(lba, readData);
-
   UpdateOutputFileUsingData(readData);
-
   return true;
 }
 
@@ -31,7 +28,8 @@ bool SSD::Write(LBA lba, DATA writeData)
   }
 
   TEST_READ_WRITE_LOGGER(lba, writeData);
-  return nand->Write(lba, writeData);
+  nand->Write(lba, writeData);
+  return true;
 }
 
 bool SSD::Erase(LBA lba, ERASE_SIZE erase_size)
@@ -43,8 +41,13 @@ bool SSD::Erase(LBA lba, ERASE_SIZE erase_size)
 
   TEST_ERASE_LOGGER(lba, erase_size);
   return nand->Erase(lba, erase_size);
+  return true;
 }
 
+void SSD::Flush()
+{
+    return;
+}
 bool SSD::IsLBAValidOrUpdateErrorToOutputFile(LBA lba, ERASE_SIZE erase_size)
 {
   if (_IsInvalidParameter(lba, erase_size))

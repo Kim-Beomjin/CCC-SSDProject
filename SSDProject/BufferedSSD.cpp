@@ -1,4 +1,4 @@
-#include "BufferManager.h"
+#include "BufferedSSD.h"
 #include <fstream>
 #include <direct.h>
 #include <windows.h>
@@ -19,7 +19,10 @@ BufferedSSD::BufferedSSD() {
 }
 
 bool BufferedSSD::Read(LBA lba) {
-	//SSD::InvalidCheck(lba);
+	if (SSD::IsLBAValidOrUpdateErrorToOutputFile(lba) == false)
+	{
+		return false;
+	}
 	_LoadBuffer(false /*need_delete*/);
 	if (dataBuffer[lba].type == BUF_TYPE::NONE)
 	{
@@ -29,8 +32,9 @@ bool BufferedSSD::Read(LBA lba) {
 	return true;
 }
 
-void BufferedSSD::Write(LBA lba, DATA data)  //first i implement dumb (just want to simple I/O test)
+bool BufferedSSD::Write(LBA lba, DATA data)  //first i implement dumb (just want to simple I/O test)
 {
+	if (SSD::IsLBAValidOrUpdateErrorToOutputFile(lba) == false) return false;
 	if (_NeedFlush())
 	{
 		Flush();
@@ -39,11 +43,12 @@ void BufferedSSD::Write(LBA lba, DATA data)  //first i implement dumb (just want
 	_ConvertWriteCmdToBuf(lba, data);
 	_ConvertBufToCmd();
 	_DumpCommand();
-	
+	return true;
 }
 
-void BufferedSSD::Erase(LBA lba, unsigned int size)  //first i implement dumb (just want to simple I/O test)
+bool BufferedSSD::Erase(LBA lba, unsigned int size)  //first i implement dumb (just want to simple I/O test)
 {
+	if (SSD::IsLBAValidOrUpdateErrorToOutputFile(lba, size) == false) return false;
 	if (_NeedFlush())
 	{
 		Flush();
@@ -52,7 +57,7 @@ void BufferedSSD::Erase(LBA lba, unsigned int size)  //first i implement dumb (j
 	_ConvertEraseCmdToBuf(lba, size);
 	_ConvertBufToCmd();
 	_DumpCommand();
-
+	return true;
 }
 
 void BufferedSSD::Flush()

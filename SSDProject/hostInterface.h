@@ -1,6 +1,6 @@
 #pragma once
 #include "ssd.h"
-#include "BufferManager.h"
+#include "BufferedSSD.h"
 #include "Interface.h"
 enum ARGV
 {
@@ -21,43 +21,15 @@ public:
     void Execute(int argc, char* argv[]);
 
 #if _DEBUG
-    void SetSSD(SSD* ssd)
+    void SetSSD(ISSD* ssd)
     {
         this->ssd = ssd;
     }
 #endif
 
 private:
-    HostInterface() :bufferedSSD{ new BufferedSSD() } {};
-    BufferedSSD* bufferedSSD;
-};
-
-class HostInterfaceUtil
-{
-public:
-    bool IsNegative(char* lbaStr)
-    {
-        return (std::string(lbaStr)[0] == '-');
-    }
-    bool IsInvalidLength(char* dataStr)
-    {
-
-        return (std::string(dataStr).size() != 10 || std::string(dataStr)[0] != ZERO || !(std::string(dataStr)[1] == LARGE_EX || std::string(dataStr)[1] == SMALL_EX));
-    }
-
-    unsigned int SafeStoul(char* str, int base)
-    {
-        size_t idx;
-        unsigned int ret = std::stoul(std::string(str), &idx, base);
-        if (idx != std::string(str).size()) {
-            throw(std::exception("INVALID INPUT PARAMETERS"));
-        }
-        return ret;
-    }
-private:
-    const char ZERO = '0';
-    const char SMALL_EX = 'x';
-    const char LARGE_EX = 'X';
+    HostInterface() :ssd{ new BufferedSSD() } {};
+    ISSD* ssd;
 };
 
 class ProcessorFactory
@@ -67,7 +39,7 @@ public:
         static ProcessorFactory processorFactory;
         return &processorFactory;
     }
-    IProcessor* CreateProcessor(int argc, char* argv[], BufferedSSD* bufferedSSD);
+    IProcessor* CreateProcessor(int argc, char* argv[], ISSD* bufferedSSD);
 private:
     ProcessorFactory() {};
     bool _WriteCondition(int argc, char* argv[]);
@@ -90,52 +62,52 @@ private:
 class WriteProcessor : public IProcessor
 {
 public:
-    WriteProcessor(BufferedSSD* bufferedSSD) : 
-        bufferedSSD{ bufferedSSD }, lba{ 0 }, data{ 0 } {}
+    WriteProcessor(ISSD* ssd) : 
+        ssd{ ssd }, lba{ 0 }, data{ 0 } {}
     bool LoadParameterAndCheckInvalid(char* lbaStr, char* dataStr) override;
-    void Process() override;
+    bool Process() override;
 private:
     LBA lba;
     DATA data;
-    GlobalUtil hostUtil;
-    BufferedSSD* bufferedSSD;
+    GlobalUtil util;
+    ISSD* ssd;
 };
 
 class ReadProcessor : public IProcessor
 {
 public:
-    ReadProcessor(BufferedSSD* bufferedSSD) : 
-        bufferedSSD{ bufferedSSD }, lba{ 0 } {}
+    ReadProcessor(ISSD* ssd) : 
+        ssd{ ssd }, lba{ 0 } {}
     bool LoadParameterAndCheckInvalid(char* lbaStr, char*) override;
-    void Process() override;
+    bool Process() override;
 private:
     LBA lba;
-    HostInterfaceUtil hostUtil;
-    BufferedSSD* bufferedSSD;
+    GlobalUtil util;
+    ISSD* ssd;
 };
 
 class EraseProcessor : public IProcessor
 {
 public:
-    EraseProcessor(BufferedSSD* bufferedSSD) :
-        bufferedSSD{ bufferedSSD }, lba{ 0 }, size{ 0 } {}
+    EraseProcessor(ISSD* ssd) :
+        ssd{ ssd }, lba{ 0 }, size{ 0 } {}
     bool LoadParameterAndCheckInvalid(char* lbaStr, char* sizeStr) override;
-    void Process() override;
+    bool Process() override;
 private:
     LBA lba;
     unsigned int size;
-    HostInterfaceUtil hostUtil;
-    BufferedSSD* bufferedSSD;
+    GlobalUtil util;
+    ISSD* ssd;
 };
 
 class FlushProcessor : public IProcessor
 {
 public:
-    FlushProcessor(BufferedSSD* bufferedSSD) :
-        bufferedSSD{ bufferedSSD } {}
+    FlushProcessor(ISSD* ssd) :
+        ssd{ ssd } {}
     bool LoadParameterAndCheckInvalid(char*, char*) override;
-    void Process() override;
+    bool Process() override;
 private:
-    HostInterfaceUtil hostUtil;
-    BufferedSSD* bufferedSSD;
+    GlobalUtil util;
+    ISSD* ssd;
 };

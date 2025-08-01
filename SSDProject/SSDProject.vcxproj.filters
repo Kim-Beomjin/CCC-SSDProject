@@ -21,9 +21,6 @@
     <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="ssd.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="nand.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -45,7 +42,7 @@
     <ClCompile Include="hostInterface.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="BufferManager.cpp">
+    <ClCompile Include="BufferedSSDcpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSD_integration_test.cpp">
@@ -53,6 +50,9 @@
     </ClCompile>
     <ClCompile Include="global_util.h">
       <Filter>헤더 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ssd.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -68,7 +68,7 @@
     <ClInclude Include="hostInterface.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="BufferManager.h">
+    <ClInclude Include="BufferedSSD.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Interface.h">
