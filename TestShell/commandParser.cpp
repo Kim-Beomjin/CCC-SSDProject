@@ -10,7 +10,7 @@ bool CommandParser::ParseCommand(const string& fullCmd) {
         return false;
     }
 
-    executor = ExecutorFactory().createExecutor(command);
+    executor = _factory->createExecutor(command);
     if (executor == nullptr) {
         print("INVALID COMMAND");
         return false;

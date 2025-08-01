@@ -9,7 +9,7 @@ int Shell::RunShellLoop(void) {
     string cmd;
 
     if (commandParser == nullptr)
-        commandParser = new CommandParser();
+        commandParser = new CommandParser(new ExecutorFactory());
 
     do {
         cout << "Shell> ";
