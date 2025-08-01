@@ -33,11 +33,11 @@ public:
     string WRITE_CMD = "write 3 0x12345678\n";
     string READ_CMD = "read 3\n";
 
-    string EXIT_RESULT = "Shell> [Exit] Done\n";
+    string EXIT_RESULT = "Shell> exit\n";
     string WRITE_RESULT = "Shell> write 3 0x12345678\n";
     string READ_RESULT = "Shell> read 3\n";
     string WRITE_DONE = "[Write] Done\n";
-    string READ_DONE = "[Read] LBA 3 : 0x00000000\n";
+    string READ_DONE = "[Read] LBA: 3 : 0x00000000\n";
 
     string GetResultFromRunShellLoop(class Shell *shell, string cmd) {
         shell->setSsdApp(&mock_app);
