@@ -49,15 +49,15 @@ bool ProcessorFactory::_FlushCondition(int argc, char* argv[])
 
 bool WriteProcessor::LoadParameterAndCheckInvalid(char* lbaStr, char* dataStr)
 {
-	if (hostUtil.IsNegative(lbaStr) || hostUtil.IsInvalidLength(dataStr))
+	if (GlobalUtil::IsNegative(lbaStr) || GlobalUtil::IsInvalidLength(dataStr))
 	{
 		DEBUG_ASSERT(false, "INVALID INPUT PARAMETERS");
 		return true;
 	}
 	try {
 		
-		lba = hostUtil.SafeStoul(lbaStr, 10);
-		data = hostUtil.SafeStoul(dataStr, 16);
+		lba = GlobalUtil::SafeStoul(lbaStr, DECIMAL_BASE);
+		data = GlobalUtil::SafeStoul(dataStr, HEXA_BASE);
 	}
 	catch (std::exception)
 	{
@@ -78,13 +78,13 @@ void WriteProcessor::Process()
 
 bool ReadProcessor::LoadParameterAndCheckInvalid(char* lbaStr, char* )
 {
-	if (hostUtil.IsNegative(lbaStr))
+	if (GlobalUtil::IsNegative(lbaStr))
 	{
 		DEBUG_ASSERT(false, "INVALID INPUT PARAMETERS");
 		return true;
 	}
 	try {
-		lba = hostUtil.SafeStoul(lbaStr, 10);
+		lba = GlobalUtil::SafeStoul(lbaStr, DECIMAL_BASE);
 	}
 	catch (std::exception)
 	{
@@ -106,15 +106,15 @@ void ReadProcessor::Process()
 
 bool EraseProcessor::LoadParameterAndCheckInvalid(char* lbaStr, char* sizeStr)
 {
-	if (hostUtil.IsNegative(lbaStr) || hostUtil.IsNegative(sizeStr))
+	if (GlobalUtil::IsNegative(lbaStr) || GlobalUtil::IsNegative(sizeStr))
 	{
 		DEBUG_ASSERT(false, "INVALID INPUT PARAMETERS");
 		return true;
 	}
 	try {
 
-		lba = hostUtil.SafeStoul(lbaStr, 10);
-		size = hostUtil.SafeStoul(sizeStr, 10);
+		lba = GlobalUtil::SafeStoul(lbaStr, DECIMAL_BASE);
+		size = GlobalUtil::SafeStoul(sizeStr, DECIMAL_BASE);
 	}
 	catch (std::exception)
 	{
@@ -125,7 +125,7 @@ bool EraseProcessor::LoadParameterAndCheckInvalid(char* lbaStr, char* sizeStr)
 }
 void EraseProcessor::Process()
 {
-	if (lba + size <= LBA_END_ADDR && size <= 10)
+	if (lba + size <= LBA_END_ADDR && size <= MAX_ERASE_SIZE)
 	{
 		bufferManager->BufferErase(lba, size);
 		return;
