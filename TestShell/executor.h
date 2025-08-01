@@ -23,7 +23,7 @@ class FullWriter : public Writer
 {
 public:
 	bool IsValidCommand(const vector<string>& tokens) override;
-	bool execute(ISsdApp* app, LBA lba, DATA data) override;
+	bool execute(ISsdApp* app, LBA lba, DATA data = 0) override;
 private:
 	const string CMD = FULL_WRITE_CMD;
 	const int NEEDED_TOKEN_COUNT = 2;

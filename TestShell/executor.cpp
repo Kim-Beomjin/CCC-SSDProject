@@ -108,7 +108,7 @@ bool OuputDecoratedWriter::IsValidCommand(const vector<string>& tokens) {
 		return false;
 	}
 
-	dbgPring("Command parameter is not enough! needed param count:" + to_string(NEEDED_TOKEN_COUNT) + ", current param count:" + to_string(tokens.size()));
+	dbgPrint("Command parameter is not enough! needed param count:" + to_string(NEEDED_TOKEN_COUNT) + ", current param count:" + to_string(tokens.size()));
 	return false;
 }
 
@@ -142,15 +142,16 @@ bool OuputDecoratedWriter::execute(ISsdApp* app, LBA lba, DATA data)
 
 bool FullWriter::IsValidCommand(const vector<string>& tokens) {
 	if (tokens[CMD_IDX] == CMD && tokens.size() == NEEDED_TOKEN_COUNT) return true;
-	dbgPring("Command parameter is not enough! needed param count:" + to_string(NEEDED_TOKEN_COUNT) + ", current param count:" + to_string(tokens.size()));
+	dbgPrint("Command parameter is not enough! needed param count:" + to_string(NEEDED_TOKEN_COUNT) + ", current param count:" + to_string(tokens.size()));
 	return false;
 }
 
 bool FullWriter::execute(ISsdApp* app, LBA lba, DATA data)
 {
+	DATA fullWriteData = lba;
 	for (LBA lba = 0; lba < SSD_MAX_SIZE; ++lba)
 	{
-		if (!Writer::execute(app, lba, data)) return false;
+		if (!Writer::execute(app, lba, fullWriteData)) return false;
 	}
 	print("[Full Write] Done");
 	return true;
@@ -182,7 +183,7 @@ string Reader::GetResultFromFile(void)
 
 bool OuputDecoratedReader::IsValidCommand(const vector<string>& tokens) {
 	if (tokens[CMD_IDX] == CMD && tokens.size() == NEEDED_TOKEN_COUNT) return true;
-	dbgPring("Command parameter is not enough! needed param count:" + to_string(NEEDED_TOKEN_COUNT) + ", current param count:" + to_string(tokens.size()));
+	dbgPrint("Command parameter is not enough! needed param count:" + to_string(NEEDED_TOKEN_COUNT) + ", current param count:" + to_string(tokens.size()));
 	return false;
 }
 
@@ -197,7 +198,7 @@ bool OuputDecoratedReader::execute(ISsdApp* app, LBA lba, DATA data)
 
 bool FullReader::IsValidCommand(const vector<string>& tokens) {
 	if (tokens[CMD_IDX] == CMD && tokens.size() == NEEDED_TOKEN_COUNT) return true;
-	dbgPring("Command parameter is not enough! needed param count:" + to_string(NEEDED_TOKEN_COUNT) + ", current param count:" + to_string(tokens.size()));
+	dbgPrint("Command parameter is not enough! needed param count:" + to_string(NEEDED_TOKEN_COUNT) + ", current param count:" + to_string(tokens.size()));
 	return false;
 }
 
@@ -231,7 +232,7 @@ bool Comparer::Compare(const DATA expectedData, const string &readResult)
 
 bool Helper::IsValidCommand(const vector<string>& tokens) {
 	if (tokens[CMD_IDX] == CMD && tokens.size() == NEEDED_TOKEN_COUNT) return true;
-	dbgPring("Command parameter is not enough! needed param count:" + to_string(NEEDED_TOKEN_COUNT) + ", current param count:" + to_string(tokens.size()));
+	dbgPrint("Command parameter is not enough! needed param count:" + to_string(NEEDED_TOKEN_COUNT) + ", current param count:" + to_string(tokens.size()));
 	return false;
 }
 
@@ -244,7 +245,7 @@ bool Helper::execute(ISsdApp* app, LBA lba, DATA data)
 
 bool Exiter::IsValidCommand(const vector<string>& tokens) {
 	if (tokens[CMD_IDX] == CMD && tokens.size() == NEEDED_TOKEN_COUNT) return true;
-	dbgPring("Command parameter is not enough! needed param count:" + to_string(NEEDED_TOKEN_COUNT) + ", current param count:" + to_string(tokens.size()));
+	dbgPrint("Command parameter is not enough! needed param count:" + to_string(NEEDED_TOKEN_COUNT) + ", current param count:" + to_string(tokens.size()));
 	return false;
 }
 
@@ -279,7 +280,7 @@ bool Eraser::ExecuteChunkedErase(ISsdApp* app, LBA startLba, SIZE size)
 bool SizeEraser::IsValidCommand(const vector<string>& tokens)
 {
 	if (tokens[CMD_IDX] == CMD && tokens.size() == NEEDED_TOKEN_COUNT) return true;
-	dbgPring("Command parameter is not enough! needed param count:" + to_string(NEEDED_TOKEN_COUNT) + ", current param count:" + to_string(tokens.size()));
+	dbgPrint("Command parameter is not enough! needed param count:" + to_string(NEEDED_TOKEN_COUNT) + ", current param count:" + to_string(tokens.size()));
 	return false;
 }
 
@@ -314,7 +315,7 @@ pair<LBA, SIZE> SizeEraser::CalculateStartLbaAndSize(LBA lba, SIZE size)
 bool RangeEraser::IsValidCommand(const vector<string>& tokens)
 {
 	if (tokens[CMD_IDX] == CMD && tokens.size() == NEEDED_TOKEN_COUNT) return true;
-	dbgPring("Command parameter is not enough! needed param count:" + to_string(NEEDED_TOKEN_COUNT) + ", current param count:" + to_string(tokens.size()));
+	dbgPrint("Command parameter is not enough! needed param count:" + to_string(NEEDED_TOKEN_COUNT) + ", current param count:" + to_string(tokens.size()));
 	return false;
 }
 
@@ -347,7 +348,7 @@ pair<LBA, SIZE> RangeEraser::GetOrderedLbaRange(LBA startLba, LBA endLba)
 
 bool Flusher::IsValidCommand(const vector<string>& tokens) {
 	if (tokens[CMD_IDX] == CMD && tokens.size() == NEEDED_TOKEN_COUNT) return true;
-	dbgPring("Command parameter is not enough! needed param count:" + to_string(NEEDED_TOKEN_COUNT) + ", current param count:" + to_string(tokens.size()));
+	dbgPrint("Command parameter is not enough! needed param count:" + to_string(NEEDED_TOKEN_COUNT) + ", current param count:" + to_string(tokens.size()));
 	return false;
 }
 
