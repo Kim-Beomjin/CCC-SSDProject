@@ -15,10 +15,6 @@ void Shell::RunShellLoop(void) {
         cout << "Shell> ";
 
         getline(std::cin, cmd);
-        // 분기 ~~~.txt면 Runner();
-        // 기존 커맨드거나 숫자로 시작하면 기존 내용으로
-        // cin.ignore();
-        // Parse cmd
         bool ret = commandParser->ParseCommand(cmd);
 #ifdef _DEBUG
         cout << cmd << "\n";
