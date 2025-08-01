@@ -9,3 +9,5 @@ const string makeExecuteCmd(string cmd, LBA lba = 0, DATA data = 0);
 string DataToHexString(const DATA data);
 unsigned int stringToUnsignedInt(const string& str);
 vector<string> splitCommand(const string& fullCmd);
+
+void print(const string& desc);

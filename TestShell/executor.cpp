@@ -1,13 +1,12 @@
-#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <direct.h>
+#include <tuple>
+#include <algorithm>
 #include "executor.h"
 #include "compositExecutor.h"
 #include "utils.h"
 #include "logger.h"
-#include <tuple>
-#include <algorithm>
 
 using namespace std;
 
@@ -42,18 +41,27 @@ bool OuputDecoratedWriter::IsValidCommand(const vector<string>& tokens) {
 		if (IsValidWriteData(tokens[DATA_IDX])) return true;
 		return false;
 	}
+
+	print("Command parameter is not enough! needed param count:" + to_string(NEEDED_TOKEN_COUNT ) + ", current param count:" + to_string(tokens.size()));
 	return false;
 }
 
 bool OuputDecoratedWriter::IsValidWriteData(const string& data) {
-	if (data.size() != 10) return false;
-
-	if (!(data[0] == '0' && (data[1] == 'x' || data[1] == 'X')))
+	if (data.size() != 10) {
+		print("Write Data Invalid: 10글자가 안 됨 - DATA:" + data);
 		return false;
+	}
+
+	if (!(data[0] == '0' && (data[1] == 'x' || data[1] == 'X'))) {
+		print("Write Data Invalid: 0x로 시작하지 않음 - DATA:" + data);
+		return false;
+	}
 
 	for (size_t i = 2; i < 10; ++i) {
-		if (!std::isxdigit(static_cast<unsigned char>(data[i])))
+		if (!std::isxdigit(static_cast<unsigned char>(data[i]))) {
+			print("Write Data Invalid: 숫자가 아닌 값이 들어가 있음 - DATA:" + data);
 			return false;
+		}
 	}
 
 	return true;
@@ -62,12 +70,13 @@ bool OuputDecoratedWriter::IsValidWriteData(const string& data) {
 bool OuputDecoratedWriter::execute(ISsdApp* app, LBA lba, DATA data)
 {
 	if (!Writer::execute(app, lba, data)) return false;
-	cout << "[Write] Done\n";
+	print("[Write] Done");
 	return true;
 }
 
 bool FullWriter::IsValidCommand(const vector<string>& tokens) {
 	if (tokens[CMD_IDX] == CMD && tokens.size() == NEEDED_TOKEN_COUNT) return true;
+	print("Command parameter is not enough! needed param count:" + to_string(NEEDED_TOKEN_COUNT ) + ", current param count:" + to_string(tokens.size()));
 	return false;
 }
 
@@ -77,7 +86,7 @@ bool FullWriter::execute(ISsdApp* app, LBA lba, DATA data)
 	{
 		if (!Writer::execute(app, lba, data)) return false;
 	}
-	cout << "[Full Write] Done\n";
+	print("[Full Write] Done");
 	return true;
 }
 
@@ -108,18 +117,22 @@ string Reader::GetResultFromFile(void)
 
 bool OuputDecoratedReader::IsValidCommand(const vector<string>& tokens) {
 	if (tokens[CMD_IDX] == CMD && tokens.size() == NEEDED_TOKEN_COUNT) return true;
+	print("Command parameter is not enough! needed param count:" + to_string(NEEDED_TOKEN_COUNT ) + ", current param count:" + to_string(tokens.size()));
 	return false;
 }
 
 bool OuputDecoratedReader::execute(ISsdApp* app, LBA lba, DATA data)
 {
 	if (!Reader::execute(app, lba, data)) return false;
-	cout << "[Read] LBA " << lba << " : " << GetResultFromFile() << "\n";
+	std::ostringstream oss;
+	oss << "[Read] LBA:" << setw(2) << lba << ":" << GetResultFromFile();
+	print(oss.str());
 	return true;
 }
 
 bool FullReader::IsValidCommand(const vector<string>& tokens) {
 	if (tokens[CMD_IDX] == CMD && tokens.size() == NEEDED_TOKEN_COUNT) return true;
+	print("Command parameter is not enough! needed param count:" + to_string(NEEDED_TOKEN_COUNT ) + ", current param count:" + to_string(tokens.size()));
 	return false;
 }
 
@@ -129,7 +142,7 @@ bool FullReader::execute(ISsdApp* app, LBA lba, DATA data)
 	{
 		if (!OuputDecoratedReader::execute(app, lba, data)) return false;
 	}
-	cout << "[Full Read] Done\n";
+	print("[Full Read] Done");
 	return true;
 }
 
@@ -153,23 +166,26 @@ bool Comparer::Compare(const DATA expectedData, const string &readResult)
 
 bool Helper::IsValidCommand(const vector<string>& tokens) {
 	if (tokens[CMD_IDX] == CMD && tokens.size() == NEEDED_TOKEN_COUNT) return true;
+	print("Command parameter is not enough! needed param count:" + to_string(NEEDED_TOKEN_COUNT ) + ", current param count:" + to_string(tokens.size()));
 	return false;
 }
 
 bool Helper::execute(ISsdApp* app, LBA lba, DATA data)
 {
-	cout << this->HELP_DESCRIPTION;
+	print(this->HELP_DESCRIPTION);
 
 	return true;
 }
 
 bool Exiter::IsValidCommand(const vector<string>& tokens) {
 	if (tokens[CMD_IDX] == CMD && tokens.size() == NEEDED_TOKEN_COUNT) return true;
+	print("Command parameter is not enough! needed param count:" + to_string(NEEDED_TOKEN_COUNT ) + ", current param count:" + to_string(tokens.size()));
 	return false;
 }
 
 bool Exiter::execute(ISsdApp* app, LBA lba, DATA data)
 {
+	print("[Exit] Done");
 	return true;
 }
 
@@ -210,11 +226,11 @@ bool SizeEraser::execute(ISsdApp* app, LBA startLba, SIZE size)
 
 	if (!Eraser::execute(app, eraseRange.first, eraseRange.second))
 	{
-		cout << "[Erase] Fail\n";
+		print("[Erase] Fail");
 		return false;
 	}
 
-	cout << "[Erase] Done\n";
+	print("[Erase] Done");
 	return true;
 }
 
@@ -245,11 +261,11 @@ bool RangeEraser::execute(ISsdApp* app, LBA startLba, LBA endLba)
 
 	if (!Eraser::execute(app, eraseRange.first, eraseRange.second))
 	{
-		cout << "[Erase Range] Fail\n";
+		print("[Erase Range] Fail");
 		return false;
 	}
 
-	cout << "[Erase Range] Done\n";
+	print("[Erase Range] Done");
 	return true;
 }
 
@@ -272,7 +288,6 @@ bool Flusher::execute(ISsdApp* app, LBA lba, DATA data)
 {
 	app->Flush();
 
-	cout << "[Flusher] Done\n";
+	print("[Flush] Done");
 	return true;
 }
-

@@ -14,6 +14,7 @@ private:
 
     bool setLbaFromToken(const string& strLba);
     bool setDataFromToken(const string& strData);
+    bool IsLbaRangeValid();
 
     IExecutor* executor;
     string command = "";

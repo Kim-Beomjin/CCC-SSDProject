@@ -77,13 +77,22 @@ private:
 	const std::string HELP_DESCRIPTION =
 		"팀명: CCC(Clean Code Collective) \n"
 		"팀장 : 김범진 / 팀원 : 김경민, 김윤진, 김율곤, 정지윤\n\n"
-		"Command 설명:\n"
+		"[Command 설명]\n"
 		"write: 필요 파라미터 lba(0~99 중), data(32bit 16진수 값) - ssd의 lba cell에 data를 저장한다.\n"
 		"fullwrite: 필요 파라미터 data(32bit 16진수 값) - ssd의 모든 cell에 data를 저장한다.\n"
 		"read: 필요 파라미터 lba(0~99 중) - ssd의 lba cell의 값을 읽어온다.\n"
 		"fullread: 필요 파라미터 NONE - ssd의 모든 cell의 값을 읽어온다\n"
 		"help: 필요 파라미터 NONE - ssd에 필요한 command 등 모든 정보에 대한 도움말을 요청한다\n"
-		"exit: 필요 파라미터 NONE - 하려던 거 끝내고 바로 종료한다\n";
+		"exit: 필요 파라미터 NONE - 하려던 거 끝내고 바로 종료한다\n"
+		"\n[Script 설명]\n"
+		"1_ or 1_FullWriteAndReadCompare: 1번 스크립트의 내용 (fullwrite / fullread) 을 수행한다\n"
+		"2_ or 2_PartialLBAWrite: 2번 스크립트의 내용 (Partial write using LBA) 을 수행한다\n"
+		"3_ or 3_WriteReadAging: 3번 스크립트의 내용 (write / read 교차 수행) 을 수행한다\n"
+		"4_ or 4_EraseAndWriteAging: 4번 스크립트의 내용 (erase / write 교차 수행) 을 수행한다\n"
+		"\n[Runner 설명]\n"
+		"Runner는 shell cmd 입력이 아닌 TestShell.exe를 파라미터와 함께 실행시키는 방식으로 수행합니다\n"
+		"실행 예시: TestShell.exe [script_file_name].txt\n"
+		"스크립트 파일에 들어가 있는 스크립트 명령어를 순차적으로 수행합니다\n";
 	const string CMD = HELP_CMD;
 	const int NEEDED_TOKEN_COUNT = 1;
 };

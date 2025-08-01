@@ -33,7 +33,7 @@ public:
     string WRITE_CMD = "write 3 0x12345678\n";
     string READ_CMD = "read 3\n";
 
-    string EXIT_RESULT = "Shell> exit\n";
+    string EXIT_RESULT = "Shell> [Exit] Done\n";
     string WRITE_RESULT = "Shell> write 3 0x12345678\n";
     string READ_RESULT = "Shell> read 3\n";
     string WRITE_DONE = "[Write] Done\n";
