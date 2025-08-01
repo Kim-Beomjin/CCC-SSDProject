@@ -25,8 +25,6 @@ IProcessor* ProcessorFactory::CreateProcessor(int argc, char* argv[], SSD* ssd, 
 	return nullptr;
 }
 
-
-
 bool ProcessorFactory::_WriteCondition(int argc, char* argv[])
 {
 	return (argc == WRITE_COMMAND_ARG_COUNT && std::string(argv[ARGV::CMD_IDX]) == WRITE_CMD);

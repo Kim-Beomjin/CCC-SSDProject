@@ -93,8 +93,8 @@ class WriteProcessor : public IProcessor
 public:
     WriteProcessor(SSD* ssd, BufferManager* bufferManager) : 
         ssd{ ssd }, bufferManager{ bufferManager }, lba{ 0 }, data{ 0 } {}
-    bool LoadParameterAndCheckInvalid(char* lbaStr, char* dataStr);
-    void Process();
+    bool LoadParameterAndCheckInvalid(char* lbaStr, char* dataStr) override;
+    void Process() override;
 private:
     LBA lba;
     DATA data;
@@ -108,8 +108,8 @@ class ReadProcessor : public IProcessor
 public:
     ReadProcessor(SSD* ssd, BufferManager* bufferManager) : 
         ssd{ ssd }, bufferManager{ bufferManager }, lba{ 0 } {}
-    bool LoadParameterAndCheckInvalid(char* lbaStr, char*);
-    void Process();
+    bool LoadParameterAndCheckInvalid(char* lbaStr, char*) override;
+    void Process() override;
 private:
     LBA lba;
     HostInterfaceUtil hostUtil;
@@ -122,8 +122,8 @@ class EraseProcessor : public IProcessor
 public:
     EraseProcessor(SSD* ssd, BufferManager* bufferManager) :
         ssd{ ssd }, bufferManager{ bufferManager }, lba{ 0 }, size{ 0 } {}
-    bool LoadParameterAndCheckInvalid(char* lbaStr, char* sizeStr);
-    void Process();
+    bool LoadParameterAndCheckInvalid(char* lbaStr, char* sizeStr) override;
+    void Process() override;
 private:
     LBA lba;
     unsigned int size;
@@ -137,8 +137,8 @@ class FlushProcessor : public IProcessor
 public:
     FlushProcessor(SSD* ssd, BufferManager* bufferManager) :
         ssd{ ssd }, bufferManager{ bufferManager } {}
-    bool LoadParameterAndCheckInvalid(char*, char*);
-    void Process();
+    bool LoadParameterAndCheckInvalid(char*, char*) override;
+    void Process() override;
 private:
     HostInterfaceUtil hostUtil;
     BufferManager* bufferManager;
