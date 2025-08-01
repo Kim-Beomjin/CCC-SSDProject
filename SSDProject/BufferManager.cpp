@@ -67,8 +67,8 @@ void BufferManager::BufferFlush()
 		if (_CheckFileValid(filename))
 		{
 			parsedFilename = filename.substr(2);
-			command = _Split(parsedFilename, '_');
-			command[command.size() - 1] = _Split(command[command.size() - 1], '.')[0];
+			command = GlobalUtil::Split(parsedFilename, '_');
+			command[command.size() - 1] = GlobalUtil::Split(command[command.size() - 1], '.')[0];
 			size_t idx;
 			if (command[0] == "W") {
 				LBA lba = std::stoul(command[1], &idx, 10);
@@ -105,8 +105,8 @@ void BufferManager::_LoadBuffer(bool need_delete)
 		{
 			fullpath = BUFFER_DIRECTORY + filename;
 			filename = filename.substr(2);
-			command = _Split(filename, '_');
-			command[command.size() - 1] = _Split(command[command.size() - 1], '.')[0];
+			command = GlobalUtil::Split(filename, '_');
+			command[command.size() - 1] = GlobalUtil::Split(command[command.size() - 1], '.')[0];
 			if (command.size() == 3) {
 				_ConvertCmdToBuf(command[0], command[1], command[2]);
 			}
@@ -274,15 +274,4 @@ void BufferManager::_DumpWriteCmd(int cmdIdx, LBA lba, DATA data)
 bool BufferManager::_CheckFileValid(const std::string& filename)
 {
 	return (filename[0] >= '1' && filename[0] <= '5' && filename[1] == '_');
-}
-
-std::vector<std::string> BufferManager::_Split(const std::string& str, const char delimiter) {
-	std::vector<std::string> result;
-	std::stringstream ss(str);
-	std::string item;
-
-	while (std::getline(ss, item, delimiter)) {
-		result.push_back(item);
-	}
-	return result;
 }

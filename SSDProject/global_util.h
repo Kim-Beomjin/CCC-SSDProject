@@ -4,6 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <vector>
 
 #ifdef _DEBUG
 #include "gmock/gmock.h"
@@ -43,6 +44,19 @@ public:
       throw(std::exception("INVALID INPUT PARAMETERS"));
     }
     return ret;
+  }
+
+  static std::vector<std::string> Split(const std::string& str, const char delimiter)
+  {
+    std::vector<std::string> result;
+    std::stringstream ss(str);
+    std::string item;
+
+    while (std::getline(ss, item, delimiter))
+    {
+      result.push_back(item);
+    }
+    return result;
   }
 
 #ifdef _DEBUG
