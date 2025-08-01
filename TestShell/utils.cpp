@@ -8,12 +8,12 @@
 using std::cout;
 using std::endl;
 
-bool fileExists(const std::string& filename) {
+bool TestShellUtils::fileExists(const std::string& filename) {
 	std::ifstream file(filename);
 	return file.is_open();
 }
 
-const string makeExecuteCmd(string cmd, LBA lba, DATA data) {
+const string TestShellUtils::makeExecuteCmd(string cmd, LBA lba, DATA data) {
 	string appFile = EXE_FILE_NAME_RELEASE_PATH;
 
 	if (!fileExists(EXE_FILE_NAME_RELEASE_PATH))
@@ -39,7 +39,7 @@ const string makeExecuteCmd(string cmd, LBA lba, DATA data) {
 	return oss.str();
 }
 
-string DataToHexString(const DATA data)
+string TestShellUtils::DataToHexString(const DATA data)
 {
 	std::stringstream hexString;
 	hexString << "0x"
@@ -51,7 +51,7 @@ string DataToHexString(const DATA data)
 	return hexStringData;
 }
 
-unsigned int stringToUnsignedInt(const string& str) {
+unsigned int TestShellUtils::stringToUnsignedInt(const string& str) {
 	try {
 		size_t pos = 0;
 		unsigned long value = std::stoul(str, &pos, 0);
@@ -71,7 +71,7 @@ unsigned int stringToUnsignedInt(const string& str) {
 	}
 }
 
-vector<string> splitCommand(const string& fullCmd) {
+vector<string> TestShellUtils::splitCommand(const string& fullCmd) {
 	vector<string> tokens = {};
 	std::istringstream iss(fullCmd);
 	std::string token;

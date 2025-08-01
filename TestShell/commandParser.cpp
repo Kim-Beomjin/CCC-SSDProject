@@ -2,7 +2,7 @@
 #include "commandParser.h"
 
 bool CommandParser::ParseCommand(const string& fullCmd) {
-    std::vector<string> tokens = splitCommand(fullCmd);
+    std::vector<string> tokens = TestShellUtils::splitCommand(fullCmd);
     if (tokens.empty()) return false;
 
     if (doParse(tokens) == false) {
@@ -45,7 +45,7 @@ bool CommandParser::doParse(const vector<string>& tokens) {
 
 bool CommandParser::setLbaFromToken(const string& strLba) {
     try {
-        lba = stringToUnsignedInt(strLba);
+        lba = TestShellUtils::stringToUnsignedInt(strLba);
         return true;
     }
     catch (const std::exception& e) {
@@ -56,7 +56,7 @@ bool CommandParser::setLbaFromToken(const string& strLba) {
 
 bool CommandParser::setDataFromToken(const string& strData) {
     try {
-        data = stringToUnsignedInt(strData);
+        data = TestShellUtils::stringToUnsignedInt(strData);
         return true;
     }
     catch (const std::exception& e) {
