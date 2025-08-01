@@ -114,18 +114,18 @@ bool OuputDecoratedWriter::IsValidCommand(const vector<string>& tokens) {
 
 bool OuputDecoratedWriter::IsValidWriteData(const string& data) {
 	if (data.size() != WRITE_DATA_SIZE) {
-		print("Write Data Invalid: 10±ÛÀÚ°¡ ¾È µÊ - DATA:" + data);
+		print("Write Data Invalid: 10ê¸€ìê°€ ì•ˆ ë¨ - DATA:" + data);
 		return false;
 	}
 
 	if (!(data[0] == '0' && (data[1] == 'x' || data[1] == 'X'))) {
-		print("Write Data Invalid: 0x·Î ½ÃÀÛÇÏÁö ¾ÊÀ½ - DATA:" + data);
+		print("Write Data Invalid: 0xë¡œ ì‹œì‘í•˜ì§€ ì•ŠìŒ - DATA:" + data);
 		return false;
 	}
 
 	for (size_t i = START_DATA_DIGIT_EXCEPT_HEX_PREFIX; i < WRITE_DATA_SIZE; ++i) {
 		if (!std::isxdigit(static_cast<unsigned char>(data[i]))) {
-			print("Write Data Invalid: ¼ıÀÚ°¡ ¾Æ´Ñ °ªÀÌ µé¾î°¡ ÀÖÀ½ - DATA:" + data);
+			print("Write Data Invalid: ìˆ«ìê°€ ì•„ë‹Œ ê°’ì´ ë“¤ì–´ê°€ ìˆìŒ - DATA:" + data);
 			return false;
 		}
 	}
@@ -250,7 +250,6 @@ bool Exiter::IsValidCommand(const vector<string>& tokens) {
 
 bool Exiter::execute(ISsdApp* app, LBA lba, DATA data)
 {
-	//print("[Exit] Done");
 	return true;
 }
 
