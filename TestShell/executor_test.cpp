@@ -19,8 +19,7 @@ public:
 	void checkExecute(string cmd = "", LBA lba = 0, DATA data = 0, DATA expect_data = 0) {
 		executor = ExecutorFactory().createExecutor(cmd);
 
-		bool ret = executor->execute(&mock_app, lba, data);
-		EXPECT_TRUE(ret);
+		EXPECT_TRUE(executor->execute(&mock_app, lba, data));
 	}
 
 	MockSsdApp mock_app;

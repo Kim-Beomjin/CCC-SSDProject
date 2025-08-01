@@ -10,7 +10,7 @@ class CompositExecutor : public IExecutor
 public:
 	CompositExecutor() = default;
 	CompositExecutor(Writer* writer, Comparer* comparer) : writer{ writer }, comparer { comparer } {}
-
+	bool IsValidCommand(const vector<string>& tokens) override { return true; }
 protected:
 	static bool PrintPass(void);
 	static bool PrintFail(void);
