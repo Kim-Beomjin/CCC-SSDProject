@@ -1,5 +1,4 @@
 #include <direct.h>
-#include <exception>
 #include "ssdApp.h"
 #include "utils.h"
 
