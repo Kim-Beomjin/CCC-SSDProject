@@ -24,7 +24,7 @@ int Shell::Runner(int argc, char* argv[])
     }
 
     if (commandParser == nullptr)
-        commandParser = new CommandParser(new CompositExecutorFactory());
+        commandParser = new CommandParser(new CompositeExecutorFactory());
 
     string cmd;
     while (std::getline(infile, cmd)) {

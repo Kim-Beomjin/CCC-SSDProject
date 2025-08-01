@@ -45,10 +45,10 @@
     <ClCompile Include="shellInterface_test.cpp">
       <Filter>테스트 파일</Filter>
     </ClCompile>
-    <ClCompile Include="compositExecutor_test.cpp">
+    <ClCompile Include="compositeExecutor_test.cpp">
       <Filter>테스트 파일</Filter>
     </ClCompile>
-    <ClCompile Include="compositExecutor.cpp">
+    <ClCompile Include="compositeExecutor.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="ssdApp.cpp">
@@ -68,7 +68,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="compositExecutor.h">
+    <ClInclude Include="compositeExecutor.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="interface.h">
