@@ -21,11 +21,16 @@ const std::string OUTPUT_FILE = "ssd_output.txt";
 #include <iostream>
 
 #define TEST_LOGGER(msg) \
-    std::cout << "[LOG] " << __func__ << ": " << msg << std::endl;
+    std::cout << "[LOG][" << __func__ << "] " << msg << std::endl;
 #else
 #define TEST_LOGGER(msg) \
     ;
 #endif
+
+#define TEST_READ_WRITE_LOGGER(lba, data) \
+    TEST_LOGGER("LBA : " << lba << ", Data : " << data);
+#define TEST_ERASE_LOGGER(lba, size) \
+    TEST_LOGGER("LBA : " << lba << ", Size : " << size);
 
 #ifdef _DEBUG
 #define DEBUG_ASSERT(cond, msg)                     \
