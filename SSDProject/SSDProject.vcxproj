@@ -165,6 +165,7 @@
     <ClInclude Include="BufferManager.h" />
     <ClInclude Include="global_config.h" />
     <ClInclude Include="hostInterface.h" />
+    <ClInclude Include="Interface.h" />
     <ClInclude Include="nand.h" />
     <ClInclude Include="ssd.h" />
   </ItemGroup>

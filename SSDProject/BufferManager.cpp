@@ -28,20 +28,33 @@ bool BufferManager::BufferRead(int lba, DATA& readData) {
 	return true;
 }
 
-void BufferManager::BufferWrite(std::string cmd, std::string lba, std::string data)  //first i implement dumb (just want to simple I/O test)
+void BufferManager::BufferWrite(LBA lba, DATA data)  //first i implement dumb (just want to simple I/O test)
 {
 	if (_NeedFlush())
 	{
-		Flush();
+		BufferFlush();
 	}
 	_LoadBuffer(true /*need_delete*/);
-	_ConvertCmdToBuf(cmd, lba, data);
+	_ConvertWriteCmdToBuf(lba, data);
 	_ConvertBufToCmd();
 	_DumpCommand();
 	
 }
 
-void BufferManager::Flush()
+void BufferManager::BufferErase(LBA lba, unsigned int size)  //first i implement dumb (just want to simple I/O test)
+{
+	if (_NeedFlush())
+	{
+		BufferFlush();
+	}
+	_LoadBuffer(true /*need_delete*/);
+	_ConvertEraseCmdToBuf(lba, size);
+	_ConvertBufToCmd();
+	_DumpCommand();
+
+}
+
+void BufferManager::BufferFlush()
 {
 	WIN32_FIND_DATAA findFileData;
 	HANDLE hFind = FindFirstFileA(SEARCH_BUFFER_DIRECTORY.c_str(), &findFileData);
@@ -76,6 +89,7 @@ void BufferManager::Flush()
 	_ResetBuffer();
 	_DumpCommand();
 }
+
 
 void BufferManager::_LoadBuffer(bool need_delete)
 {
@@ -149,20 +163,31 @@ void BufferManager::_DumpCommand()
 	}
 }
 
+
 void BufferManager::_ConvertCmdToBuf(std::string cmdStr, std::string lbaStr, std::string dataStr)
 {
 	size_t idx;
 	if (cmdStr == "W") {
 		LBA lba = std::stoul(lbaStr, &idx, 10);
 		DATA data = std::stoul(dataStr, &idx, 16);
-		dataBuffer[lba] = { BUF_TYPE::WRITE, data };
+		_ConvertWriteCmdToBuf(lba, data);
 	}
 	else if (cmdStr == "E") {
 		LBA lba = std::stoul(lbaStr);
 		unsigned int length = std::stoul(dataStr);
-		for (LBA i = lba; i < lba + length; i++) {
-			dataBuffer[i] = { BUF_TYPE::ERASE, 0 };
-		}
+		_ConvertEraseCmdToBuf(lba, length);
+	}
+}
+
+void BufferManager::_ConvertWriteCmdToBuf(LBA lba, DATA data)
+{
+	dataBuffer[lba] = { BUF_TYPE::WRITE, data };
+}
+
+void BufferManager::_ConvertEraseCmdToBuf(LBA lba, unsigned int size)
+{
+	for (LBA i = lba; i < lba + size; i++) {
+		dataBuffer[i] = { BUF_TYPE::ERASE, 0 };
 	}
 }
 
