@@ -14,4 +14,5 @@ public:
 };
 
 void print(const string& desc);
+void printWithoutLineBreak(const string& desc);
 void dbgPring(const string& desc);

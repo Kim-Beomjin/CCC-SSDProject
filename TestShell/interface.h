@@ -1,9 +1,12 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <unordered_map>
+#include <functional>
 
 using std::string;
 using std::vector;
+using std::unordered_map;
 
 #define interface struct
 
@@ -16,19 +19,30 @@ interface ISsdApp {
 	virtual bool Flush() = 0;
 };
 
-interface IExecutor{
+interface IExecutor {
 	virtual bool IsValidCommand(const vector<string>& tokens) { return false; }
 	virtual bool execute(ISsdApp* pApp = nullptr, u32 lba = 0, u32 data = 0) = 0;
 };
 
-class ICommandParserBridge
-{
-public:
+interface ICommandParserBridge {
 	virtual bool ParseCommand(const string& cmd) = 0;
 	virtual bool ExecuteSsdUsingParsedCommand(ISsdApp* app) = 0;
 };
 
-class ExecutorFactory {
+class ScriptRunnerFactory {
 public:
-	IExecutor* createExecutor(const string command);
+	virtual IExecutor* createExecutor(const string& command);
+private:
+	using Creator = std::function<IExecutor* ()>;
+	static const unordered_map<string, Creator> factoryMap;
 };
+
+
+class ExecutorFactory : public ScriptRunnerFactory {
+public:
+	IExecutor* createExecutor(const string& command) override;
+private:
+	using Creator = std::function<IExecutor* ()>;
+	static const unordered_map<string, Creator> factoryMap;
+};
+
