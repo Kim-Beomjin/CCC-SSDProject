@@ -21,6 +21,7 @@ void LogFile::SetLogFile(const string& filename) {
     if (logFile.is_open())
         logFile.close();
     logFile.open(filename, ios::out | ios::app);
+    SetLatestName(filename);
 }
 /*
 void LogFile::SetName(const std::string& filename) {
@@ -32,11 +33,11 @@ string LogFile::GetName(void) {
 }
 */
 void LogFile::SetLatestName(const std::string& filename) {
-    untilLogName = filename;
+    latestLogName = filename;
 }
 
-string LogFile::GetLatestlName(void) {
-    return untilLogName;
+string LogFile::GetLatestName(void) {
+    return latestLogName;
 }
 
 void LogFile::SetUntilName(const std::string& filename) {
@@ -94,7 +95,9 @@ string UntilLogState::MakeUntilFileName(void) {
 }
 
 void UntilLogState::SaveUntilLogger(LogFile& logfile, const std::string& newName) {
-    string oldName = logfile.GetLatestlName();
+    string oldName = logfile.GetLatestName();
+
+    cout << __FUNCTION__ << endl;
 
     if (std::rename(oldName.c_str(), newName.c_str()) != 0) {
         //cout << "Rename Error" << endl;
@@ -121,7 +124,8 @@ void UntilLogState::SaveLog(LogFile& logfile, const std::string& message)
     }
 
     /* Change latest.log -> newUntilName.log */
-    SaveUntilLogger(logfile, MakeUntilFileName());
+    string newname = MakeUntilFileName();
+    SaveUntilLogger(logfile, newname);
 }
 
 bool UntilLogState::CheckChangeZip(LogFile& logfile) {
@@ -140,15 +144,17 @@ void LatestLogState::SaveLog(LogFile& logfile, const std::string& message)
 
     logfile.SetLogFile(LATEST_LOG_NAME);
 
-    WriteMessageToFile(logFile, message);
-
     needStateChange = CheckChangeUntil(logFile);
 
     if (needStateChange) {
         logfile.SetState(std::make_unique<UntilLogState>());
 
         logfile.SaveLog(message);
+
+        logfile.SetLogFile(LATEST_LOG_NAME);
     }
+
+    WriteMessageToFile(logFile, message);
 }
 
 void LatestLogState::WriteMessageToFile(ofstream& logfile, const std::string& message)
