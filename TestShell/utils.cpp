@@ -16,8 +16,6 @@ bool TestShellUtils::fileExists(const std::string& filename) {
 const string TestShellUtils::makeExecuteCmd(string cmd, LBA lba, DATA data) {
 	string appFile = EXE_FILE_NAME_RELEASE_PATH;
 
-	if (!fileExists(EXE_FILE_NAME_RELEASE_PATH)) throw new std::exception("SSD.exe 파일이 없습니다.");
-
 	std::ostringstream oss;
 	oss << appFile << " " << cmd;
 
