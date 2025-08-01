@@ -29,20 +29,24 @@ interface ICommandParserBridge {
 	virtual bool ExecuteSsdUsingParsedCommand(ISsdApp* app) = 0;
 };
 
-class ScriptRunnerFactory {
+class IExecutorFactory {
 public:
-	virtual IExecutor* createExecutor(const string& command);
-private:
+	virtual IExecutor* createExecutor(const string& command) = 0;
+protected:
 	using Creator = std::function<IExecutor* ()>;
-	static const unordered_map<string, Creator> factoryMap;
 };
 
-
-class ExecutorFactory : public ScriptRunnerFactory {
+class CompositExecutorFactory : public IExecutorFactory {
 public:
 	IExecutor* createExecutor(const string& command) override;
 private:
-	using Creator = std::function<IExecutor* ()>;
+	static const unordered_map<string, Creator> factoryMap;
+};
+
+class ExecutorFactory : public IExecutorFactory {
+public:
+	IExecutor* createExecutor(const string& command);
+private:
 	static const unordered_map<string, Creator> factoryMap;
 };
 

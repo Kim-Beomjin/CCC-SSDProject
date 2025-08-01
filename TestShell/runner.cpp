@@ -7,6 +7,8 @@
 
 using namespace std;
 
+#define _RUNNER
+
 int Shell::Runner(int argc, char* argv[])
 {
     if (argc != 2)
@@ -24,20 +26,19 @@ int Shell::Runner(int argc, char* argv[])
     }
 
     if (commandParser == nullptr)
-        commandParser = new CommandParser();
+        commandParser = new CommandParser(new CompositExecutorFactory());
 
     string cmd;
     while (std::getline(infile, cmd)) {
         if (cmd.empty())
         {
-            print("[Runner] Empty Line");
             return 0; // Empty Line
         }
 
         printWithoutLineBreak(cmd + "  ___  ");
         if (!commandParser->ParseCommand(cmd))
         {
-            print("[Runner] Invalid Command");
+            print("FAIL!");
             return 0; // Invalid command
         }
 
