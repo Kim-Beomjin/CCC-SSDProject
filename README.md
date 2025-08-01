@@ -15,7 +15,8 @@
 7. Healthy tag에 code coverage를 기입한다
 
 
-<img width="1498" height="864" alt="image" src="https://github.com/user-attachments/assets/09481deb-f7a5-4381-a0d7-cd5b952bcff3" />
+<img width="1532" height="875" alt="image" src="https://github.com/user-attachments/assets/38e8ec10-8265-44ee-b959-8d7c241ffd6a" />
+
 
 
 - 임시 plantump layered Arch. 적용
@@ -59,20 +60,37 @@ package "test_shell.exe" {
 }
 
 package "SSD.exe" {
-  component HostInterface
-  component FlashDevice
 
-  component SSD
-  component NandInterface
-  component Nand
+  package "HostInterface Layer" {
+    interface IProcessor
+    component WriteProcessor
+    component ReadProcessor
+    component EraseProcessor
+    component HostInterface
+  }
 
+  package "SSD Layer" {
+    component SSD
+    interface NandInterface
+    component Nand
+    component BufferManager
+  }
+
+  ' 내부 클래스 관계
   SSD --> NandInterface
   Nand -up-|> NandInterface
-  HostInterface--> SSD
-  HostInterface--> NandInterface
+  HostInterface --> IProcessor
+
+  ' Processor 계층 관계
+  WriteProcessor ..|> IProcessor
+  ReadProcessor ..|> IProcessor
+  EraseProcessor ..|> IProcessor
+
+  IProcessor --> BufferManager
+  IProcessor --> SSD
 }
 
-' Layer 의존 관계
+' 실행파일 간 계층 의존 관계
 Shell --> CommandParser
 Runner --> CommandParser
 CommandParser --> IExecutor
@@ -94,5 +112,5 @@ EraseAndWriteAging ..|> CompositeExecutor
 IExecutor --> SSDAppController
 SSDAppController --> HostInterface
 SSDAppController --> LBAManager
-HostInterface --> FlashDevice
+
 @enduml
