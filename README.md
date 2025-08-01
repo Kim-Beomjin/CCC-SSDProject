@@ -15,9 +15,7 @@
 7. Healthy tag에 code coverage를 기입한다
 
 
-<img width="1033" height="628" alt="image" src="https://github.com/user-attachments/assets/2d82e2ee-f820-4194-9f32-56e357d186b6" />
-
-
+<img width="1498" height="864" alt="image" src="https://github.com/user-attachments/assets/09481deb-f7a5-4381-a0d7-cd5b952bcff3" />
 
 
 - 임시 plantump layered Arch. 적용
@@ -27,49 +25,74 @@
 skinparam componentStyle rectangle
 skinparam shadowing false
 
-package "UserLayer" {
-  [Shell]  
-  [Runner]  
+package "test_shell.exe" {
+
+  package "Shell Layer" {
+    component Shell  
+    component Runner  
+  }
+
+  package "Command Parser Layer" {
+    component CommandParser
+  }
+
+  package "Executor Layer" {
+    interface IExecutor
+    component Writer
+    component Reader
+    component Exiter
+    component Helper
+    component Eraser
+    component Comparer
+    component Flusher
+    component CompositeExecutor
+    component FullWriteAndReadCompare
+    component PartialLBAWrite
+    component WriteReadAging
+    component EraseAndWriteAging
+  }
+
+  package "SSD App Layer" {
+    component SSDAppController
+    component LBAManager
+  }
 }
 
-package "Command Parser Layer" {
-  [CommandParser]
+package "SSD.exe" {
+  component HostInterface
+  component FlashDevice
+
+  component SSD
+  component NandInterface
+  component Nand
+
+  SSD --> NandInterface
+  Nand -up-|> NandInterface
+  HostInterface--> SSD
+  HostInterface--> NandInterface
 }
 
-package "Executor Layer" {
-  [IExecutor]  
-  [Writer]
-  [Reader]
-  [Eraser]
-  [Comparer]
-  [Flusher]
-}
+' Layer 의존 관계
+Shell --> CommandParser
+Runner --> CommandParser
+CommandParser --> IExecutor
 
-package "SSD App Layer" {
-  [SSDAppController]
-  [LBAManager]
-}
+Writer ..|> IExecutor
+Reader ..|> IExecutor
+Eraser ..|> IExecutor
+Exiter ..|> IExecutor
+Helper ..|> IExecutor
+Comparer ..|> IExecutor
+Flusher ..|> IExecutor
 
-package "SSD HW Layer" {
-  [SSDHardwareInterface]
-  [FlashDevice]
-}
+CompositeExecutor ..|> IExecutor
+FullWriteAndReadCompare ..|> CompositeExecutor
+PartialLBAWrite ..|> CompositeExecutor
+WriteReadAging ..|> CompositeExecutor
+EraseAndWriteAging ..|> CompositeExecutor
 
-' 의존 관계
-[Shell] --> [CommandParser]
-[Runner] --> [CommandParser]
-[CommandParser] --> [IExecutor]
-
-[Writer] -up-|> [IExecutor]
-[Reader] -up-|> [IExecutor]
-[Eraser] -up-|> [IExecutor]
-[Comparer] -up-|> [IExecutor]
-[Flusher] -up-|> [IExecutor]
-
-[IExecutor] --> [SSDAppController]
-[SSDAppController] --> [SSDHardwareInterface]
-[SSDAppController] --> [LBAManager]
-[LBAManager] --> [FlashDevice]
-[SSDHardwareInterface] --> [FlashDevice]
-
+IExecutor --> SSDAppController
+SSDAppController --> HostInterface
+SSDAppController --> LBAManager
+HostInterface --> FlashDevice
 @enduml
