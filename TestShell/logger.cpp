@@ -5,7 +5,11 @@
 #include <string>
 #include "logger.h"
 
-void LogFile::Log(const std::string& message) {
+LogFile::LogFile() {
+    SetState(std::make_unique<LatestLogState>());
+}
+
+void LogFile::SaveLog(const std::string& message) {
     state->SaveLog(*this, message);
 }
 
@@ -18,13 +22,29 @@ void LogFile::SetLogFile(const string& filename) {
         logFile.close();
     logFile.open(filename, ios::out | ios::app);
 }
-
+/*
 void LogFile::SetName(const std::string& filename) {
-    fileName = filename;
+    ;// state->SetName(filename);
 }
 
 string LogFile::GetName(void) {
-    return fileName;
+    return state->GetName();
+}
+*/
+void LogFile::SetLatestName(const std::string& filename) {
+    untilLogName = filename;
+}
+
+string LogFile::GetLatestlName(void) {
+    return untilLogName;
+}
+
+void LogFile::SetUntilName(const std::string& filename) {
+    untilLogName = filename;
+}
+
+string LogFile::GetUntilName(void) {
+    return untilLogName;
 }
 
 ofstream& LogFile::GetFile(void) {
@@ -61,6 +81,12 @@ void ZipUntilLogState::ZipUntilLogFile(const std::string& old_filename) {
     */
 }
 
+void ZipUntilLogState::SaveLog(LogFile& logfile, const std::string& message)
+{
+    ofstream& logFile = logfile.GetFile();
+
+}
+
 string UntilLogState::GetUntilFileName(void) {
     time_t now = time(nullptr);
     tm localTime{};
@@ -77,64 +103,78 @@ string UntilLogState::GetUntilFileName(void) {
     return oss.str();
 }
 
-void UntilLogState::SaveUntilLogger(const std::string& old_filename) {
-#if 0
-    string newName = GetUntilFileName();
+void UntilLogState::SaveUntilLogger(LogFile& logfile, const std::string& newName) {
+    string oldName = logfile.GetLatestlName();
 
-    if (logFile.is_open())
-        logFile.close();
-    /* Change oldUntilName.log -> newZipUntilName.log */
-    zipUntilLogger.ZipUntilLogFile(GetName());
-
-    /* Change latest.log -> newUntilName.log */
-    if (std::rename(old_filename.c_str(), newName.c_str()) != 0) {
-        cout << "Rename Error" << endl;
+    if (std::rename(oldName.c_str(), newName.c_str()) != 0) {
+        //cout << "Rename Error" << endl;
         return;
     }
 
-    SetName(newName);
-
-    logFile.open(GetName(), ios::out | ios::app);
-#endif
+    logfile.SetUntilName(newName);
 }
 
-void ZipUntilLogState::SaveLog(LogFile& logfile, const std::string& message)
+void UntilLogState::SaveLog(LogFile& logfile, const std::string& message)
 {
     ofstream& logFile = logfile.GetFile();
+    bool needStateChange = 0;
 
+    needStateChange = CheckChangeZip(logfile);
+    if (needStateChange) {
+        /* Change oldUntilName.log -> newZipUntilName.log */
+        logfile.SetState(std::make_unique<ZipUntilLogState>());
+
+        logfile.SaveLog(message);
+    }
+
+    if (logFile.is_open())
+        logFile.close();
+
+    /* Change latest.log -> newUntilName.log */
+    SaveUntilLogger(logfile, GetUntilFileName());
 }
 
-void UntilLogState::SaveLog(LogFile& logfile,const std::string& message)
-{
-    ofstream& logFile = logfile.GetFile();
+bool UntilLogState::CheckChangeZip(LogFile& logfile) {
+    string name = logfile.GetUntilName();
+
+    if (name.empty())
+        return false;
+
+    return false;
 }
 
 void LatestLogState::SaveLog(LogFile& logfile, const std::string& message)
 {
-    CheckManageUntilLogFile(logfile);
+    ofstream& logFile = logfile.GetFile();
+    bool needStateChange = 0;
+
+    logfile.SetLogFile(LATEST_LOG_NAME);
+
+    WriteMessageToFile(logFile, message);
+
+    needStateChange = CheckChangeUntil(logFile);
+
+    if (needStateChange) {
+        logfile.SetState(std::make_unique<UntilLogState>());
+
+        logfile.SaveLog(message);
+    }
 }
 
-void LatestLogState::CheckManageUntilLogFile(LogFile& logfile) {
-    ofstream& logFile = logfile.GetFile();
-
-    if (logFile.is_open() == false) {
-        logfile.SetLogFile(LATEST_LOG_NAME);
-    }
-
-    /*
-    if (GetLatestLogSize() > MANAGE_FILE_SIZE) {
-        if (logFile.is_open())
-            logFile.close();
-
-        untilLogger.SaveUntilLogger(LATEST_LOG_NAME);
-
-        SetLogFile(LATEST_LOG_NAME);
-    }
-    */
+void LatestLogState::WriteMessageToFile(ofstream& logfile, const std::string& message)
+{
+    logfile << message;
 }
 
-int LatestLogState::GetLatestLogSize(LogFile& logfile) {
-    ofstream& logFile = logfile.GetFile();
+bool LatestLogState::CheckChangeUntil(ofstream& logfile) {
+    if (GetLatestLogSize(logfile) > MANAGE_FILE_SIZE) {
+        return true;
+    }
+
+    return false;
+}
+
+int LatestLogState::GetLatestLogSize(ofstream& logFile) {
     return logFile.tellp();
 }
 
