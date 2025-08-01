@@ -47,9 +47,11 @@ const int CMD_IDX = 0;
 const int LBA_IDX = 1;
 const int DATA_IDX = 2;
 
+const int START_DATA_DIGIT_EXCEPT_HEX_PREFIX = 2;
 const int DATA_NUM_DIGIT = 8;
 
 const SIZE SSD_MAX_SIZE = 100;
+const SIZE WRITE_DATA_SIZE = 10;
 const SIZE SSD_ERASE_MAX_SIZE = 10;
 
 const string EXE_FILE_NAME_RELEASE_PATH = "SSD.exe";

@@ -33,9 +33,8 @@ const string TestShellUtils::makeExecuteCmd(string cmd, LBA lba, DATA data) {
 	else if (cmd == SEND_ERASE_CMD) {
 		oss << " " << data;
 	}
-#ifdef _DEBUG
-	print(oss.str());
-#endif
+
+	dbgPring(oss.str());
 	return oss.str();
 }
 
@@ -83,4 +82,10 @@ vector<string> TestShellUtils::splitCommand(const string& fullCmd) {
 
 void print(const string& desc) {
 	cout << desc << endl;
+}
+
+void dbgPring(const string& desc) {
+#ifdef _DEBUG
+	cout << desc << endl;
+#endif
 }
