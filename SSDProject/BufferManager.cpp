@@ -266,7 +266,7 @@ void BufferManager::_DumpEraseCmd(int cmdIdx, LBA lba, int eraseSize)
 void BufferManager::_DumpWriteCmd(int cmdIdx, LBA lba, DATA data)
 {
 	std::string filename = BUFFER_DIRECTORY + std::to_string(cmdIdx + 1) + "_" + "W" + "_" +
-		std::to_string(lba) + "_" + _DataToHexString(data) + ".txt";
+		std::to_string(lba) + "_" + GlobalUtil::DataToHexString(data) + ".txt";
 	cmdList[cmdIdx] = filename;
 }
 
@@ -286,16 +286,3 @@ std::vector<std::string> BufferManager::_Split(const std::string& str, const cha
 	}
 	return result;
 }
-
-std::string BufferManager::_DataToHexString(const DATA data)
-{
-	std::stringstream hexString;
-	hexString << HEXA_PREFIX
-		<< std::setw(DATA_NUM_DIGIT) << std::setfill('0')
-		<< std::hex << std::uppercase
-		<< data;
-	std::string hexStringData = hexString.str();
-
-	return hexStringData;
-}
-

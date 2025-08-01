@@ -44,7 +44,6 @@ private:
 	int _GetCmdCnt();
 	
 	std::vector<std::string> _Split(const std::string& str, const char delemeter);
-	std::string _DataToHexString(const DATA data);
 
 	SSD* ssd;
 	Buffer dataBuffer[LBA_END_ADDR - LBA_START_ADDR] = { { BUF_TYPE::NONE,0 }, };

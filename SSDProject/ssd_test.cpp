@@ -47,11 +47,6 @@ public:
 
     ssd.Read(lba);
   }
-  void ValidateOutputDataWith(const std::string expectedData)
-  {
-    std::string outputData = GlobalUtil::DBG_GetDataFromOutputFile();
-    EXPECT_EQ(expectedData, outputData);
-  }
 };
 
 TEST_F(MockNandSSDFixture, ReadAfterWrite)
@@ -59,14 +54,14 @@ TEST_F(MockNandSSDFixture, ReadAfterWrite)
   ssd.Write(VALID_LBA, stoul(WRITE_DATA_STRING, nullptr, 16));
   ReadAndUpdateOutputFile(VALID_LBA, WRITE_DATA_STRING);
 
-  ValidateOutputDataWith(WRITE_DATA_STRING);
+  GlobalUtil::ValidateOutputDataWith(WRITE_DATA_STRING);
 }
 
 TEST_F(MockNandSSDFixture, ReadWithoutWrite)
 {
   ReadAndUpdateOutputFile(VALID_LBA, EMPTY_DATA_STRING);
 
-  ValidateOutputDataWith(EMPTY_DATA_STRING);
+  GlobalUtil::ValidateOutputDataWith(EMPTY_DATA_STRING);
 }
 
 TEST_F(MockNandSSDFixture, EraseLba)
@@ -77,34 +72,34 @@ TEST_F(MockNandSSDFixture, EraseLba)
 
   ssd.Erase(VALID_LBA, 1);
   ReadAndUpdateOutputFile(VALID_LBA, EMPTY_DATA_STRING);
-  ValidateOutputDataWith(EMPTY_DATA_STRING);
+  GlobalUtil::ValidateOutputDataWith(EMPTY_DATA_STRING);
 }
 
 TEST_F(MockNandSSDFixture, ReadInvalidParam)
 {
   ssd.Read(INVALID_LBA);
 
-  ValidateOutputDataWith(ERROR_MSG);
+  GlobalUtil::ValidateOutputDataWith(ERROR_MSG);
 }
 
 TEST_F(MockNandSSDFixture, WriteInvalidParam)
 {
   ssd.Write(INVALID_LBA, stoul(WRITE_DATA_STRING, nullptr, 16));
 
-  ValidateOutputDataWith(ERROR_MSG);
+  GlobalUtil::ValidateOutputDataWith(ERROR_MSG);
 }
 
 TEST_F(MockNandSSDFixture, EraseInvalidLBA)
 {
   ssd.Erase(INVALID_LBA, 6);
 
-  ValidateOutputDataWith(ERROR_MSG);
+  GlobalUtil::ValidateOutputDataWith(ERROR_MSG);
 }
 
 TEST_F(MockNandSSDFixture, EraseInvalidSize)
 {
   ssd.Erase(VALID_LBA, 11);
 
-  ValidateOutputDataWith(ERROR_MSG);
+  GlobalUtil::ValidateOutputDataWith(ERROR_MSG);
 }
 #endif

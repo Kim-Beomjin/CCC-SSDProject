@@ -53,7 +53,7 @@ bool SSD::Erase(LBA lba, ERASE_SIZE erase_size)
 
 bool SSD::_IsInvalidParameter(LBA lba, ERASE_SIZE erase_size)
 {
-  if (lba >= LBA_END_ADDR || lba + erase_size > LBA_END_ADDR || erase_size > 10)
+  if (lba >= LBA_END_ADDR || lba + erase_size > LBA_END_ADDR || erase_size > MAX_ERASE_SIZE)
   {
     TEST_LOGGER("INVALID PARAMETER");
     return true;
@@ -64,7 +64,7 @@ bool SSD::_IsInvalidParameter(LBA lba, ERASE_SIZE erase_size)
 
 void SSD::UpdateOutputFileUsingData(const DATA data)
 {
-  _UpdateOutputFile(_DataToHexString(data));
+  _UpdateOutputFile(GlobalUtil::DataToHexString(data));
 }
 
 void SSD::_UpdateOutputFile(std::string stringData)
@@ -73,16 +73,4 @@ void SSD::_UpdateOutputFile(std::string stringData)
   std::ofstream ofs(outputFile);
 
   ofs.write(stringData.c_str(), stringData.size());
-}
-
-std::string SSD::_DataToHexString(const DATA data)
-{
-  std::stringstream hexString;
-  hexString << HEXA_PREFIX
-  << std::setw(DATA_NUM_DIGIT) << std::setfill(ZERO_PADDING)
-  << std::hex << std::uppercase
-  << data;
-  std::string hexStringData = hexString.str();
-
-  return hexStringData;
 }

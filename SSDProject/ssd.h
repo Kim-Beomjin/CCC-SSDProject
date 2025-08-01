@@ -17,6 +17,5 @@ public:
 private:
   bool _IsInvalidParameter(LBA lba, ERASE_SIZE erase_size = 0);
   void _UpdateOutputFile(std::string stringData);
-  std::string _DataToHexString(const DATA data);
   NandInterface* nand;
 };

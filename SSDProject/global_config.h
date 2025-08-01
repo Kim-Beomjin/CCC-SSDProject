@@ -10,10 +10,14 @@ using ERASE_SIZE = unsigned int;
 #define EMPTY_DATA      (0)
 #define DATA_NUM_DIGIT  (8)
 #define MAX_ERASE_SIZE  (10)
+#define DECIMAL_BASE    (10)
+#define HEXA_BASE       (16)
 
 const std::string ERROR_MSG = "ERROR";
 const std::string HEXA_PREFIX = "0x";
-const char ZERO_PADDING = '0';
+const char ZERO = '0';
+const char SMALL_EX = 'x';
+const char LARGE_EX = 'X';
 
 const std::string OUTPUT_FILE = "ssd_output.txt";
 
