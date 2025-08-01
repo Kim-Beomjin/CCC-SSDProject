@@ -34,7 +34,10 @@ bool BufferedSSD::Read(LBA lba) {
 
 bool BufferedSSD::Write(LBA lba, DATA data)  //first i implement dumb (just want to simple I/O test)
 {
-	if (SSD::IsLBAValidOrUpdateErrorToOutputFile(lba) == false) return false;
+	if (SSD::IsLBAValidOrUpdateErrorToOutputFile(lba) == false)
+	{
+		return false;
+	}
 	if (_NeedFlush())
 	{
 		Flush();
@@ -48,7 +51,10 @@ bool BufferedSSD::Write(LBA lba, DATA data)  //first i implement dumb (just want
 
 bool BufferedSSD::Erase(LBA lba, unsigned int size)  //first i implement dumb (just want to simple I/O test)
 {
-	if (SSD::IsLBAValidOrUpdateErrorToOutputFile(lba, size) == false) return false;
+	if (SSD::IsLBAValidOrUpdateErrorToOutputFile(lba, size) == false)
+	{
+		return false;
+	}
 	if (_NeedFlush())
 	{
 		Flush();

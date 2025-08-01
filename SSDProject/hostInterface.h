@@ -39,7 +39,7 @@ public:
         static ProcessorFactory processorFactory;
         return &processorFactory;
     }
-    IProcessor* CreateProcessor(int argc, char* argv[], ISSD* bufferedSSD);
+    IProcessor* CreateProcessor(int argc, char* argv[], ISSD* ssd);
 private:
     ProcessorFactory() {};
     bool _WriteCondition(int argc, char* argv[]);
@@ -69,7 +69,6 @@ public:
 private:
     LBA lba;
     DATA data;
-    GlobalUtil util;
     ISSD* ssd;
 };
 
@@ -82,7 +81,6 @@ public:
     bool Process() override;
 private:
     LBA lba;
-    GlobalUtil util;
     ISSD* ssd;
 };
 
@@ -96,7 +94,6 @@ public:
 private:
     LBA lba;
     unsigned int size;
-    GlobalUtil util;
     ISSD* ssd;
 };
 
@@ -108,6 +105,5 @@ public:
     bool LoadParameterAndCheckInvalid(char*, char*) override;
     bool Process() override;
 private:
-    GlobalUtil util;
     ISSD* ssd;
 };
