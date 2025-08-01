@@ -60,7 +60,7 @@ public:
 
 private:
     void ZipUntilLogFile(const std::string& message);
-    string GetZipFileName(const std::string& old_filename);
+    string MakeZipFileName(const std::string& old_filename);
 };
 
 class UntilLogState : public ILogFileState {
@@ -70,7 +70,7 @@ public:
 private:
     bool CheckChangeZip(LogFile& logfile);
     void SaveUntilLogger(LogFile& logfile, const std::string& old_filename);
-    string GetUntilFileName(void);
+    string MakeUntilFileName(void);
 };
 
 class LatestLogState : public ILogFileState {
