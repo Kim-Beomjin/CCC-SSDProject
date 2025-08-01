@@ -143,7 +143,9 @@
   <ItemGroup>
     <ClCompile Include="commandParser.cpp" />
     <ClCompile Include="commandParser_test.cpp" />
+    <ClCompile Include="decoratedExecutor.cpp" />
     <ClCompile Include="executor.cpp" />
+    <ClCompile Include="executorFactory.cpp" />
     <ClCompile Include="executor_test.cpp" />
     <ClCompile Include="logger.cpp" />
     <ClCompile Include="main.cpp">
