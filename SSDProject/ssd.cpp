@@ -18,7 +18,7 @@ bool SSD::Read(LBA lba)
   {
     return false;
   }
-  TEST_LOGGER(lba << ", " << readData);
+  TEST_READ_WRITE_LOGGER(lba, readData);
 
   UpdateOutputFileUsingData(readData);
 
@@ -34,7 +34,7 @@ bool SSD::Write(LBA lba, DATA writeData)
     return false;
   }
 
-  TEST_LOGGER(lba << ", " << writeData);
+  TEST_READ_WRITE_LOGGER(lba, writeData);
   return nand->Write(lba, writeData);
 }
 
@@ -47,7 +47,7 @@ bool SSD::Erase(LBA lba, ERASE_SIZE erase_size)
     return false;
   }
 
-  TEST_LOGGER(lba << ", " << erase_size);
+  TEST_ERASE_LOGGER(lba, erase_size);
   return nand->Erase(lba, erase_size);
 }
 
