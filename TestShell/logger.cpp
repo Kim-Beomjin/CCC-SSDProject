@@ -11,6 +11,8 @@ LogFile::LogFile() {
 
 void LogFile::SaveLog(const std::string& message) {
     state->SaveLog(*this, message);
+
+    SetState(std::make_unique<LatestLogState>());
 }
 
 void LogFile::SetState(std::unique_ptr<ILogFileState> newState) {
@@ -23,15 +25,7 @@ void LogFile::SetLogFile(const string& filename) {
     logFile.open(filename, ios::out | ios::app);
     SetLatestName(filename);
 }
-/*
-void LogFile::SetName(const std::string& filename) {
-    ;// state->SetName(filename);
-}
 
-string LogFile::GetName(void) {
-    return state->GetName();
-}
-*/
 void LogFile::SetLatestName(const std::string& filename) {
     latestLogName = filename;
 }
@@ -64,17 +58,24 @@ string ZipUntilLogState::MakeZipFileName(const std::string& old_filename) {
     return zipName;
 }
 
-void ZipUntilLogState::ZipUntilLogFile(const std::string& old_filename) {
-    string newName = MakeZipFileName(old_filename);
+void ZipUntilLogState::ZipUntilLogFile(const std::string& oldName) {
+    string newName = MakeZipFileName(oldName);
 
-    if (std::rename(old_filename.c_str(), newName.c_str()) != 0) {
-        //cout << "Rename Error" << endl;
+    //cout << __FUNCTION__ << " " << oldName << "->" << newName << endl;
+
+    if (std::rename(oldName.c_str(), newName.c_str()) != 0) {
+        cout << "Rename Error" << endl;
         return;
     }
 }
 
 void ZipUntilLogState::SaveLog(LogFile& logfile, const std::string& message)
 {
+    ofstream& logFile = logfile.GetFile();
+
+    if (logFile.is_open())
+        logFile.close();
+
     ZipUntilLogFile(logfile.GetUntilName());
 }
 
@@ -97,10 +98,10 @@ string UntilLogState::MakeUntilFileName(void) {
 void UntilLogState::SaveUntilLogger(LogFile& logfile, const std::string& newName) {
     string oldName = logfile.GetLatestName();
 
-    cout << __FUNCTION__ << endl;
+    //cout << __FUNCTION__ << " " << oldName << "->" << newName << endl;
 
     if (std::rename(oldName.c_str(), newName.c_str()) != 0) {
-        //cout << "Rename Error" << endl;
+        cout << "Rename Error" << endl;
         return;
     }
 
@@ -131,10 +132,11 @@ void UntilLogState::SaveLog(LogFile& logfile, const std::string& message)
 bool UntilLogState::CheckChangeZip(LogFile& logfile) {
     string name = logfile.GetUntilName();
 
+
     if (name.empty())
         return false;
 
-    return false;
+    return true;
 }
 
 void LatestLogState::SaveLog(LogFile& logfile, const std::string& message)
@@ -144,17 +146,14 @@ void LatestLogState::SaveLog(LogFile& logfile, const std::string& message)
 
     logfile.SetLogFile(LATEST_LOG_NAME);
 
-    needStateChange = CheckChangeUntil(logFile);
+    WriteMessageToFile(logFile, message);
 
+    needStateChange = CheckChangeUntil(logFile);
     if (needStateChange) {
         logfile.SetState(std::make_unique<UntilLogState>());
 
         logfile.SaveLog(message);
-
-        logfile.SetLogFile(LATEST_LOG_NAME);
     }
-
-    WriteMessageToFile(logFile, message);
 }
 
 void LatestLogState::WriteMessageToFile(ofstream& logfile, const std::string& message)
