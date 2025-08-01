@@ -5,6 +5,14 @@
 #include <string>
 #include "logger.h"
 
+void LogFile::Log(const std::string& message) {
+    state->SaveLog(*this, message);
+}
+
+void LogFile::SetState(std::unique_ptr<ILogFileState> newState) {
+    state = std::move(newState);
+}
+
 void LogFile::SetLogFile(const string& filename) {
     if (logFile.is_open())
         logFile.close();
@@ -19,7 +27,11 @@ string LogFile::GetName(void) {
     return fileName;
 }
 
-string ZipUntilLogger::GetZipFileName(const std::string& old_filename) {
+ofstream& LogFile::GetFile(void) {
+    return logFile;
+}
+
+string ZipUntilLogState::GetZipFileName(const std::string& old_filename) {
     string zipName = old_filename;
     const string target = ".log";
     const string replacement = ".zip";
@@ -31,7 +43,8 @@ string ZipUntilLogger::GetZipFileName(const std::string& old_filename) {
     return zipName;
 }
 
-void ZipUntilLogger::ZipUntilLogFile(const std::string& old_filename) {
+void ZipUntilLogState::ZipUntilLogFile(const std::string& old_filename) {
+    /*
     string newName = GetZipFileName(old_filename);
 
     if (logFile.is_open())
@@ -45,9 +58,10 @@ void ZipUntilLogger::ZipUntilLogFile(const std::string& old_filename) {
     SetName(newName);
 
     logFile.open(GetName(), ios::out | ios::app);
+    */
 }
 
-string UntilLogger::GetUntilFileName(void) {
+string UntilLogState::GetUntilFileName(void) {
     time_t now = time(nullptr);
     tm localTime{};
 
@@ -63,7 +77,8 @@ string UntilLogger::GetUntilFileName(void) {
     return oss.str();
 }
 
-void UntilLogger::SaveUntilLogger(const std::string& old_filename) {
+void UntilLogState::SaveUntilLogger(const std::string& old_filename) {
+#if 0
     string newName = GetUntilFileName();
 
     if (logFile.is_open())
@@ -80,13 +95,33 @@ void UntilLogger::SaveUntilLogger(const std::string& old_filename) {
     SetName(newName);
 
     logFile.open(GetName(), ios::out | ios::app);
+#endif
 }
 
-void Logger::CheckManageUntilLogFile(void) {
+void ZipUntilLogState::SaveLog(LogFile& logfile, const std::string& message)
+{
+    ofstream& logFile = logfile.GetFile();
+
+}
+
+void UntilLogState::SaveLog(LogFile& logfile,const std::string& message)
+{
+    ofstream& logFile = logfile.GetFile();
+}
+
+void LatestLogState::SaveLog(LogFile& logfile, const std::string& message)
+{
+    CheckManageUntilLogFile(logfile);
+}
+
+void LatestLogState::CheckManageUntilLogFile(LogFile& logfile) {
+    ofstream& logFile = logfile.GetFile();
+
     if (logFile.is_open() == false) {
-        SetLogFile(LATEST_LOG_NAME);
+        logfile.SetLogFile(LATEST_LOG_NAME);
     }
 
+    /*
     if (GetLatestLogSize() > MANAGE_FILE_SIZE) {
         if (logFile.is_open())
             logFile.close();
@@ -95,9 +130,11 @@ void Logger::CheckManageUntilLogFile(void) {
 
         SetLogFile(LATEST_LOG_NAME);
     }
+    */
 }
 
-int Logger::GetLatestLogSize(void) {
+int LatestLogState::GetLatestLogSize(LogFile& logfile) {
+    ofstream& logFile = logfile.GetFile();
     return logFile.tellp();
 }
 

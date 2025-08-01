@@ -16,35 +16,62 @@ using namespace std;
 #define SHELL_LOG(...) Logger::GetInstance().Log(__FUNCTION__, __VA_ARGS__)
 #endif
 
+class LogFile;
+
+class ILogFileState {
+public:
+    virtual void SaveLog(LogFile& file, const std::string& message) = 0;
+    virtual ~ILogFileState() = default;
+};
+
 class LogFile {
 public:
-    void SetLogFile(const std::string& filename);
+    void Log(const std::string& message);
 
-    std::ofstream logFile;
+    void SetState(std::unique_ptr<ILogFileState> newState);
+
+    void SetLogFile(const std::string& filename);
 
     void SetName(const std::string& filename);
     string GetName(void);
+
+    //void SetFile(const std::string& filename);
+    std::ofstream& GetFile(void);
+
 private:
     string fileName;
+    std::ofstream logFile;
+    std::unique_ptr<ILogFileState> state;
 
 };
 
-class ZipUntilLogger : public LogFile {
+class ZipUntilLogState : public ILogFileState {
 public:
-    void ZipUntilLogFile(const std::string& message);
+    void SaveLog(LogFile& logfile, const std::string& message) override;
 
 private:
+    void ZipUntilLogFile(const std::string& message);
     string GetZipFileName(const std::string& old_filename);
 };
 
-class UntilLogger : public LogFile {
+class UntilLogState : public ILogFileState {
 public:
-    void SaveUntilLogger(const std::string& old_filename);
+    void SaveLog(LogFile& logfile, const std::string& message) override;
 
 private:
+    void SaveUntilLogger(const std::string& old_filename);
     string GetUntilFileName(void);
+};
 
-    ZipUntilLogger zipUntilLogger;
+class LatestLogState : public ILogFileState {
+public:
+    void SaveLog(LogFile& logfile, const std::string& message) override;
+private:
+    const string LATEST_LOG_NAME = "latest.log";
+    const int MANAGE_FILE_SIZE = 10 * 1024; // 10KB
+    void CheckManageUntilLogFile(LogFile& logfile);
+
+    int GetLatestLogSize(LogFile& logfile);
 };
 
 class Logger : public LogFile {
@@ -55,18 +82,14 @@ public:
 
     template <typename... Args>
     void Log(const string& func, Args&&... args) {
-        CheckManageUntilLogFile();
+        string result;
+        //CheckManageUntilLogFile();
 
-        LogImpl(func, std::forward<Args>(args)...);
+        result = LogImpl(func, std::forward<Args>(args)...);
+
+        logFile.Log(result);
     }
 private:
-    const string LATEST_LOG_NAME = "latest.log";
-    const int MANAGE_FILE_SIZE = 10 * 1024; // 10KB
-
-    void CheckManageUntilLogFile();
-
-    int GetLatestLogSize();
-
     template <typename T>
     void AppendToStream(std::ostringstream& oss, T&& value) {
         oss << std::forward<T>(value);
@@ -81,7 +104,7 @@ private:
     string ReplaceDoubleColonWithDot(string str);
 
     template <typename... Args>
-    void LogImpl(const std::string& func, Args&&... args) {
+    string LogImpl(const std::string& func, Args&&... args) {
         std::ostringstream oss;
         string message;
         string fix_func = ReplaceDoubleColonWithDot(func + "()");
@@ -89,12 +112,9 @@ private:
         oss << GetCurrentTimeString() << " ";
         oss << std::left << std::setw(30) << fix_func << " : ";
         AppendToStream(oss, std::forward<Args>(args)...);
+        oss << std::endl;
 
-#ifdef LOG_DEBUG
-        cout << oss.str() << std::endl;
-#else
-        logFile << oss.str() << std::endl;
-#endif
+        return oss.str();
     }
-    UntilLogger untilLogger;
+    LogFile logFile;
 };
