@@ -4,6 +4,7 @@
 
 using std::vector;
 
+bool fileExists(const std::string& filename);
 const string makeExecuteCmd(string cmd, LBA lba = 0, DATA data = 0);
 string DataToHexString(const DATA data);
 unsigned int stringToUnsignedInt(const string& str);

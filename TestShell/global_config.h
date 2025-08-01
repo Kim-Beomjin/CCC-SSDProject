@@ -38,4 +38,6 @@ const DATA NO_DATA = 0x00000000;
 
 const int DATA_NUM_DIGIT = 8;
 const int MAX_SEND_ERASE_SIZE_FOR_ONE_TIME = 10;
-const string EXE_FILE_NAME = "..\\x64\\Release\\SSD.exe";
+
+const string EXE_FILE_NAME_RELEASE_PATH = "SSD.exe";
+const string EXE_FILE_NAME_BUILD_PATH = "..\\x64\\Release\\SSD.exe";
