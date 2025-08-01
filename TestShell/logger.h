@@ -37,7 +37,7 @@ public:
  //   void SetName(const std::string& filename);
  //   string GetName(void);
     void SetLatestName(const std::string& filename);
-    string GetLatestlName(void);
+    string GetLatestName(void);
 
     void SetUntilName(const std::string& filename);
     string GetUntilName(void);
