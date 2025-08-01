@@ -27,6 +27,7 @@ bool BufferedSSD::Read(LBA lba) {
 	if (dataBuffer[lba].type == BUF_TYPE::NONE)
 	{
 		SSD::Read(lba);
+		return true;
 	}
 	SSD::UpdateOutputFileUsingData(dataBuffer[lba].data);
 	return true;
