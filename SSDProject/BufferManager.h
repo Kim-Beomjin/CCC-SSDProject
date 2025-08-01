@@ -20,8 +20,10 @@ class BufferManager
 public:
 	BufferManager(SSD* ssd);
 	bool BufferRead(int lba, DATA& readData); //for read  
-	void BufferWrite(std::string cmd, std::string lba, std::string data);
-	void Flush();
+	void BufferWrite(LBA lba, DATA data);
+	void BufferErase(LBA lba, unsigned int size);
+	void BufferFlush();
+
 private:
 	bool _NeedFlush();
 	void _LoadBuffer(bool need_delete);
@@ -31,7 +33,10 @@ private:
 	
 	void _DumpCommand();
 	void _ConvertBufToCmd();
+
 	void _ConvertCmdToBuf(std::string cmdStr, std::string lbaStr, std::string dataStr);
+	void _ConvertWriteCmdToBuf(LBA lba, DATA data);
+	void _ConvertEraseCmdToBuf(LBA lba, unsigned int size);
 
 	void _DumpEraseCmd(int cmdIdx, LBA lba, int eraseSize);
 	void _DumpWriteCmd(int cmdIdx, LBA lba, DATA data);

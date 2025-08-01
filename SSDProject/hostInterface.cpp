@@ -7,46 +7,35 @@ void HostInterface::Execute(int argc, char* argv[])
 {
 	if (_WriteCondition(argc,argv))
 	{
-		if (_LoadWriteParameterAndCheckInvalid(argv[ARGV::LBA_IDX], argv[ARGV::DATA_IDX])) {
-			return;
-		}
-		if (lba < LBA_END_ADDR)
+		IProcessor* processor = new WriteProcessor(ssd, bufferManager);
+		if (processor->LoadParameterAndCheckInvalid(argv[ARGV::LBA_IDX], argv[ARGV::DATA_IDX]))
 		{
-			bufferManager->BufferWrite(argv[ARGV::CMD_IDX], argv[ARGV::LBA_IDX], argv[ARGV::DATA_IDX]);
-			return;
+			processor->Process();
 		}
-		ssd->Write(lba, data);
 	}
 	else if (_ReadCondition(argc, argv))
 	{
-		if (_LoadReadParameterAndCheckInvalid(argv[ARGV::LBA_IDX], argv[ARGV::DATA_IDX])) {
-			return;
-		}
-		if (lba < LBA_END_ADDR && bufferManager->BufferRead(lba, data))
+		IProcessor* processor = new ReadProcessor(ssd, bufferManager);
+		if (processor->LoadParameterAndCheckInvalid(argv[ARGV::LBA_IDX], nullptr))
 		{
-			ssd->UpdateOutputFileUsingData(data);
-			return;
+			processor->Process();
 		}
-		ssd->Read(lba);
 	}
 	else if (_EraseCondition(argc, argv))
 	{
-		if (_LoadEraseParameterAndCheckInvalid(argv[ARGV::LBA_IDX], argv[ARGV::LENGTH_IDX])) {
-			return;
-		}
-		if (lba + length <= LBA_END_ADDR && length <= 10)
+		IProcessor* processor = new EraseProcessor(ssd, bufferManager);
+		if (processor->LoadParameterAndCheckInvalid(argv[ARGV::LBA_IDX], argv[ARGV::SIZE_IDX]))
 		{
-			bufferManager->BufferWrite(argv[ARGV::CMD_IDX], argv[ARGV::LBA_IDX], argv[ARGV::LENGTH_IDX]);
-			return;
+			processor->Process();
 		}
-		ssd->Erase(lba, length);
 	}
 	else if (_FlushCondition(argc, argv))
 	{
-		if (_LoadFlushParameterAndCheckInvalid(argv[ARGV::LBA_IDX], argv[ARGV::DATA_IDX])) {
-			return;
+		IProcessor* processor = new FlushProcessor(ssd, bufferManager);
+		if (processor->LoadParameterAndCheckInvalid(nullptr, nullptr))
+		{
+			processor->Process();
 		}
-		bufferManager->Flush();
 	}
 	else {
 		DEBUG_ASSERT(false, "INVALID INPUT PARAMETERS");
@@ -74,17 +63,18 @@ bool HostInterface::_FlushCondition(int argc, char* argv[])
 }
 
 
-bool HostInterface::_LoadWriteParameterAndCheckInvalid(char* lbaStr, char* dataStr)
+
+bool WriteProcessor::LoadParameterAndCheckInvalid(char* lbaStr, char* dataStr)
 {
-	if (_IsNegative(lbaStr) || _IsInvalidLength(dataStr))
+	if (hostUtil.IsNegative(lbaStr) || hostUtil.IsInvalidLength(dataStr))
 	{
 		DEBUG_ASSERT(false, "INVALID INPUT PARAMETERS");
 		return true;
 	}
 	try {
 		
-		lba = _SafeStoul(lbaStr, 10);
-		data = _SafeStoul(dataStr, 16);
+		lba = hostUtil.SafeStoul(lbaStr, 10);
+		data = hostUtil.SafeStoul(dataStr, 16);
 	}
 	catch (std::exception)
 	{
@@ -94,15 +84,26 @@ bool HostInterface::_LoadWriteParameterAndCheckInvalid(char* lbaStr, char* dataS
 	return false;
 }
 
-bool HostInterface::_LoadReadParameterAndCheckInvalid(char* lbaStr, char* )
+void WriteProcessor::Process()
 {
-	if (_IsNegative(lbaStr))
+	if (lba < LBA_END_ADDR)
+	{
+		bufferManager->BufferWrite(lba, data);
+		return;
+	}
+	ssd->Write(lba, data);
+}
+
+
+bool ReadProcessor::LoadParameterAndCheckInvalid(char* lbaStr, char* )
+{
+	if (hostUtil.IsNegative(lbaStr))
 	{
 		DEBUG_ASSERT(false, "INVALID INPUT PARAMETERS");
 		return true;
 	}
 	try {
-		lba = _SafeStoul(lbaStr, 10);
+		lba = hostUtil.SafeStoul(lbaStr, 10);
 	}
 	catch (std::exception)
 	{
@@ -112,17 +113,29 @@ bool HostInterface::_LoadReadParameterAndCheckInvalid(char* lbaStr, char* )
 	return false;
 }
 
-bool HostInterface::_LoadEraseParameterAndCheckInvalid(char* lbaStr, char* lengthStr)
+void ReadProcessor::Process()
 {
-	if (_IsNegative(lbaStr) || _IsNegative(lengthStr))
+	DATA readData;
+	if (lba < LBA_END_ADDR && bufferManager->BufferRead(lba, readData))
+	{
+		ssd->UpdateOutputFileUsingData(readData);
+		return;
+	}
+	ssd->Read(lba);
+}
+
+
+bool EraseProcessor::LoadParameterAndCheckInvalid(char* lbaStr, char* sizeStr)
+{
+	if (hostUtil.IsNegative(lbaStr) || hostUtil.IsNegative(sizeStr))
 	{
 		DEBUG_ASSERT(false, "INVALID INPUT PARAMETERS");
 		return true;
 	}
 	try {
 
-		lba = _SafeStoul(lbaStr, 10);
-		length = _SafeStoul(lengthStr, 10);
+		lba = hostUtil.SafeStoul(lbaStr, 10);
+		size = hostUtil.SafeStoul(sizeStr, 10);
 	}
 	catch (std::exception)
 	{
@@ -132,29 +145,24 @@ bool HostInterface::_LoadEraseParameterAndCheckInvalid(char* lbaStr, char* lengt
 	return false;
 }
 
-bool HostInterface::_LoadFlushParameterAndCheckInvalid(char* , char* )
+void EraseProcessor::Process()
+{
+	if (lba + size <= LBA_END_ADDR && size <= 10)
+	{
+		bufferManager->BufferErase(lba, size);
+		return;
+	}
+	ssd->Erase(lba, size);
+}
+
+
+bool FlushProcessor::LoadParameterAndCheckInvalid(char* , char* )
 {
 	return false;
 }
-
-bool HostInterface::_IsNegative(char* lbaStr)
+void FlushProcessor::Process()
 {
-	return (std::string(lbaStr)[0] == '-');
+	bufferManager->BufferFlush();
 }
 
-bool HostInterface::_IsInvalidLength(char* dataStr)
-{
-	
-	return (std::string(dataStr).size() != 10 || std::string(dataStr)[0] != ZERO || !(std::string(dataStr)[1] == LARGE_EX || std::string(dataStr)[1] == SMALL_EX));
-}
-
-unsigned int HostInterface::_SafeStoul(char* str, int base)
-{
-	size_t idx;
-	unsigned int ret = std::stoul(std::string(str), &idx, base);
-	if (idx != std::string(str).size()) {
-		throw(std::exception("INVALID INPUT PARAMETERS"));
-	}
-	return ret;
-}
 
