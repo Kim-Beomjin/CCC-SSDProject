@@ -7,7 +7,7 @@
 class SSD_IT_Fixture : public testing::Test
 {
 public:
-  void SetUp()
+  void SetUp() override
   {
     host->SetSSD(new SSD(new Nand()));
   }
@@ -22,174 +22,175 @@ protected:
   static const int INVALID_WRITE_ARGC = 3;
   static const int INVALID_ERASE_ARGC = 3;
 
-  const std::vector<char*> VALID_LBA_LIST = {
-    (char*)"59",
-    (char*)"99",
-    (char*)"12",
-    (char*)"13", (char*)"13", (char*)"24", (char*)"12", (char*)"23",
-    (char*)"24", (char*)"25", (char*)"26", (char*)"27", (char*)"28", (char*)"28",
+  const std::vector<std::string> VALID_LBA_LIST = {
+    "59", "99", "13", "13", "24", "12", "23", "24", "25", "26", "27", "28", "28"
   };
 
-  const std::vector<char*> INVALID_LBA_LIST = {
-    (char*)"-1",
-    (char*)"-100",
-    (char*)"124872424232118782323422",
+  const std::vector<std::string> INVALID_LBA_LIST = {
+    "-1", "-100", "-152"
   };
 
-  const std::vector<char*> VALID_WRITE_DATA_LIST = {
-    (char*)"0x12345678", (char*)"0x55565678", (char*)"0x12335678",
-    (char*)"0XDEADBeeF", (char*)"0xDeaDBEE1", (char*)"0xDeaDBEE1",
-    (char*)"0xDeaDBEE1", (char*)"0xDeaDBEE1", (char*)"0xDeaDBEE1",
-    (char*)"0xDeaDBEE1", (char*)"0xDeaDBEE1",
+  const std::vector<std::string> ERROR_LBA_LIST = {
+    "12553", "124872322123122", "100"
+  };
+ 
+  const std::vector<std::string> VALID_WRITE_DATA_LIST = {
+    "0x12345678", "0x55565678", "0x12335678", "0XDEADBeeF", "0xDeaDBEE1", "0xDeaDBEE1",
+    "0xDeaDBEE1", "0xDeaDBEE1", "0xDeaDBEE1", "0xDeaDBEE1", "0xDeaDBEE1"
   };
 
-  const std::vector<char*> INVALID_WRITE_LBA_LIST = {
-    (char*)"-1", (char*)"-100", (char*)"10", (char*)"123", (char*)"11234", (char*)"11234",
+  const std::vector<std::string> INVALID_WRITE_LBA_LIST = {
+    "-1", "-100", "10", "123", "11234", "11234"
   };
 
-  const std::vector<char*> INVALID_WRITE_DATA_LIST = {
-    (char*)"0x12678", (char*)"0xDWADBEEF", (char*)"0xDQADBEE1", (char*)"1234567882",
+  const std::vector<std::string> INVALID_WRITE_DATA_LIST = {
+    "0x12678", "0xDWADBEEF", "0xDQADBEE1", "1234567882"
   };
 
-  const std::vector<std::pair<char*, char*>> VALID_ERASE_ARGV_LIST = {
-    {(char*)"13", (char*)"10"},
-    {(char*)"13", (char*)"1"},
-    {(char*)"24", (char*)"0"},
-    {(char*)"12", (char*)"3"},
-    {(char*)"23", (char*)"6"},
-    {(char*)"24", (char*)"5"},
-    {(char*)"25", (char*)"1"},
-    {(char*)"26", (char*)"3"},
-    {(char*)"27", (char*)"4"},
-    {(char*)"28", (char*)"8"},
-    {(char*)"99", (char*)"1"},
+  const std::vector<std::pair<std::string, std::string>> VALID_ERASE_ARGV_LIST = {
+    {"13", "10"}, {"13", "1"}, {"24", "0"}, {"12", "3"}, {"23", "6"},
+    {"24", "5"}, {"25", "1"}, {"26", "3"}, {"27", "4"}, {"28", "8"}, {"99", "1"}
   };
 
-  const std::vector<std::pair<char*, char*>> INVALID_ERASE_ARGV_LIST = {
-    {(char*)"-1", (char*)"10"},
-    {(char*)"-100", (char*)"5"},
-    {(char*)"62", (char*)"-1"},
+  const std::vector<std::pair<std::string, std::string>> INVALID_ERASE_ARGV_LIST = {
+    {"-1", "10"}, {"-100", "5"}, {"62", "-1"}
   };
 
-  const std::vector<std::pair<char*, char*>> ERROR_OUTPUT_ERASE_ARGV_LIST = {
-    {(char*)"99", (char*)"4"},
-    {(char*)"10", (char*)"16"},
-    {(char*)"42", (char*)"11"},
+  const std::vector<std::pair<std::string, std::string>> ERROR_OUTPUT_ERASE_ARGV_LIST = {
+    {"99", "4"}, {"10", "16"}, {"42", "11"}
   };
 
-  void MakeReadArgv(char** argv, char* lba)
+  void MakeArgv(std::vector<std::string>& args, std::vector<char*>& argv)
   {
-    argv[0] = (char*)"SSD.exe";
-    argv[1] = (char*)"R";
-    argv[2] = lba;
-  }
-
-  void MakeWriteArgv(char** argv, char* lba, char* data)
-  {
-    argv[0] = (char*)"SSD.exe";
-    argv[1] = (char*)"W";
-    argv[2] = lba;
-    argv[3] = data;
-  }
-
-  void MakeEraseArgv(char** argv, const std::pair<char*, char*>& lba_count)
-  {
-    argv[0] = (char*)"SSD.exe";
-    argv[1] = (char*)"E";
-    argv[2] = lba_count.first;
-    argv[3] = lba_count.second;
+    argv.clear();
+    for (auto& str : args)
+      argv.push_back((char*)str.data());
   }
 };
 
 TEST_F(SSD_IT_Fixture, SSD_IT_READ_INVALID_ARGC)
 {
-  char* argv[5];
-  for (auto lba : VALID_LBA_LIST)
+  for (const auto& lba : VALID_LBA_LIST)
   {
-    MakeReadArgv(argv, lba);
-    EXPECT_THROW(host->Execute(INVALID_READ_ARGC, argv), std::exception);
+    std::vector<std::string> args = {"SSD.exe", "R", lba};
+    std::vector<char*> argv;
+    MakeArgv(args, argv);
+    EXPECT_THROW(host->Execute(INVALID_READ_ARGC, argv.data()), std::exception);
   }
 }
 
 TEST_F(SSD_IT_Fixture, SSD_IT_WRITE_INVALID_ARGC)
 {
-  char* argv[5];
-  for (int index = 0; index < VALID_WRITE_DATA_LIST.size(); index++)
+  for (const auto& lba : VALID_LBA_LIST)
   {
-    MakeWriteArgv(argv, VALID_LBA_LIST[3 + index], VALID_WRITE_DATA_LIST[index]); // 3부터 VALID_WRITE_LBA 부분
-    EXPECT_THROW(host->Execute(INVALID_WRITE_ARGC, argv), std::exception);
+    std::vector<std::string> args = {"SSD.exe", "W", lba};
+    std::vector<char*> argv;
+    MakeArgv(args, argv);
+    EXPECT_THROW(host->Execute(INVALID_WRITE_ARGC, argv.data()), std::exception);
   }
 }
 
 TEST_F(SSD_IT_Fixture, SSD_IT_ERASE_INVALID_ARGC)
 {
-  char* argv[5];
-  for (auto& p : VALID_ERASE_ARGV_LIST)
+  for (const auto& p : VALID_ERASE_ARGV_LIST)
   {
-    MakeEraseArgv(argv, p);
-    EXPECT_THROW(host->Execute(INVALID_ERASE_ARGC, argv), std::exception);
+    std::vector<std::string> args = {"SSD.exe", "E", p.first, p.second};
+    std::vector<char*> argv;
+    MakeArgv(args, argv);
+    EXPECT_THROW(host->Execute(INVALID_ERASE_ARGC, argv.data()), std::exception);
   }
 }
 
 TEST_F(SSD_IT_Fixture, SSD_IT_READ_INVALID_ARGV)
 {
-  char* argv[3];
-  for (auto lba : INVALID_LBA_LIST)
+  for (const auto& lba : INVALID_LBA_LIST)
   {
-    MakeReadArgv(argv, lba);
-    EXPECT_THROW(host->Execute(VALID_READ_ARGC, argv), std::exception);
+    std::vector<std::string> args = {"SSD.exe", "R", lba};
+    std::vector<char*> argv;
+    MakeArgv(args, argv);
+    EXPECT_THROW(host->Execute(VALID_READ_ARGC, argv.data()), std::exception);
+  }
+}
+
+TEST_F(SSD_IT_Fixture, SSD_IT_WRITE_INVALID_ARGV)
+{
+  for (int index = 0; index < INVALID_LBA_LIST[index].count; index++)
+  {
+    std::vector<std::string> args = {"SSD.exe", "W", INVALID_LBA_LIST[index], };
+    std::vector<char*> argv;
+    MakeArgv(args, argv);
+    EXPECT_THROW(host->Execute(VALID_READ_ARGC, argv.data()), std::exception);
+  }
+}
+
+TEST_F(SSD_IT_Fixture, SSD_IT_READ_ERROR_ARGV)
+{
+  for (const auto& lba : INVALID_LBA_LIST)
+  {
+    std::vector<std::string> args = {"SSD.exe", "R", lba};
+    std::vector<char*> argv;
+    MakeArgv(args, argv);
+    EXPECT_THROW(host->Execute(VALID_READ_ARGC, argv.data()), std::exception);
   }
 }
 
 TEST_F(SSD_IT_Fixture, SSD_IT_ERASE_INVALID_ARGV)
 {
-  char* argv[4];
-  int max_size = std::min(INVALID_ERASE_ARGV_LIST.size(), VALID_ERASE_ARGV_LIST.size());
-  for (int index = 0; index < max_size; index++)
+  size_t max_size = std::min(INVALID_ERASE_ARGV_LIST.size(), VALID_ERASE_ARGV_LIST.size());
+  for (size_t i = 0; i < max_size; ++i)
   {
-    MakeEraseArgv(argv, INVALID_ERASE_ARGV_LIST[index]);
-    EXPECT_THROW(host->Execute(VALID_ERASE_ARGC, argv), std::exception);
+    const auto& p = INVALID_ERASE_ARGV_LIST[i];
+    std::vector<std::string> args = {"SSD.exe", "E", p.first, p.second};
+    std::vector<char*> argv;
+    MakeArgv(args, argv);
+    EXPECT_THROW(host->Execute(VALID_ERASE_ARGC, argv.data()), std::exception);
   }
 }
 
 TEST_F(SSD_IT_Fixture, SSD_IT_ERASE_ERROR_ARGV)
 {
-  char* argv[4];
-  for (auto& p : ERROR_OUTPUT_ERASE_ARGV_LIST)
+  for (const auto& p : ERROR_OUTPUT_ERASE_ARGV_LIST)
   {
-    MakeEraseArgv(argv, p);
-    EXPECT_NO_THROW(host->Execute(VALID_ERASE_ARGC, argv));
+    std::vector<std::string> args = {"SSD.exe", "E", p.first, p.second};
+    std::vector<char*> argv;
+    MakeArgv(args, argv);
+    EXPECT_NO_THROW(host->Execute(VALID_ERASE_ARGC, argv.data()));
     GlobalUtil::ValidateOutputDataWith(ERROR_MSG);
   }
 }
 
 TEST_F(SSD_IT_Fixture, SSD_IT_READ_VALID_ARGV)
 {
-  char* argv[3];
-  for (int index = 0; index < 3; index++)
+  for (int i = 0; i < 3; ++i)
   {
-    MakeReadArgv(argv, VALID_LBA_LIST[index]);
-    EXPECT_NO_THROW(host->Execute(VALID_READ_ARGC, argv));
+    std::vector<std::string> args = {"SSD.exe", "R", VALID_LBA_LIST[i]};
+    std::vector<char*> argv;
+    MakeArgv(args, argv);
+    EXPECT_NO_THROW(host->Execute(VALID_READ_ARGC, argv.data()));
   }
 }
 
 TEST_F(SSD_IT_Fixture, SSD_IT_WRITE_VALID_ARGV)
 {
-  char* argv[4];
-  for (int index = 0; index < VALID_WRITE_DATA_LIST.size(); index++)
+  for (size_t i = 0; i < VALID_WRITE_DATA_LIST.size(); ++i)
   {
-    MakeWriteArgv(argv, VALID_LBA_LIST[3 + index], VALID_WRITE_DATA_LIST[index]);
-    EXPECT_NO_THROW(host->Execute(VALID_WRITE_ARGC, argv));
+    std::string lba = VALID_LBA_LIST[3 + i];
+    std::string data = VALID_WRITE_DATA_LIST[i];
+    std::vector<std::string> args = {"SSD.exe", "W", lba, data};
+    std::vector<char*> argv;
+    MakeArgv(args, argv);
+    EXPECT_NO_THROW(host->Execute(VALID_WRITE_ARGC, argv.data()));
   }
 }
 
 TEST_F(SSD_IT_Fixture, SSD_IT_ERASE_VALID_ARGV)
 {
-  char* argv[4];
-  for (auto& p : VALID_ERASE_ARGV_LIST)
+  for (const auto& p : VALID_ERASE_ARGV_LIST)
   {
-    MakeEraseArgv(argv, p);
-    EXPECT_NO_THROW(host->Execute(VALID_ERASE_ARGC, argv));
+    std::vector<std::string> args = {"SSD.exe", "E", p.first, p.second};
+    std::vector<char*> argv;
+    MakeArgv(args, argv);
+    EXPECT_NO_THROW(host->Execute(VALID_ERASE_ARGC, argv.data()));
   }
 }
 
