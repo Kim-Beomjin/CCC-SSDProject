@@ -21,21 +21,21 @@ const unordered_map<string, CompositExecutorFactory::Creator> CompositExecutorFa
 	{FOURTH_SCRIPT_FULL_NAME,  []() { return new EraseAndWriteAging(new Writer(), new Comparer(), new Eraser()); }},
 };
 
+IExecutor* IExecutorFactory::getExecutorFromCache(const string& command) {
+	auto cacheIterator = executorCache.find(command);
+	if (cacheIterator != executorCache.end()) {
+		return cacheIterator->second.get();
+	}
+
+	return nullptr;
+}
+
 IExecutor* CompositExecutorFactory::createExecutor(const string& command) {
 	IExecutor* executor = getExecutorFromCache(command);
 	if (nullptr != executor) return executor;
 
 	executor = getExecutorFromMap(command);
 	if (nullptr != executor) return executor;
-	
-	return nullptr;
-}
-
-IExecutor* CompositExecutorFactory::getExecutorFromCache(const string& command) {
-	auto cacheIterator = executorCache.find(command);
-	if (cacheIterator != executorCache.end()) {
-		return cacheIterator->second.get();
-	}
 	
 	return nullptr;
 }
@@ -79,15 +79,6 @@ IExecutor* ExecutorFactory::createExecutor(const string& command) {
 
 	executor = getExecutorFromMap(command);
 	if (nullptr != executor) return executor;
-
-	return nullptr;
-}
-
-IExecutor* ExecutorFactory::getExecutorFromCache(const string& command) {
-	auto cacheIterator = executorCache.find(command);
-	if (cacheIterator != executorCache.end()) {
-		return cacheIterator->second.get();
-	}
 
 	return nullptr;
 }
