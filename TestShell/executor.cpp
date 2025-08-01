@@ -183,7 +183,6 @@ bool RangeEraser::execute(ISsdApp* app, LBA startLba, LBA endLba)
 	std::tie(changedStartLba, changedEndLba) = std::minmax(startLba, endLba);
 
 	SIZE size = changedEndLba - changedStartLba + 1;
-	cout << "call Erase::execute - changedStartLba:" << changedStartLba << ", size:" << size << ", endLba:" << changedEndLba << "startLba:" << startLba << ", endLba:" << endLba << endl;
 	Eraser::execute(app, changedStartLba, size);
 	return true;
 }
