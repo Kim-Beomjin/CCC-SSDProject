@@ -1,12 +1,11 @@
-#include <algorithm>
-#include <direct.h>
-#include <tuple>
-#include "utils.h"
 #include <fstream>
 #include <sstream>
-#include "logger.h"
+#include <algorithm>
+#include <tuple>
+#include <direct.h>
 #include "executor.h"
-#include "compositeExecutor.h"
+#include "utils.h"
+#include "logger.h"
 
 bool OuputDecoratedWriter::IsValidCommand(const vector<string>& tokens) {
 	if (tokens[CMD_IDX] == WRITE_CMD && tokens.size() == NEEDED_TOKEN_COUNT) {
