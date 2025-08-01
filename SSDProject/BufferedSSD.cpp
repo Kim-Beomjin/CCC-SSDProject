@@ -236,7 +236,6 @@ void BufferedSSD::_ConvertBufToCmd()
 	}
 	if (erase_start_idx != -1)
 	{
-		std::cout << 100 << erase_start_idx << "\n";
 		erase_size = ((100 - erase_start_idx) > 10) ? 10 : 100 - erase_start_idx;
 		_DumpEraseCmd(cmd_buf_idx++, erase_start_idx, erase_size);
 		erase_start_idx += erase_size;
