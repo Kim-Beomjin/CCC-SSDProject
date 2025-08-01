@@ -1,6 +1,6 @@
 #include "CompositExecutor.h"
 #include "utils.h"
-#include <iostream>
+
 #ifdef _DEBUG
 #include <stdexcept>
 #else
@@ -9,13 +9,13 @@
 
 bool CompositExecutor::PrintPass(void)
 {
-	cout << "PASS\n";
+	print("PASS");
 	return true;
 }
 
 bool CompositExecutor::PrintFail(void)
 {
-	cout << "FAIL\n";
+	print("FAIL");
 	return false;
 }
 

@@ -1,9 +1,9 @@
-#include "utils.h"
 #include <fstream>
 #include <iostream>
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
+#include "utils.h"
 
 using std::cout;
 using std::endl;
@@ -33,9 +33,9 @@ const string makeExecuteCmd(string cmd, LBA lba, DATA data) {
 	else if (cmd == SEND_ERASE_CMD) {
 		oss << " " << data;
 	}
-//#ifdef _DEBUG
-	cout << oss.str() << endl;
-//#endif
+#ifdef _DEBUG
+	print(oss.str());
+#endif
 	return oss.str();
 }
 
@@ -79,4 +79,8 @@ vector<string> splitCommand(const string& fullCmd) {
 		tokens.push_back(token);
 	}
 	return tokens;
+}
+
+void print(const string& desc) {
+	cout << desc << endl;
 }

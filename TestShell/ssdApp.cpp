@@ -1,4 +1,3 @@
-#include <iostream>
 #include <direct.h>
 #include "ssdApp.h"
 #include "utils.h"
