@@ -169,7 +169,7 @@ bool LatestLogState::CheckChangeUntil(ofstream& logfile) {
     return false;
 }
 
-int LatestLogState::GetLatestLogSize(ofstream& logFile) {
+size_t LatestLogState::GetLatestLogSize(ofstream& logFile) {
     return logFile.tellp();
 }
 
