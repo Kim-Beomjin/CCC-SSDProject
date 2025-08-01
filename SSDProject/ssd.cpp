@@ -6,12 +6,10 @@
 
 bool SSD::Read(LBA lba)
 {
-  if (_IsInvalidParameter(lba))
+  if (IsLBAValidOrUpdateErrorToOutputFile(lba) == false)
   {
-    _UpdateOutputFile(ERROR_MSG);
-
     return false;
-   }
+  }
 
   DATA readData;
   if (nand->Read(lba, readData) == false)
@@ -27,10 +25,8 @@ bool SSD::Read(LBA lba)
 
 bool SSD::Write(LBA lba, DATA writeData)
 {
-  if (_IsInvalidParameter(lba))
+  if (IsLBAValidOrUpdateErrorToOutputFile(lba) == false)
   {
-    _UpdateOutputFile(ERROR_MSG);
-
     return false;
   }
 
@@ -40,15 +36,24 @@ bool SSD::Write(LBA lba, DATA writeData)
 
 bool SSD::Erase(LBA lba, ERASE_SIZE erase_size)
 {
+  if (IsLBAValidOrUpdateErrorToOutputFile(lba, erase_size) == false)
+  {
+    return false;
+  }
+
+  TEST_ERASE_LOGGER(lba, erase_size);
+  return nand->Erase(lba, erase_size);
+}
+
+bool SSD::IsLBAValidOrUpdateErrorToOutputFile(LBA lba, ERASE_SIZE erase_size)
+{
   if (_IsInvalidParameter(lba, erase_size))
   {
     _UpdateOutputFile(ERROR_MSG);
 
     return false;
   }
-
-  TEST_ERASE_LOGGER(lba, erase_size);
-  return nand->Erase(lba, erase_size);
+  return true;
 }
 
 bool SSD::_IsInvalidParameter(LBA lba, ERASE_SIZE erase_size)
