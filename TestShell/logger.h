@@ -26,20 +26,29 @@ public:
 
 class LogFile {
 public:
-    void Log(const std::string& message);
+    LogFile();
+
+    void SaveLog(const std::string& message);
 
     void SetState(std::unique_ptr<ILogFileState> newState);
 
     void SetLogFile(const std::string& filename);
 
-    void SetName(const std::string& filename);
-    string GetName(void);
+ //   void SetName(const std::string& filename);
+ //   string GetName(void);
+    void SetLatestName(const std::string& filename);
+    string GetLatestlName(void);
+
+    void SetUntilName(const std::string& filename);
+    string GetUntilName(void);
 
     //void SetFile(const std::string& filename);
     std::ofstream& GetFile(void);
 
 private:
-    string fileName;
+    string latestLogName = {};
+    string untilLogName = {};
+    string zipLogName = {};
     std::ofstream logFile;
     std::unique_ptr<ILogFileState> state;
 
@@ -59,19 +68,22 @@ public:
     void SaveLog(LogFile& logfile, const std::string& message) override;
 
 private:
-    void SaveUntilLogger(const std::string& old_filename);
+    bool CheckChangeZip(LogFile& logfile);
+    void SaveUntilLogger(LogFile& logfile, const std::string& old_filename);
     string GetUntilFileName(void);
 };
 
 class LatestLogState : public ILogFileState {
 public:
     void SaveLog(LogFile& logfile, const std::string& message) override;
+
 private:
     const string LATEST_LOG_NAME = "latest.log";
     const int MANAGE_FILE_SIZE = 10 * 1024; // 10KB
-    void CheckManageUntilLogFile(LogFile& logfile);
+    void WriteMessageToFile(ofstream& logfile, const std::string& message);
+    bool CheckChangeUntil(ofstream& logfile);
 
-    int GetLatestLogSize(LogFile& logfile);
+    int GetLatestLogSize(ofstream& logFile);
 };
 
 class Logger : public LogFile {
@@ -83,11 +95,10 @@ public:
     template <typename... Args>
     void Log(const string& func, Args&&... args) {
         string result;
-        //CheckManageUntilLogFile();
 
         result = LogImpl(func, std::forward<Args>(args)...);
 
-        logFile.Log(result);
+        logFile.SaveLog(result);
     }
 private:
     template <typename T>
