@@ -66,6 +66,7 @@ bool CommandParser::setDataFromToken(const string& strData) {
 }
 
 bool CommandParser::IsLbaRangeValid() {
+    if (command == FULL_WRITE_CMD) return true;
     if (lba >= 0 && lba < static_cast<LBA>(SSD_MAX_SIZE)) return true;
     return false;
 }

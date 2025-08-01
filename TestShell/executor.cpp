@@ -57,7 +57,7 @@ const unordered_map<string, ExecutorFactory::Creator> ExecutorFactory::factoryMa
 	{FULL_WRITE_CMD,           []() { return new FullWriter(); }},
 	{READ_CMD,                 []() { return new OuputDecoratedReader(); }},
 	{FULL_READ_CMD,            []() { return new FullReader(); }},
-	{ERASE_CMD,                []() { return new Eraser(); }},
+	{ERASE_CMD,                []() { return new SizeEraser(); }},
 	{ERASE_RANGE_CMD,          []() { return new RangeEraser(); }},
 	{HELP_CMD,                 []() { return new Helper(); }},
 	{EXIT_CMD,                 []() { return new Exiter(); }},

@@ -7,6 +7,7 @@ using namespace std;
 
 class CommandParser : public ICommandParserBridge {
 public:
+    CommandParser() = default;
     CommandParser(IExecutorFactory* factory) : _factory{ factory } {}
     bool ParseCommand(const string& cmd) override;
     bool ExecuteSsdUsingParsedCommand(ISsdApp* app) override;
