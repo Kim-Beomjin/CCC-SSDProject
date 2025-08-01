@@ -86,7 +86,7 @@ private:
     int GetLatestLogSize(ofstream& logFile);
 };
 
-class Logger : public LogFile {
+class Logger {
 public:
     std::string GetCurrentTimeString(void);
 
