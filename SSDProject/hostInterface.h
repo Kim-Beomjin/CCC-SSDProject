@@ -18,7 +18,6 @@ public:
         static HostInterface hostinterface; 
         return &hostinterface;
     }
-
     void Execute(int argc, char* argv[]);
 
 #if _DEBUG
@@ -29,31 +28,9 @@ public:
 #endif
 
 private:
-    HostInterface() : ssd{ new SSD() }, bufferManager{ new BufferManager(ssd) }, lba{ 0 }, data{ 0 }, length{ 0 } {};
-    bool _WriteCondition(int argc, char* argv[]);
-    bool _ReadCondition(int argc, char* argv[]);
-    bool _EraseCondition(int argc, char* argv[]);
-    bool _FlushCondition(int argc, char* argv[]); //TODO Become Interface
-
-    bool _LoadReadParameterAndCheckInvalid(char* lbaStr, char*);
-    bool _LoadEraseParameterAndCheckInvalid(char* lbaStr, char* lengthStr);
-    bool _LoadFlushParameterAndCheckInvalid(char*, char*); //TODO Become Interface
-
-    LBA lba;
-    DATA data;
-    unsigned int length;
+    HostInterface() : ssd{ new SSD() }, bufferManager{ new BufferManager(ssd) } {};
     SSD* ssd;
     BufferManager* bufferManager;
-
-    const int WRITE_COMMAND_ARG_COUNT = 4;
-    const int READ_COMMAND_ARG_COUNT = 3;
-    const int ERASE_COMMAND_ARG_COUNT = 4;
-    const int FLUSH_COMMAND_ARG_COUNT = 2;
-
-    const char* WRITE_CMD = "W";
-    const char* READ_CMD = "R";
-    const char* ERASE_CMD = "E";
-    const char* FLUSH_CMD = "F";
 };
 
 class HostInterfaceUtil
@@ -82,6 +59,33 @@ private:
     const char ZERO = '0';
     const char SMALL_EX = 'x';
     const char LARGE_EX = 'X';
+};
+
+class ProcessorFactory
+{
+public:
+    static ProcessorFactory* GetInstance() {
+        static ProcessorFactory processorFactory;
+        return &processorFactory;
+    }
+    IProcessor* CreateProcessor(int argc, char* argv[], SSD* ssd, BufferManager* bufferManager);
+private:
+    ProcessorFactory() {};
+    bool _WriteCondition(int argc, char* argv[]);
+    bool _ReadCondition(int argc, char* argv[]);
+    bool _EraseCondition(int argc, char* argv[]);
+    bool _FlushCondition(int argc, char* argv[]);
+
+    const int WRITE_COMMAND_ARG_COUNT = 4;
+    const int READ_COMMAND_ARG_COUNT = 3;
+    const int ERASE_COMMAND_ARG_COUNT = 4;
+    const int FLUSH_COMMAND_ARG_COUNT = 2;
+
+    const char* WRITE_CMD = "W";
+    const char* READ_CMD = "R";
+    const char* ERASE_CMD = "E";
+    const char* FLUSH_CMD = "F";
+
 };
 
 class WriteProcessor : public IProcessor

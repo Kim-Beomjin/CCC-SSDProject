@@ -5,64 +5,49 @@
 
 void HostInterface::Execute(int argc, char* argv[])
 {
-	if (_WriteCondition(argc,argv))
+	IProcessor* processor = ProcessorFactory::GetInstance()->CreateProcessor(argc, argv, ssd, bufferManager);
+	if (processor != nullptr && processor->LoadParameterAndCheckInvalid(argv[ARGV::LBA_IDX], argv[ARGV::DATA_IDX]))
 	{
-		IProcessor* processor = new WriteProcessor(ssd, bufferManager);
-		if (processor->LoadParameterAndCheckInvalid(argv[ARGV::LBA_IDX], argv[ARGV::DATA_IDX]))
-		{
-			processor->Process();
-		}
-	}
-	else if (_ReadCondition(argc, argv))
-	{
-		IProcessor* processor = new ReadProcessor(ssd, bufferManager);
-		if (processor->LoadParameterAndCheckInvalid(argv[ARGV::LBA_IDX], nullptr))
-		{
-			processor->Process();
-		}
-	}
-	else if (_EraseCondition(argc, argv))
-	{
-		IProcessor* processor = new EraseProcessor(ssd, bufferManager);
-		if (processor->LoadParameterAndCheckInvalid(argv[ARGV::LBA_IDX], argv[ARGV::SIZE_IDX]))
-		{
-			processor->Process();
-		}
-	}
-	else if (_FlushCondition(argc, argv))
-	{
-		IProcessor* processor = new FlushProcessor(ssd, bufferManager);
-		if (processor->LoadParameterAndCheckInvalid(nullptr, nullptr))
-		{
-			processor->Process();
-		}
-	}
-	else {
-		DEBUG_ASSERT(false, "INVALID INPUT PARAMETERS");
+		processor->Process();
 	}
 }
 
-bool HostInterface::_WriteCondition(int argc, char* argv[])
+//------------------------------ Processor Factory ----------------------------------//
+
+IProcessor* ProcessorFactory::CreateProcessor(int argc, char* argv[], SSD* ssd, BufferManager* bufferManager)
+{
+	if (_WriteCondition(argc, argv)) return new WriteProcessor(ssd, bufferManager);
+	if (_ReadCondition(argc, argv)) return new ReadProcessor(ssd, bufferManager);
+	if (_EraseCondition(argc, argv)) return new EraseProcessor(ssd, bufferManager);
+	if (_FlushCondition(argc, argv)) return new FlushProcessor(ssd, bufferManager);
+	DEBUG_ASSERT(false, "INVALID_PARAMETER");
+	std::cout << "SSD GET INVALID PARAMETER!!!!" << "\n";
+	return nullptr;
+}
+
+
+
+bool ProcessorFactory::_WriteCondition(int argc, char* argv[])
 {
 	return (argc == WRITE_COMMAND_ARG_COUNT && std::string(argv[ARGV::CMD_IDX]) == WRITE_CMD);
 }
 
-bool HostInterface::_ReadCondition(int argc, char* argv[])
+bool ProcessorFactory::_ReadCondition(int argc, char* argv[])
 {
 	return (argc == READ_COMMAND_ARG_COUNT && std::string(argv[ARGV::CMD_IDX]) == READ_CMD);
 }
 
-bool HostInterface::_EraseCondition(int argc, char* argv[])
+bool ProcessorFactory::_EraseCondition(int argc, char* argv[])
 {
 	return (argc == ERASE_COMMAND_ARG_COUNT && std::string(argv[ARGV::CMD_IDX]) == ERASE_CMD);
 }
 
-bool HostInterface::_FlushCondition(int argc, char* argv[])
+bool ProcessorFactory::_FlushCondition(int argc, char* argv[])
 {
 	return (argc == FLUSH_COMMAND_ARG_COUNT && std::string(argv[ARGV::CMD_IDX]) == FLUSH_CMD);
 }
 
-
+//----------------------------------- Processor -------------------------------------//
 
 bool WriteProcessor::LoadParameterAndCheckInvalid(char* lbaStr, char* dataStr)
 {
@@ -83,7 +68,6 @@ bool WriteProcessor::LoadParameterAndCheckInvalid(char* lbaStr, char* dataStr)
 	}
 	return false;
 }
-
 void WriteProcessor::Process()
 {
 	if (lba < LBA_END_ADDR)
@@ -93,7 +77,6 @@ void WriteProcessor::Process()
 	}
 	ssd->Write(lba, data);
 }
-
 
 bool ReadProcessor::LoadParameterAndCheckInvalid(char* lbaStr, char* )
 {
@@ -112,7 +95,6 @@ bool ReadProcessor::LoadParameterAndCheckInvalid(char* lbaStr, char* )
 	}
 	return false;
 }
-
 void ReadProcessor::Process()
 {
 	DATA readData;
@@ -123,7 +105,6 @@ void ReadProcessor::Process()
 	}
 	ssd->Read(lba);
 }
-
 
 bool EraseProcessor::LoadParameterAndCheckInvalid(char* lbaStr, char* sizeStr)
 {
@@ -144,7 +125,6 @@ bool EraseProcessor::LoadParameterAndCheckInvalid(char* lbaStr, char* sizeStr)
 	}
 	return false;
 }
-
 void EraseProcessor::Process()
 {
 	if (lba + size <= LBA_END_ADDR && size <= 10)
@@ -154,7 +134,6 @@ void EraseProcessor::Process()
 	}
 	ssd->Erase(lba, size);
 }
-
 
 bool FlushProcessor::LoadParameterAndCheckInvalid(char* , char* )
 {
