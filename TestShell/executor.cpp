@@ -37,11 +37,38 @@ bool Writer::execute(ISsdApp* app, LBA lba, DATA data)
 	return true;
 }
 
+bool OuputDecoratedWriter::IsValidCommand(const vector<string>& tokens) {
+	if (tokens[CMD_IDX] == WRITE_CMD && tokens.size() == NEEDED_TOKEN_COUNT) {
+		if (IsValidWriteData(tokens[DATA_IDX])) return true;
+		return false;
+	}
+	return false;
+}
+
+bool OuputDecoratedWriter::IsValidWriteData(const string& data) {
+	if (data.size() != 10) return false;
+
+	if (!(data[0] == '0' && (data[1] == 'x' || data[1] == 'X')))
+		return false;
+
+	for (size_t i = 2; i < 10; ++i) {
+		if (!std::isxdigit(static_cast<unsigned char>(data[i])))
+			return false;
+	}
+
+	return true;
+}
+
 bool OuputDecoratedWriter::execute(ISsdApp* app, LBA lba, DATA data)
 {
 	if (!Writer::execute(app, lba, data)) return false;
 	cout << "[Write] Done\n";
 	return true;
+}
+
+bool FullWriter::IsValidCommand(const vector<string>& tokens) {
+	if (tokens[CMD_IDX] == CMD && tokens.size() == NEEDED_TOKEN_COUNT) return true;
+	return false;
 }
 
 bool FullWriter::execute(ISsdApp* app, LBA lba, DATA data)
@@ -79,11 +106,21 @@ string Reader::GetResultFromFile(void)
 	return result;
 }
 
+bool OuputDecoratedReader::IsValidCommand(const vector<string>& tokens) {
+	if (tokens[CMD_IDX] == CMD && tokens.size() == NEEDED_TOKEN_COUNT) return true;
+	return false;
+}
+
 bool OuputDecoratedReader::execute(ISsdApp* app, LBA lba, DATA data)
 {
 	if (!Reader::execute(app, lba, data)) return false;
 	cout << "[Read] LBA " << lba << " : " << GetResultFromFile() << "\n";
 	return true;
+}
+
+bool FullReader::IsValidCommand(const vector<string>& tokens) {
+	if (tokens[CMD_IDX] == CMD && tokens.size() == NEEDED_TOKEN_COUNT) return true;
+	return false;
 }
 
 bool FullReader::execute(ISsdApp* app, LBA lba, DATA data)
@@ -114,6 +151,11 @@ bool Comparer::Compare(const DATA expectedData, const string &readResult)
 	return false;
 }
 
+bool Helper::IsValidCommand(const vector<string>& tokens) {
+	if (tokens[CMD_IDX] == CMD && tokens.size() == NEEDED_TOKEN_COUNT) return true;
+	return false;
+}
+
 bool Helper::execute(ISsdApp* app, LBA lba, DATA data)
 {
 	cout << this->HELP_DESCRIPTION;
@@ -121,9 +163,19 @@ bool Helper::execute(ISsdApp* app, LBA lba, DATA data)
 	return true;
 }
 
+bool Exiter::IsValidCommand(const vector<string>& tokens) {
+	if (tokens[CMD_IDX] == CMD && tokens.size() == NEEDED_TOKEN_COUNT) return true;
+	return false;
+}
+
 bool Exiter::execute(ISsdApp* app, LBA lba, DATA data)
 {
 	return true;
+}
+
+bool Eraser::IsValidCommand(const vector<string>& tokens) {
+	if (tokens[CMD_IDX] == CMD && tokens.size() == NEEDED_TOKEN_COUNT) return true;
+	return false;
 }
 
 bool Eraser::execute(ISsdApp* app, LBA startLba, SIZE size)
@@ -177,6 +229,11 @@ bool Eraser::sendEraseMessageWithCalculatedSize(ISsdApp* app, LBA startLba, SIZE
 	return true;
 }
 
+bool RangeEraser::IsValidCommand(const vector<string>& tokens) {
+	if (tokens[CMD_IDX] == CMD && tokens.size() == NEEDED_TOKEN_COUNT) return true;
+	return false;
+}
+
 bool RangeEraser::execute(ISsdApp* app, LBA startLba, LBA endLba)
 {
 	LBA changedStartLba, changedEndLba;
@@ -185,6 +242,11 @@ bool RangeEraser::execute(ISsdApp* app, LBA startLba, LBA endLba)
 	SIZE size = changedEndLba - changedStartLba + 1;
 	Eraser::execute(app, changedStartLba, size);
 	return true;
+}
+
+bool Flusher::IsValidCommand(const vector<string>& tokens) {
+	if (tokens[CMD_IDX] == CMD && tokens.size() == NEEDED_TOKEN_COUNT) return true;
+	return false;
 }
 
 bool Flusher::execute(ISsdApp* app, LBA lba, DATA data)

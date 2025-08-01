@@ -1,7 +1,9 @@
 #pragma once
 #include <string>
+#include <vector>
 
 using std::string;
+using std::vector;
 
 #define interface struct
 
@@ -16,7 +18,8 @@ interface ISsdApp {
 	virtual bool Flush() = 0;
 };
 
-interface IExecutor {
+interface IExecutor{
+	virtual bool IsValidCommand(const vector<string>& tokens) { return false; }
 	virtual bool execute(ISsdApp* pApp = nullptr, u32 lba = 0, u32 data = 0) = 0;
 };
 

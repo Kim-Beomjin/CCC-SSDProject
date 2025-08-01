@@ -3,7 +3,10 @@
 #include "commandParser.h"
 
 bool CommandParser::ParseCommand(const string& fullCmd) {
-    if (doParse(fullCmd) == false) {
+    std::vector<string> tokens = splitCommand(fullCmd);
+    if (tokens.empty()) return false;
+
+    if (doParse(tokens) == false) {
         cout << "INVALID COMMAND" << endl;
         return false;
     }
@@ -13,6 +16,8 @@ bool CommandParser::ParseCommand(const string& fullCmd) {
         return false;
     }
 
+    if (false == executor->IsValidCommand(tokens)) return false;
+
     return true;
 }
 
@@ -21,66 +26,21 @@ bool CommandParser::ExecuteSsdUsingParsedCommand(ISsdApp* app) {
     return executor->execute(app, lba, data);
 }
 
-bool CommandParser::IsVaildCommand(const string& cmd, size_t tokenSize) {
-    // TODO: need to refactor
-    if (cmd_set.find(cmd) != cmd_set.end()) {
-        if (IsWriteCmdValid(cmd, tokenSize)) return true;
-        else if (IsFullWriteCmdValid(cmd, tokenSize)) return true;
-        else if (IsReadCmdValid(cmd, tokenSize)) return true;
-        else if (IsEraseCmdValid(cmd, tokenSize)) return true;
-        else if ((cmd != WRITE_CMD && cmd != READ_CMD) && tokenSize == 1) return true;
-        return false;
-    }
+bool CommandParser::IsVaildCommand(const string& cmd) {
+    if (cmd_set.find(cmd) != cmd_set.end()) return true;
     return false;
 }
 
-bool CommandParser::IsFullWriteCmdValid(const string& cmd, size_t tokenSize) {
-    if (cmd == FULL_WRITE_CMD && tokenSize == 2) return true;
-    return false;
-}
+bool CommandParser::doParse(const vector<string>& tokens) {
+    command = tokens[CMD_IDX];
+    if (IsVaildCommand(command) == false) return false;
 
-bool CommandParser::IsWriteCmdValid(const string& cmd, size_t tokenSize) {
-    if (cmd == WRITE_CMD && tokenSize == 3) return true;
-    return false;
-}
-
-bool CommandParser::IsEraseCmdValid(const string& cmd, size_t tokenSize) {
-    if (cmd.find(ERASE_CMD) != string::npos && tokenSize == 3) return true;
-    return false;
-}
-
-bool CommandParser::IsReadCmdValid(const string& cmd, size_t tokenSize) {
-    if (cmd == READ_CMD && tokenSize == 2) return true;
-    return false;
-}
-
-bool CommandParser::doParse(const string& fullCmd) {
-    std::vector<string> tokens = splitCommand(fullCmd);
-
-    if (tokens.empty()) return false;
-
-    command = tokens[0];
-    if (IsVaildCommand(command, tokens.size()) == false) return false;
-    if (tokens.size() > 1) {
-        if (setLbaFromToken(tokens[1]) == false) return false;
+    if (tokens.size() > LBA_IDX) {
+        if (setLbaFromToken(tokens[LBA_IDX]) == false) return false;
     }
     
-    if (tokens.size() > 2) {
-        if (setDataFromToken(tokens[2]) == false) return false;
-    }
-
-    return true;
-}
-
-bool CommandParser::IsValidWriteData(const string& data) {
-    if (data.size() != 10) return false;
-
-    if (!(data[0] == '0' && (data[1] == 'x' || data[1] == 'X')))
-        return false;
-
-    for (size_t i = 2; i < 10; ++i) {
-        if (!std::isxdigit(static_cast<unsigned char>(data[i])))
-            return false;
+    if (tokens.size() > DATA_IDX) {
+        if (setDataFromToken(tokens[DATA_IDX]) == false) return false;
     }
 
     return true;
@@ -99,8 +59,6 @@ bool CommandParser::setLbaFromToken(const string& strLba) {
 }
 
 bool CommandParser::setDataFromToken(const string& strData) {
-    if (command == WRITE_CMD && IsValidWriteData(strData) == false) return false;
-
     try {
         data = stringToUnsignedInt(strData);
     }
