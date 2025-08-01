@@ -4,13 +4,13 @@
 #include <tuple>
 #include <algorithm>
 #include "executor.h"
-#include "compositExecutor.h"
+#include "compositeExecutor.h"
 #include "utils.h"
 #include "logger.h"
 
 using namespace std;
 
-const unordered_map<string, CompositExecutorFactory::Creator> CompositExecutorFactory::factoryMap = {
+const unordered_map<string, CompositeExecutorFactory::Creator> CompositeExecutorFactory::factoryMap = {
 	{FIRST_SCRIPT_SHORT_NAME,  []() { return new FullWriteAndReadCompare(new Writer(), new Comparer()); }},
 	{FIRST_SCRIPT_FULL_NAME,   []() { return new FullWriteAndReadCompare(new Writer(), new Comparer()); }},
 	{SECOND_SCRIPT_SHORT_NAME, []() { return new PartialLBAWrite(new Writer(), new Comparer()); }},
@@ -30,7 +30,7 @@ IExecutor* IExecutorFactory::getExecutorFromCache(const string& command) {
 	return nullptr;
 }
 
-IExecutor* CompositExecutorFactory::createExecutor(const string& command) {
+IExecutor* CompositeExecutorFactory::createExecutor(const string& command) {
 	IExecutor* executor = getExecutorFromCache(command);
 	if (nullptr != executor) return executor;
 
@@ -40,7 +40,7 @@ IExecutor* CompositExecutorFactory::createExecutor(const string& command) {
 	return nullptr;
 }
 
-IExecutor* CompositExecutorFactory::getExecutorFromMap(const string& command) {
+IExecutor* CompositeExecutorFactory::getExecutorFromMap(const string& command) {
 	auto mapIterator = factoryMap.find(command);
 	if (mapIterator != factoryMap.end()) {
 		std::unique_ptr<IExecutor> executor(mapIterator->second());

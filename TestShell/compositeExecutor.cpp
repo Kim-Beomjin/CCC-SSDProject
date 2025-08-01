@@ -1,4 +1,4 @@
-#include "CompositExecutor.h"
+#include "compositeExecutor.h"
 #include "utils.h"
 
 #ifdef _DEBUG
@@ -7,13 +7,13 @@
 #include <random>
 #endif
 
-bool CompositExecutor::PrintPass(void)
+bool CompositeExecutor::PrintPass(void)
 {
 	print("PASS");
 	return true;
 }
 
-bool CompositExecutor::PrintFail(void)
+bool CompositeExecutor::PrintFail(void)
 {
 	print("FAIL");
 	return false;
@@ -40,11 +40,11 @@ bool FullWriteAndReadCompare::execute(ISsdApp* app, LBA lba, DATA data)
 
 		for (LBA readLba = startLba; readLba < endLba; readLba++)
 		{
-			if (!comparer->execute(app, readLba, writeData)) return CompositExecutor::PrintFail();
+			if (!comparer->execute(app, readLba, writeData)) return CompositeExecutor::PrintFail();
 		}
 	}
 
-	return CompositExecutor::PrintPass();
+	return CompositeExecutor::PrintPass();
 }
 
 bool PartialLBAWrite::IsValidCommand(const vector<string>& tokens)
@@ -70,11 +70,11 @@ bool PartialLBAWrite::execute(ISsdApp* app, LBA lba, DATA data)
 
 		for (DATA readLba = readStartLba; readLba < readEndLba; readLba++)
 		{
-			if (!comparer->execute(app, readLba, writeData)) return CompositExecutor::PrintFail();
+			if (!comparer->execute(app, readLba, writeData)) return CompositeExecutor::PrintFail();
 		}
 	}
 
-	return CompositExecutor::PrintPass();
+	return CompositeExecutor::PrintPass();
 }
 
 bool WriteReadAging::IsValidCommand(const vector<string>& tokens)
@@ -105,11 +105,11 @@ bool WriteReadAging::execute(ISsdApp* app, LBA lba, DATA data)
 
 		for (int index = 0; index < NUM_LBA_PER_LOOP; index++)
 		{
-			if (!comparer->execute(app, lbaRange[index], writeData[index])) return CompositExecutor::PrintFail();
+			if (!comparer->execute(app, lbaRange[index], writeData[index])) return CompositeExecutor::PrintFail();
 		}
 	}
 
-	return CompositExecutor::PrintPass();
+	return CompositeExecutor::PrintPass();
 }
 
 bool EraseAndWriteAging::IsValidCommand(const vector<string>& tokens)
@@ -141,11 +141,11 @@ bool EraseAndWriteAging::execute(ISsdApp* app, LBA lba, DATA data)
 
 			for (LBA readLba = startLba; readLba < endLba; readLba++)
 			{
-				if (!comparer->execute(app, readLba, erasedData)) return CompositExecutor::PrintFail();
+				if (!comparer->execute(app, readLba, erasedData)) return CompositeExecutor::PrintFail();
 			}
 		}
 	}
 
-	return CompositExecutor::PrintPass();
+	return CompositeExecutor::PrintPass();
 }
 

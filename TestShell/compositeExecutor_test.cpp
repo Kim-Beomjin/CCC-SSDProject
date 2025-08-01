@@ -1,6 +1,6 @@
 #ifdef _DEBUG
 #include "gmock/gmock.h"
-#include "CompositExecutor.h"
+#include "compositeExecutor.h"
 
 using namespace testing;
 
@@ -23,7 +23,7 @@ public:
 	MOCK_METHOD(bool, execute, (ISsdApp*, LBA, DATA), (override));
 };
 
-class CompositExecutorFixture : public Test {
+class CompositeExecutorFixture : public Test {
 public:
 	FullWriteAndReadCompare mockFirstApp{ &mockWriter, &mockComparer };
 	PartialLBAWrite mockSecondApp{ &mockWriter, &mockComparer };
@@ -47,7 +47,7 @@ public:
 };
 
 #if (FIX_ME_LATER == 0)
-TEST_F(CompositExecutorFixture, ThrowInvalidCompositExecutor) {
+TEST_F(CompositeExecutorFixture, ThrowInvalidCompositeExecutor) {
 	EXPECT_THROW(mockFirstApp.execute(BLANK_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
 	EXPECT_THROW(mockSecondApp.execute(BLANK_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
 	EXPECT_THROW(mockThirdApp.execute(BLANK_TEST_SCRIPT_NAME, &mockSsdApp), runtime_error);
@@ -58,7 +58,7 @@ TEST_F(CompositExecutorFixture, ThrowInvalidCompositExecutor) {
 }
 #endif
 
-TEST_F(CompositExecutorFixture, CompositExecutor1CheckMockReadWriteMaxTimes) {
+TEST_F(CompositeExecutorFixture, CompositeExecutor1CheckMockReadWriteMaxTimes) {
 	EXPECT_CALL(mockWriter, execute)
 		.Times(FIRST_TEST_SCRIPT_MAX_IO_TIMES);
 
@@ -69,7 +69,7 @@ TEST_F(CompositExecutorFixture, CompositExecutor1CheckMockReadWriteMaxTimes) {
 	mockFirstApp.execute(&mockSsdApp, 0, 0);
 }
 
-TEST_F(CompositExecutorFixture, CompositExecutor2CheckMockReadWriteMaxTimes) {
+TEST_F(CompositeExecutorFixture, CompositeExecutor2CheckMockReadWriteMaxTimes) {
 	EXPECT_CALL(mockWriter, execute)
 		.Times(SECOND_TEST_SCRIPT_MAX_IO_TIMES);
 
@@ -80,7 +80,7 @@ TEST_F(CompositExecutorFixture, CompositExecutor2CheckMockReadWriteMaxTimes) {
 	mockSecondApp.execute(&mockSsdApp, 0, 0);
 }
 
-TEST_F(CompositExecutorFixture, CompositExecutor3CheckMockReadWriteMaxTimes) {
+TEST_F(CompositeExecutorFixture, CompositeExecutor3CheckMockReadWriteMaxTimes) {
 	EXPECT_CALL(mockWriter, execute)
 		.Times(THIRD_TEST_SCRIPT_MAX_IO_TIMES);
 

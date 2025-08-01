@@ -157,8 +157,8 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'"> %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="ssdApp.cpp" />
-    <ClCompile Include="compositExecutor.cpp" />
-    <ClCompile Include="compositExecutor_test.cpp" />
+    <ClCompile Include="compositeExecutor.cpp" />
+    <ClCompile Include="compositeExecutor_test.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -172,7 +172,7 @@
     <ClInclude Include="logger.h" />
     <ClInclude Include="shell.h" />
     <ClInclude Include="ssdApp.h" />
-    <ClInclude Include="compositExecutor.h" />
+    <ClInclude Include="compositeExecutor.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

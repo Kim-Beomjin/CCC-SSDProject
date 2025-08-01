@@ -5,11 +5,11 @@
 
 using namespace std;
 
-class CompositExecutor : public IExecutor
+class CompositeExecutor : public IExecutor
 {
 public:
-	CompositExecutor() = default;
-	CompositExecutor(Writer* writer, Comparer* comparer) : writer{ writer }, comparer { comparer } {}
+	CompositeExecutor() = default;
+	CompositeExecutor(Writer* writer, Comparer* comparer) : writer{ writer }, comparer { comparer } {}
 
 protected:
 	static bool PrintPass(void);
@@ -19,10 +19,10 @@ protected:
 	Comparer* comparer;
 };
 
-class FullWriteAndReadCompare : public CompositExecutor {
+class FullWriteAndReadCompare : public CompositeExecutor {
 public:
 	FullWriteAndReadCompare() = default;
-	FullWriteAndReadCompare(Writer* writer, Comparer* comparer) : CompositExecutor{ writer, comparer } {}
+	FullWriteAndReadCompare(Writer* writer, Comparer* comparer) : CompositeExecutor{ writer, comparer } {}
 	bool IsValidCommand(const vector<string>& tokens) override;
 
 	static const int LOOP_COUNT = 20;
@@ -31,10 +31,10 @@ public:
 	bool execute(ISsdApp* app, LBA lba, DATA data) override;
 };
 
-class PartialLBAWrite : public CompositExecutor {
+class PartialLBAWrite : public CompositeExecutor {
 public:
 	PartialLBAWrite() = default;
-	PartialLBAWrite(Writer* writer, Comparer* comparer) : CompositExecutor{ writer, comparer } {}
+	PartialLBAWrite(Writer* writer, Comparer* comparer) : CompositeExecutor{ writer, comparer } {}
 	bool IsValidCommand(const vector<string>& tokens) override;
 
 	static const int LOOP_COUNT = 30;
@@ -43,10 +43,10 @@ public:
 	bool execute(ISsdApp* app, LBA lba, DATA data) override;
 };
 
-class WriteReadAging : public CompositExecutor {
+class WriteReadAging : public CompositeExecutor {
 public:
 	WriteReadAging() = default;
-	WriteReadAging(Writer* writer, Comparer* comparer) : CompositExecutor{ writer, comparer } {}
+	WriteReadAging(Writer* writer, Comparer* comparer) : CompositeExecutor{ writer, comparer } {}
 	bool IsValidCommand(const vector<string>& tokens) override;
 
 	static const int LOOP_COUNT = 200;
@@ -55,11 +55,11 @@ public:
 	bool execute(ISsdApp* app, LBA lba, DATA data) override;
 };
 
-class EraseAndWriteAging : public CompositExecutor {
+class EraseAndWriteAging : public CompositeExecutor {
 public:
 	EraseAndWriteAging() = default;
 	EraseAndWriteAging(Writer* writer, Comparer* comparer, Eraser* eraser) :
-		CompositExecutor{ writer, comparer }, eraser { eraser } {}
+		CompositeExecutor{ writer, comparer }, eraser { eraser } {}
 	bool IsValidCommand(const vector<string>& tokens) override;
 
 	static const int LOOP_COUNT = 30;

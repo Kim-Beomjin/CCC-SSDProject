@@ -40,7 +40,7 @@ protected:
 	IExecutor* getExecutorFromCache(const string& command);
 };
 
-class CompositExecutorFactory : public IExecutorFactory {
+class CompositeExecutorFactory : public IExecutorFactory {
 public:
 	IExecutor* createExecutor(const string& command) override;
 private:
