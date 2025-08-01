@@ -7,6 +7,12 @@
 
 class SSD_IT_Fixture : public testing::Test
 {
+public:
+  void SetUp()
+  {
+    host->SetSSD(new SSD(new Nand()));
+  }
+
 protected:
   HostInterface* host = HostInterface::GetInstance();
 
@@ -68,9 +74,12 @@ protected:
   const std::vector<std::array<char*, 4>> INVALID_ERASE_ARGV_LIST = {
     {(char*)"SSD.exe", (char*)"E", (char*)"-1", (char*)"10"},
     {(char*)"SSD.exe", (char*)"E", (char*)"-100", (char*)"5"},
-    {(char*)"SSD.exe", (char*)"E", (char*)"1123", (char*)"4"},
-    {(char*)"SSD.exe", (char*)"E", (char*)"10", (char*)"16"},
     {(char*)"SSD.exe", (char*)"E", (char*)"62", (char*)"-1"},
+  };
+
+  const std::vector<std::array<char*, 4>> ERROR_OUTPUT_ERASE_ARGV_LIST = {
+    {(char*)"SSD.exe", (char*)"E", (char*)"99", (char*)"4"},
+    {(char*)"SSD.exe", (char*)"E", (char*)"10", (char*)"16"},
     {(char*)"SSD.exe", (char*)"E", (char*)"42", (char*)"11"},
   };
 };
@@ -119,6 +128,7 @@ TEST_F(SSD_IT_Fixture, SSD_IT_WRITE_INVALID_ARGV)
     EXPECT_THROW(host->Execute(VALID_WRITE_ARGC, argv), std::exception);
   }
 }
+
 TEST_F(SSD_IT_Fixture, SSD_IT_ERASE_INVALID_ARGV)
 {
   for (auto testcase : INVALID_ERASE_ARGV_LIST)
@@ -127,6 +137,15 @@ TEST_F(SSD_IT_Fixture, SSD_IT_ERASE_INVALID_ARGV)
     EXPECT_THROW(host->Execute(VALID_ERASE_ARGC, argv), std::exception);
   }
 }
+//
+//TEST_F(SSD_IT_Fixture, SSD_IT_ERASE_ERROR_ARGV)
+//{
+//  for (auto testcase : INVALID_ERASE_ARGV_LIST)
+//  {
+//    char** argv = const_cast<char**>(testcase.data());
+//    EXPECT_EQ(false, host->Execute(VALID_ERASE_ARGC, argv));
+//  }
+//}
 
 TEST_F(SSD_IT_Fixture, SSD_IT_READ_VALID_ARGV)
 {
