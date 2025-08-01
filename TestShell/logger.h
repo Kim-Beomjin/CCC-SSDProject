@@ -83,7 +83,7 @@ private:
     void WriteMessageToFile(ofstream& logfile, const std::string& message);
     bool CheckChangeUntil(ofstream& logfile);
 
-    int GetLatestLogSize(ofstream& logFile);
+    size_t GetLatestLogSize(ofstream& logFile);
 };
 
 class Logger {
