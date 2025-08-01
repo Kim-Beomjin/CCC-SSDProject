@@ -84,6 +84,10 @@ void print(const string& desc) {
 	cout << desc << endl;
 }
 
+void printWithoutLineBreak(const string& desc) {
+	cout << desc;
+}
+
 void dbgPring(const string& desc) {
 #ifdef _DEBUG
 	cout << desc << endl;

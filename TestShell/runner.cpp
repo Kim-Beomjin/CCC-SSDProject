@@ -34,12 +34,14 @@ int Shell::Runner(int argc, char* argv[])
             return 0; // Empty Line
         }
 
+        printWithoutLineBreak(cmd + "  ___  ");
         if (!commandParser->ParseCommand(cmd))
         {
             print("[Runner] Invalid Command");
             return 0; // Invalid command
         }
 
+        printWithoutLineBreak("Run()...");
         commandParser->ExecuteSsdUsingParsedCommand(SsdApp::getInstance());
     }
 

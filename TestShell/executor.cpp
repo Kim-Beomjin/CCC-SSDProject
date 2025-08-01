@@ -10,23 +10,37 @@
 
 using namespace std;
 
-IExecutor* ExecutorFactory::createExecutor(const string command)
-{
-	if (command == WRITE_CMD) return new OuputDecoratedWriter();
-	if (command == FULL_WRITE_CMD) return new FullWriter();
-	if (command == READ_CMD) return new OuputDecoratedReader();
-	if (command == FULL_READ_CMD) return new FullReader();
-	if (command == ERASE_CMD) return new SizeEraser();
-	if (command == ERASE_RANGE_CMD) return new RangeEraser();
-	if (command == HELP_CMD) return new Helper();
-	if (command == EXIT_CMD) return new Exiter();
-	if (command == FLUSH_CMD) return new Flusher();
-	if (command == FIRST_SCRIPT_SHORT_NAME || command == FIRST_SCRIPT_FULL_NAME) return new FullWriteAndReadCompare(new Writer(), new Comparer());
-	if (command == SECOND_SCRIPT_SHORT_NAME || command == SECOND_SCRIPT_FULL_NAME) return new PartialLBAWrite(new Writer(), new Comparer());
-	if (command == THIRD_SCRIPT_SHORT_NAME || command == THIRD_SCRIPT_FULL_NAME) return new WriteReadAging(new Writer(), new Comparer());
-	if (command == FOURTH_SCRIPT_SHORT_NAME || command == FOURTH_SCRIPT_FULL_NAME) return new EraseAndWriteAging(new Writer(), new Comparer(), new Eraser());
+const unordered_map<string, ScriptRunnerFactory::Creator> ScriptRunnerFactory::factoryMap = {
+	{FIRST_SCRIPT_SHORT_NAME, []() { return new FullWriteAndReadCompare(new Writer(), new Comparer()); }},
+	{FIRST_SCRIPT_FULL_NAME,  []() { return new FullWriteAndReadCompare(new Writer(), new Comparer()); }},
+	{SECOND_SCRIPT_SHORT_NAME, []() { return new PartialLBAWrite(new Writer(), new Comparer()); }},
+	{SECOND_SCRIPT_FULL_NAME,  []() { return new PartialLBAWrite(new Writer(), new Comparer()); }},
+	{THIRD_SCRIPT_SHORT_NAME, []() { return new WriteReadAging(new Writer(), new Comparer()); }},
+	{THIRD_SCRIPT_FULL_NAME,  []() { return new WriteReadAging(new Writer(), new Comparer()); }},
+	{FOURTH_SCRIPT_SHORT_NAME, []() { return new EraseAndWriteAging(new Writer(), new Comparer(), new Eraser()); }},
+	{FOURTH_SCRIPT_FULL_NAME,  []() { return new EraseAndWriteAging(new Writer(), new Comparer(), new Eraser()); }},
+};
 
-	return nullptr;
+IExecutor* ScriptRunnerFactory::createExecutor(const string& command) {
+	auto it = factoryMap.find(command);
+	return (it != factoryMap.end()) ? it->second() : nullptr;
+}
+
+const unordered_map<string, ExecutorFactory::Creator> ExecutorFactory::factoryMap = {
+	{WRITE_CMD,              []() { return new OuputDecoratedWriter(); }},
+	{FULL_WRITE_CMD,         []() { return new FullWriter(); }},
+	{READ_CMD,               []() { return new OuputDecoratedReader(); }},
+	{FULL_READ_CMD,          []() { return new FullReader(); }},
+	{ERASE_CMD,              []() { return new Eraser(); }},
+	{ERASE_RANGE_CMD,        []() { return new RangeEraser(); }},
+	{HELP_CMD,               []() { return new Helper(); }},
+	{EXIT_CMD,               []() { return new Exiter(); }},
+	{FLUSH_CMD,              []() { return new Flusher(); }},
+};
+
+IExecutor* ExecutorFactory::createExecutor(const string& command) {
+	auto it = factoryMap.find(command);
+	return (it != factoryMap.end()) ? it->second() : ScriptRunnerFactory::createExecutor(command);
 }
 
 bool Writer::execute(ISsdApp* app, LBA lba, DATA data)
