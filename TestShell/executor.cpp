@@ -168,8 +168,7 @@ string Reader::GetResultFromFile(void)
 	string result = "0x00000000";
 
 	ifstream file(OUTPUT_NAME);
-	if (!file.is_open()) file.open("../" + OUTPUT_NAME);
-	if (!file.is_open()) file.open("../../" + OUTPUT_NAME);
+
 	if (!file.is_open()) return result;
 
 	std::stringstream buffer;
@@ -191,7 +190,7 @@ bool OuputDecoratedReader::execute(ISsdApp* app, LBA lba, DATA data)
 {
 	if (!Reader::execute(app, lba, data)) return false;
 	std::ostringstream oss;
-	oss << "[Read] LBA:" << setw(2) << lba << ":" << GetResultFromFile();
+	oss << "[Read] LBA:" << setw(2) << lba << " : " << GetResultFromFile();
 	print(oss.str());
 	return true;
 }
@@ -251,7 +250,7 @@ bool Exiter::IsValidCommand(const vector<string>& tokens) {
 
 bool Exiter::execute(ISsdApp* app, LBA lba, DATA data)
 {
-	print("[Exit] Done");
+	//print("[Exit] Done");
 	return true;
 }
 
