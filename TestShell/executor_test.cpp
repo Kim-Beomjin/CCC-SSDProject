@@ -43,20 +43,20 @@ TEST_F(ExecutorTestFixture, writeCommandTest) {
 	checkExecute(WRITE_CMD, TEST_LBA, TEST_DATA);
 }
 
-TEST_F(ExecutorTestFixture, fullwriteCommandTest) {
-	EXPECT_CALL(mock_app, Write)
-		.Times(SSD_MAX_SIZE)
-		.WillRepeatedly(Return(true));
-	
-	checkExecute(FULL_WRITE_CMD, 0, TEST_DATA);
-}
-
 TEST_F(ExecutorTestFixture, readNonWriteTest) {
 	EXPECT_CALL(mock_app, Read)
 		.Times(1)
 		.WillOnce(Return(NO_DATA));
 
 	checkExecute(READ_CMD, TEST_LBA, 0, NO_DATA);
+}
+#ifdef _FULL_TEST_RUN
+TEST_F(ExecutorTestFixture, fullWriteCommandTest) {
+	EXPECT_CALL(mock_app, Write)
+		.Times(SSD_MAX_SIZE)
+		.WillRepeatedly(Return(true));
+
+	checkExecute(FULL_WRITE_CMD, 0, TEST_DATA);
 }
 
 TEST_F(ExecutorTestFixture, fullreadCommandTest) {
@@ -66,6 +66,7 @@ TEST_F(ExecutorTestFixture, fullreadCommandTest) {
 
 	checkExecute(FULL_READ_CMD, 0, 0, NO_DATA);
 }
+#endif
 
 TEST_F(ExecutorTestFixture, eraseCommandTest) {
 	EXPECT_CALL(mock_app, Erase)
@@ -73,6 +74,22 @@ TEST_F(ExecutorTestFixture, eraseCommandTest) {
 		.WillOnce(Return(true));
 
 	checkExecute(ERASE_CMD, 0, 2);
+}
+
+TEST_F(ExecutorTestFixture, eraseRangeCommandTest) {
+	EXPECT_CALL(mock_app, Erase)
+		.Times(1)
+		.WillOnce(Return(true));
+
+	checkExecute(ERASE_RANGE_CMD, 3, 10);
+}
+
+TEST_F(ExecutorTestFixture, flushCommandTest) {
+	EXPECT_CALL(mock_app, Flush)
+		.Times(1)
+		.WillOnce(Return(true));
+
+	checkExecute(FLUSH_CMD);
 }
 
 #endif

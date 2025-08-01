@@ -14,6 +14,7 @@ private:
     bool IsVaildCommand(const string& cmd, size_t tokenSize);
     bool doParse(const string& cmd);
     bool IsWriteCmdValid(const string& cmd, size_t tokenSize);
+    bool IsFullWriteCmdValid(const string& cmd, size_t tokenSize);
     bool IsEraseCmdValid(const string& cmd, size_t tokenSize);
     bool IsReadCmdValid(const string& cmd, size_t tokenSize);
     bool IsValidWriteData(const string& data);
