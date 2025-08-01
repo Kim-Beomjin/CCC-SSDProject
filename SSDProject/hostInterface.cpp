@@ -5,7 +5,7 @@
 
 void HostInterface::Execute(int argc, char* argv[])
 {
-	IProcessor* processor = ProcessorFactory::GetInstance()->CreateProcessor(argc, argv, ssd, bufferManager);
+	IProcessor* processor = ProcessorFactory::GetInstance()->CreateProcessor(argc, argv, ssd, bufferedSSD);
 	if (processor == nullptr || processor->LoadParameterAndCheckInvalid(argv[ARGV::LBA_IDX], argv[ARGV::DATA_IDX]))
 	{
 		return;
@@ -15,12 +15,12 @@ void HostInterface::Execute(int argc, char* argv[])
 
 //------------------------------ Processor Factory ----------------------------------//
 
-IProcessor* ProcessorFactory::CreateProcessor(int argc, char* argv[], SSD* ssd, BufferManager* bufferManager)
+IProcessor* ProcessorFactory::CreateProcessor(int argc, char* argv[], SSD* ssd, BufferedSSD* bufferedSSD)
 {
-	if (_WriteCondition(argc, argv)) return new WriteProcessor(ssd, bufferManager);
-	if (_ReadCondition(argc, argv)) return new ReadProcessor(ssd, bufferManager);
-	if (_EraseCondition(argc, argv)) return new EraseProcessor(ssd, bufferManager);
-	if (_FlushCondition(argc, argv)) return new FlushProcessor(ssd, bufferManager);
+	if (_WriteCondition(argc, argv)) return new WriteProcessor(ssd, bufferedSSD);
+	if (_ReadCondition(argc, argv)) return new ReadProcessor(ssd, bufferedSSD);
+	if (_EraseCondition(argc, argv)) return new EraseProcessor(ssd, bufferedSSD);
+	if (_FlushCondition(argc, argv)) return new FlushProcessor(ssd, bufferedSSD);
 	DEBUG_ASSERT(false, "INVALID_PARAMETER");
 	std::cout << "SSD GET INVALID PARAMETER!!!!" << "\n";
 	return nullptr;
@@ -69,12 +69,7 @@ bool WriteProcessor::LoadParameterAndCheckInvalid(char* lbaStr, char* dataStr)
 }
 void WriteProcessor::Process()
 {
-	if (lba < LBA_END_ADDR)
-	{
-		bufferManager->BufferWrite(lba, data);
-		return;
-	}
-	ssd->Write(lba, data);
+	bufferedSSD->Write(lba, data);
 }
 
 bool ReadProcessor::LoadParameterAndCheckInvalid(char* lbaStr, char* )
@@ -96,13 +91,7 @@ bool ReadProcessor::LoadParameterAndCheckInvalid(char* lbaStr, char* )
 }
 void ReadProcessor::Process()
 {
-	DATA readData;
-	if (lba < LBA_END_ADDR && bufferManager->BufferRead(lba, readData))
-	{
-		ssd->UpdateOutputFileUsingData(readData);
-		return;
-	}
-	ssd->Read(lba);
+	bufferedSSD->Read(lba);
 }
 
 bool EraseProcessor::LoadParameterAndCheckInvalid(char* lbaStr, char* sizeStr)
@@ -128,7 +117,7 @@ void EraseProcessor::Process()
 {
 	if (lba + size <= LBA_END_ADDR && size <= MAX_ERASE_SIZE)
 	{
-		bufferManager->BufferErase(lba, size);
+		bufferedSSD->Erase(lba, size);
 		return;
 	}
 	ssd->Erase(lba, size);
@@ -140,7 +129,7 @@ bool FlushProcessor::LoadParameterAndCheckInvalid(char* , char* )
 }
 void FlushProcessor::Process()
 {
-	bufferManager->BufferFlush();
+	bufferedSSD->Flush();
 }
 
 

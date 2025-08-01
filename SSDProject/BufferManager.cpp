@@ -8,7 +8,7 @@
 #include <vector>
 #include <iomanip>
 
-BufferManager::BufferManager(SSD* ssd) : ssd{ ssd } {
+BufferedSSD::BufferedSSD() {
 	_ResetBuffer();
 	if (_access(BUFFER_DIRECTORY.c_str(), 0) != 0)
 	{
@@ -18,21 +18,22 @@ BufferManager::BufferManager(SSD* ssd) : ssd{ ssd } {
 	}
 }
 
-bool BufferManager::BufferRead(int lba, DATA& readData) {
+bool BufferedSSD::Read(LBA lba) {
+	//SSD::InvalidCheck(lba);
 	_LoadBuffer(false /*need_delete*/);
 	if (dataBuffer[lba].type == BUF_TYPE::NONE)
 	{
-		return false;
+		SSD::Read(lba);
 	}
-	readData = dataBuffer[lba].data;
+	SSD::UpdateOutputFileUsingData(dataBuffer[lba].data);
 	return true;
 }
 
-void BufferManager::BufferWrite(LBA lba, DATA data)  //first i implement dumb (just want to simple I/O test)
+void BufferedSSD::Write(LBA lba, DATA data)  //first i implement dumb (just want to simple I/O test)
 {
 	if (_NeedFlush())
 	{
-		BufferFlush();
+		Flush();
 	}
 	_LoadBuffer(true /*need_delete*/);
 	_ConvertWriteCmdToBuf(lba, data);
@@ -41,11 +42,11 @@ void BufferManager::BufferWrite(LBA lba, DATA data)  //first i implement dumb (j
 	
 }
 
-void BufferManager::BufferErase(LBA lba, unsigned int size)  //first i implement dumb (just want to simple I/O test)
+void BufferedSSD::Erase(LBA lba, unsigned int size)  //first i implement dumb (just want to simple I/O test)
 {
 	if (_NeedFlush())
 	{
-		BufferFlush();
+		Flush();
 	}
 	_LoadBuffer(true /*need_delete*/);
 	_ConvertEraseCmdToBuf(lba, size);
@@ -54,7 +55,7 @@ void BufferManager::BufferErase(LBA lba, unsigned int size)  //first i implement
 
 }
 
-void BufferManager::BufferFlush()
+void BufferedSSD::Flush()
 {
 	WIN32_FIND_DATAA findFileData;
 	HANDLE hFind = FindFirstFileA(SEARCH_BUFFER_DIRECTORY.c_str(), &findFileData);
@@ -73,12 +74,12 @@ void BufferManager::BufferFlush()
 			if (command[0] == "W") {
 				LBA lba = std::stoul(command[1], &idx, 10);
 				DATA data = std::stoul(command[2], &idx, 16);
-				ssd->Write(lba, data);
+				SSD::Write(lba, data);
 			}
 			else if (command[0] == "E") {
 				LBA lba = std::stoul(command[1]);
 				int size = std::stoul(command[2]);
-				ssd->Erase(lba, size);
+				SSD::Erase(lba, size);
 			}
 			if (std::remove((BUFFER_DIRECTORY + filename).c_str()) != 0) {
 				DEBUG_ASSERT(false, "delete file fail");
@@ -91,7 +92,7 @@ void BufferManager::BufferFlush()
 }
 
 
-void BufferManager::_LoadBuffer(bool need_delete)
+void BufferedSSD::_LoadBuffer(bool need_delete)
 {
 	WIN32_FIND_DATAA findFileData;
 	HANDLE hFind = FindFirstFileA(SEARCH_BUFFER_DIRECTORY.c_str(), &findFileData);
@@ -117,12 +118,12 @@ void BufferManager::_LoadBuffer(bool need_delete)
 	} while (FindNextFileA(hFind, &findFileData) != 0);
 }
 
-bool BufferManager::_NeedFlush()
+bool BufferedSSD::_NeedFlush()
 {	
 	return (_GetCmdCnt() == 5);
 }
 
-int BufferManager::_GetCmdCnt()
+int BufferedSSD::_GetCmdCnt()
 {
 	WIN32_FIND_DATAA findFileData;
 	HANDLE hFind = FindFirstFileA(SEARCH_BUFFER_DIRECTORY.c_str(), &findFileData);
@@ -142,7 +143,7 @@ int BufferManager::_GetCmdCnt()
 	return valid_file_count;
 }
 
-void BufferManager::_ResetBuffer()
+void BufferedSSD::_ResetBuffer()
 {
 	for (int i = 1; i <= 5; ++i) {
 		std::string filename = BUFFER_DIRECTORY + std::to_string(i) + "_empty.txt";
@@ -150,7 +151,7 @@ void BufferManager::_ResetBuffer()
 	}
 }
 
-void BufferManager::_DumpCommand()
+void BufferedSSD::_DumpCommand()
 {
 	for (int i = 0; i < 5; ++i) {
 		std::ofstream outFile(cmdList[i]);
@@ -164,7 +165,7 @@ void BufferManager::_DumpCommand()
 }
 
 
-void BufferManager::_ConvertCmdToBuf(std::string cmdStr, std::string lbaStr, std::string dataStr)
+void BufferedSSD::_ConvertCmdToBuf(std::string cmdStr, std::string lbaStr, std::string dataStr)
 {
 	size_t idx;
 	if (cmdStr == "W") {
@@ -179,19 +180,19 @@ void BufferManager::_ConvertCmdToBuf(std::string cmdStr, std::string lbaStr, std
 	}
 }
 
-void BufferManager::_ConvertWriteCmdToBuf(LBA lba, DATA data)
+void BufferedSSD::_ConvertWriteCmdToBuf(LBA lba, DATA data)
 {
 	dataBuffer[lba] = { BUF_TYPE::WRITE, data };
 }
 
-void BufferManager::_ConvertEraseCmdToBuf(LBA lba, unsigned int size)
+void BufferedSSD::_ConvertEraseCmdToBuf(LBA lba, unsigned int size)
 {
 	for (LBA i = lba; i < lba + size; i++) {
 		dataBuffer[i] = { BUF_TYPE::ERASE, 0 };
 	}
 }
 
-void BufferManager::_ConvertBufToCmd()
+void BufferedSSD::_ConvertBufToCmd()
 {
 	//erase check
 	int write_start_idx = -1;
@@ -256,14 +257,14 @@ void BufferManager::_ConvertBufToCmd()
 	DEBUG_ASSERT(cmd_buf_idx <= 5, "ALGORITHM ERROR!!");
 }
 
-void BufferManager::_DumpEraseCmd(int cmdIdx, LBA lba, int eraseSize)
+void BufferedSSD::_DumpEraseCmd(int cmdIdx, LBA lba, int eraseSize)
 {
 	std::string filename = BUFFER_DIRECTORY + std::to_string(cmdIdx + 1) + "_" + "E" + "_" +
 		std::to_string(lba) + "_" + std::to_string(eraseSize) + ".txt";
 	cmdList[cmdIdx] = filename;
 }
 
-void BufferManager::_DumpWriteCmd(int cmdIdx, LBA lba, DATA data)
+void BufferedSSD::_DumpWriteCmd(int cmdIdx, LBA lba, DATA data)
 {
 	std::string filename = BUFFER_DIRECTORY + std::to_string(cmdIdx + 1) + "_" + "W" + "_" +
 		std::to_string(lba) + "_" + GlobalUtil::DataToHexString(data) + ".txt";
@@ -271,7 +272,7 @@ void BufferManager::_DumpWriteCmd(int cmdIdx, LBA lba, DATA data)
 }
 
 
-bool BufferManager::_CheckFileValid(const std::string& filename)
+bool BufferedSSD::_CheckFileValid(const std::string& filename)
 {
 	return (filename[0] >= '1' && filename[0] <= '5' && filename[1] == '_');
 }
