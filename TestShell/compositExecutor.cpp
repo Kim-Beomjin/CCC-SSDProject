@@ -19,6 +19,12 @@ bool CompositExecutor::PrintFail(void)
 	return false;
 }
 
+bool FullWriteAndReadCompare::IsValidCommand(const vector<string>& tokens)
+{
+	if (tokens[CMD_IDX] == FIRST_SCRIPT_SHORT_NAME || tokens[CMD_IDX] == FIRST_SCRIPT_FULL_NAME) return true;
+	return false;
+}
+
 bool FullWriteAndReadCompare::execute(ISsdApp* app, LBA lba, DATA data)
 {
 	for (int loop = 0; loop < LOOP_COUNT; loop++)
@@ -39,6 +45,12 @@ bool FullWriteAndReadCompare::execute(ISsdApp* app, LBA lba, DATA data)
 	}
 
 	return CompositExecutor::PrintPass();
+}
+
+bool PartialLBAWrite::IsValidCommand(const vector<string>& tokens)
+{
+	if (tokens[CMD_IDX] == SECOND_SCRIPT_SHORT_NAME || tokens[CMD_IDX] == SECOND_SCRIPT_FULL_NAME) return true;
+	return false;
 }
 
 bool PartialLBAWrite::execute(ISsdApp* app, LBA lba, DATA data)
@@ -63,6 +75,12 @@ bool PartialLBAWrite::execute(ISsdApp* app, LBA lba, DATA data)
 	}
 
 	return CompositExecutor::PrintPass();
+}
+
+bool WriteReadAging::IsValidCommand(const vector<string>& tokens)
+{
+	if (tokens[CMD_IDX] == THIRD_SCRIPT_SHORT_NAME || tokens[CMD_IDX] == THIRD_SCRIPT_FULL_NAME) return true;
+	return false;
 }
 
 bool WriteReadAging::execute(ISsdApp* app, LBA lba, DATA data)
@@ -92,6 +110,12 @@ bool WriteReadAging::execute(ISsdApp* app, LBA lba, DATA data)
 	}
 
 	return CompositExecutor::PrintPass();
+}
+
+bool EraseAndWriteAging::IsValidCommand(const vector<string>& tokens)
+{
+	if (tokens[CMD_IDX] == FOURTH_SCRIPT_SHORT_NAME || tokens[CMD_IDX] == FOURTH_SCRIPT_FULL_NAME) return true;
+	return false;
 }
 
 bool EraseAndWriteAging::execute(ISsdApp* app, LBA lba, DATA data)

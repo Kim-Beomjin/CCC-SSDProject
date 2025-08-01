@@ -22,7 +22,7 @@ IExecutor* ExecutorFactory::createExecutor(const string command)
 	if (command == HELP_CMD) return new Helper();
 	if (command == EXIT_CMD) return new Exiter();
 	if (command == FLUSH_CMD) return new Flusher();
-	if (command == FIRST_SCRIPT_SHORT_NAME || command == FIRST_SCRIPT_FULL_NAME)return new FullWriteAndReadCompare(new Writer(), new Comparer());
+	if (command == FIRST_SCRIPT_SHORT_NAME || command == FIRST_SCRIPT_FULL_NAME) return new FullWriteAndReadCompare(new Writer(), new Comparer());
 	if (command == SECOND_SCRIPT_SHORT_NAME || command == SECOND_SCRIPT_FULL_NAME) return new PartialLBAWrite(new Writer(), new Comparer());
 	if (command == THIRD_SCRIPT_SHORT_NAME || command == THIRD_SCRIPT_FULL_NAME) return new WriteReadAging(new Writer(), new Comparer());
 	if (command == FOURTH_SCRIPT_SHORT_NAME || command == FOURTH_SCRIPT_FULL_NAME) return new EraseAndWriteAging(new Writer(), new Comparer(), new Eraser());
