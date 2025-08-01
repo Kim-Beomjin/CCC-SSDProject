@@ -207,57 +207,39 @@ void BufferedSSD::_ConvertEraseCmdToBuf(LBA lba, unsigned int size)
 void BufferedSSD::_ConvertBufToCmd()
 {
 	//erase check
-	int write_start_idx = -1;
 	int erase_start_idx = -1;
-	int erase_end_idx = -1;
 	int cmd_buf_idx = 0;
 	std::string filename;
 	int erase_size;
 	for (int i = LBA_START_ADDR; i < LBA_END_ADDR; i++) {
 		if (dataBuffer[i].type == BUF_TYPE::NONE)
 		{
-			if (erase_start_idx != -1 && erase_end_idx != -1)
+			if (erase_start_idx != -1)
 			{
-				erase_end_idx += 1;
-				while (erase_start_idx < erase_end_idx) {
-					erase_size = ((erase_end_idx - erase_start_idx) > 10) ? 10 : erase_end_idx - erase_start_idx;
-					_DumpEraseCmd(cmd_buf_idx++, erase_start_idx, erase_size);
-					erase_start_idx += erase_size;
-				}
-				erase_start_idx = -1; erase_end_idx = -1;
+				erase_size = i - erase_start_idx;
+				_DumpEraseCmd(cmd_buf_idx++, erase_start_idx, erase_size);
+				erase_start_idx = -1;
 			}
 		}
-		else if (dataBuffer[i].type == BUF_TYPE::ERASE)
+		else
 		{
-			if (erase_start_idx == -1) {
+			if (dataBuffer[i].type == BUF_TYPE::ERASE && erase_start_idx == -1) {
 				erase_start_idx = i;
 			}
-			erase_end_idx = i;
-		}
-		else if (dataBuffer[i].type == BUF_TYPE::WRITE)
-		{
-			if (((i - erase_start_idx) % 10) == 0)
+			if (erase_start_idx != -1 && ((i - erase_start_idx + 1) % 10) == 0)
 			{
-				erase_end_idx += 1;
-				while (erase_start_idx + 10 < erase_end_idx) {
-					erase_size = ((erase_end_idx - erase_start_idx) > 10) ? 10 : erase_end_idx - erase_start_idx;
-					_DumpEraseCmd(cmd_buf_idx++, erase_start_idx, erase_size);
-					erase_start_idx += erase_size;
-				}
-				erase_start_idx = -1; erase_end_idx = -1;
+				erase_size = 10;
+				_DumpEraseCmd(cmd_buf_idx++, erase_start_idx, erase_size);
+				erase_start_idx = -1;
 			}
 		}
 	}
-
-	if (erase_start_idx != -1 && erase_end_idx != -1)
+	if (erase_start_idx != -1)
 	{
-		erase_end_idx += 1;
-		while (erase_start_idx < erase_end_idx) {
-			erase_size = ((erase_end_idx - erase_start_idx) > 10) ? 10 : erase_end_idx - erase_start_idx;
-			_DumpEraseCmd(cmd_buf_idx++, erase_start_idx, erase_size);
-			erase_start_idx += erase_size;
-		}
-		erase_start_idx = -1; erase_end_idx = -1;
+		std::cout << 100 << erase_start_idx << "\n";
+		erase_size = ((100 - erase_start_idx) > 10) ? 10 : 100 - erase_start_idx;
+		_DumpEraseCmd(cmd_buf_idx++, erase_start_idx, erase_size);
+		erase_start_idx += erase_size;
 	}
 
 	for (int i = LBA_START_ADDR; i < LBA_END_ADDR; i++) {
