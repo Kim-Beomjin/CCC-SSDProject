@@ -28,8 +28,8 @@ bool SSD::Write(LBA lba, DATA writeData)
   }
 
   TEST_READ_WRITE_LOGGER(lba, writeData);
-  nand->Write(lba, writeData);
-  return true;
+  
+  return nand->Write(lba, writeData);
 }
 
 bool SSD::Erase(LBA lba, ERASE_SIZE erase_size)
@@ -40,8 +40,8 @@ bool SSD::Erase(LBA lba, ERASE_SIZE erase_size)
   }
 
   TEST_ERASE_LOGGER(lba, erase_size);
+
   return nand->Erase(lba, erase_size);
-  return true;
 }
 
 void SSD::Flush()
