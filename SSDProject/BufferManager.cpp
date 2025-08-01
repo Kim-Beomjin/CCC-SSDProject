@@ -194,7 +194,7 @@ void BufferManager::_ConvertBufToCmd()
 		}
 		else if (dataBuffer[i].type == BUF_TYPE::WRITE)
 		{
-			if (((erase_end_idx - erase_start_idx + 1) % 10) == 0)
+			if (((i - erase_start_idx) % 10) == 0)
 			{
 				erase_end_idx += 1;
 				while (erase_start_idx + 10 < erase_end_idx) {
