@@ -6,7 +6,8 @@ public:
     Shell() : commandParser(nullptr) {}
     Shell(ICommandParserBridge* broker) : commandParser(broker) {}
 
-    void RunShellLoop(void);
+    int RunShellLoop(void);
+    int Runner(int argc, char* argv[]);
 #ifdef _DEBUG
     void setSsdApp(ISsdApp* app);
 #endif

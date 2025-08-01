@@ -5,7 +5,7 @@
 
 using namespace std;
 
-void Shell::RunShellLoop(void) {
+int Shell::RunShellLoop(void) {
     string cmd;
 
     if (commandParser == nullptr)
@@ -31,6 +31,8 @@ void Shell::RunShellLoop(void) {
 
 
     } while (IsCmdExit(cmd) == false);
+
+    return 0;
 }
 
 bool Shell::IsCmdExit(string cmd) {
