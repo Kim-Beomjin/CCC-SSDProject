@@ -34,7 +34,7 @@ const string TestShellUtils::makeExecuteCmd(string cmd, LBA lba, DATA data) {
 		oss << " " << data;
 	}
 
-	dbgPring(oss.str());
+	dbgPrint(oss.str());
 	return oss.str();
 }
 
@@ -88,7 +88,7 @@ void printWithoutLineBreak(const string& desc) {
 	cout << desc;
 }
 
-void dbgPring(const string& desc) {
+void dbgPrint(const string& desc) {
 #ifdef _DEBUG
 	cout << desc << endl;
 #endif
