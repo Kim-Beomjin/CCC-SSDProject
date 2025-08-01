@@ -155,7 +155,7 @@ bool Comparer::execute(ISsdApp* app, LBA lba, DATA data)
 
 bool Comparer::Compare(const DATA expectedData, const string &readResult)
 {
-	DATA readData = stringToUnsignedInt(readResult);
+	DATA readData = TestShellUtils::stringToUnsignedInt(readResult);
 	if (expectedData == readData) return true;
 
 	SHELL_LOG("[Compare] Fail Expected ", expectedData);

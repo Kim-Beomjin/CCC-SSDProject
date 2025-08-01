@@ -32,7 +32,7 @@ TEST_F(CommandParserFixture, FullwriteCommand) {
         .Times(SSD_MAX_SIZE)
         .WillRepeatedly(Return(true));
 
-    CheckParseCommand(FULL_WRITE_CMD + " " + DataToHexString(TEST_DATA));
+    CheckParseCommand(FULL_WRITE_CMD + " " + TestShellUtils::DataToHexString(TEST_DATA));
 }
 
 TEST_F(CommandParserFixture, FullreadCommand) {
@@ -48,7 +48,7 @@ TEST_F(CommandParserFixture, writeCommand) {
         .Times(1)
         .WillOnce(Return(true));
 
-    CheckParseCommand(WRITE_CMD + " " + to_string(TEST_LBA) + " "  + DataToHexString(TEST_DATA));
+    CheckParseCommand(WRITE_CMD + " " + to_string(TEST_LBA) + " "  + TestShellUtils::DataToHexString(TEST_DATA));
 }
 
 TEST_F(CommandParserFixture, readCommand) {

@@ -4,10 +4,13 @@
 
 using std::vector;
 
-bool fileExists(const std::string& filename);
-const string makeExecuteCmd(string cmd, LBA lba = 0, DATA data = 0);
-string DataToHexString(const DATA data);
-unsigned int stringToUnsignedInt(const string& str);
-vector<string> splitCommand(const string& fullCmd);
+class TestShellUtils {
+public:
+	static bool fileExists(const std::string& filename);
+	static const string makeExecuteCmd(string cmd, LBA lba = 0, DATA data = 0);
+	static string DataToHexString(const DATA data);
+	static unsigned int stringToUnsignedInt(const string& str);
+	static vector<string> splitCommand(const string& fullCmd);
+};
 
 void print(const string& desc);
