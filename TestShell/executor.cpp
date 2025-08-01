@@ -22,14 +22,14 @@ const unordered_map<string, CompositExecutorFactory::Creator> CompositExecutorFa
 };
 
 IExecutor* CompositExecutorFactory::createExecutor(const string& command) {
-	auto it = executorCache.find(command);
-	if (it != executorCache.end()) {
-		return it->second.get();
+	auto cacheIterator = executorCache.find(command);
+	if (cacheIterator != executorCache.end()) {
+		return cacheIterator->second.get();
 	}
 
-	auto factoryIt = factoryMap.find(command);
-	if (factoryIt != factoryMap.end()) {
-		std::unique_ptr<IExecutor> executor(factoryIt->second());
+	auto mapIterator = factoryMap.find(command);
+	if (mapIterator != factoryMap.end()) {
+		std::unique_ptr<IExecutor> executor(mapIterator->second());
 		IExecutor* rawPtr = executor.get();
 		executorCache[command] = std::move(executor);
 		return rawPtr;
@@ -60,14 +60,14 @@ const unordered_map<string, ExecutorFactory::Creator> ExecutorFactory::factoryMa
 };
 
 IExecutor* ExecutorFactory::createExecutor(const string& command) {
-	auto it = executorCache.find(command);
-	if (it != executorCache.end()) {
-		return it->second.get();
+	auto cacheIterator = executorCache.find(command);
+	if (cacheIterator != executorCache.end()) {
+		return cacheIterator->second.get();
 	}
 
-	auto factoryIt = factoryMap.find(command);
-	if (factoryIt != factoryMap.end()) {
-		std::unique_ptr<IExecutor> executor(factoryIt->second());
+	auto mapIterator = factoryMap.find(command);
+	if (mapIterator != factoryMap.end()) {
+		std::unique_ptr<IExecutor> executor(mapIterator->second());
 		IExecutor* rawPtr = executor.get();
 		executorCache[command] = std::move(executor);
 		return rawPtr;
@@ -206,7 +206,7 @@ bool Comparer::Compare(const DATA expectedData, const string &readResult)
 	if (expectedData == readData) return true;
 
 	SHELL_LOG("[Compare] Fail Expected ", expectedData);
-	SHELL_LOG("[Caompre] Fail Real ", readData);
+	SHELL_LOG("[Compare] Fail Real ", readData);
 
 	return false;
 }
