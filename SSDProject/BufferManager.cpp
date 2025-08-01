@@ -74,6 +74,7 @@ void BufferManager::Flush()
 	} while (FindNextFileA(hFind, &findFileData) != 0);
 
 	_ResetBuffer();
+	_DumpCommand();
 }
 
 void BufferManager::_LoadBuffer(bool need_delete)
@@ -142,6 +143,9 @@ void BufferManager::_DumpCommand()
 		if (outFile.is_open()) {
 			outFile.close();
 		}
+	}
+	for (LBA i = LBA_START_ADDR; i < LBA_END_ADDR; i++) {
+		dataBuffer[i] = { BUF_TYPE::NONE, 0 };
 	}
 }
 
