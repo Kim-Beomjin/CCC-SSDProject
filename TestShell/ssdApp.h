@@ -5,7 +5,7 @@
 class SsdApp : public ISsdApp
 {
 public:
-	DATA Read(LBA lba) override;
+	bool Read(LBA lba) override;
 
 	bool Write(LBA lba, DATA data) override;
 

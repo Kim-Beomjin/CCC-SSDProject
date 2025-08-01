@@ -6,7 +6,7 @@ using namespace testing;
 
 class MockSsdApp : public ISsdApp {
 public:
-	MOCK_METHOD(DATA, Read, (LBA), (override));
+	MOCK_METHOD(bool, Read, (LBA), (override));
 	MOCK_METHOD(bool, Write, (LBA, DATA), (override));
 	MOCK_METHOD(bool, Erase, (LBA, SIZE), (override));
 	MOCK_METHOD(bool, Flush, (), (override));
