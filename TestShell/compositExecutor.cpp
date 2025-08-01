@@ -130,7 +130,7 @@ bool EraseAndWriteAging::execute(ISsdApp* app, LBA lba, DATA data)
 		const DATA writeData = loop;
 		const DATA overWriteData = LOOP_COUNT - loop;
 
-		for (LBA testLba = loopStartLBA; testLba < ssdMaxLBA; testLba += (NUM_LBA_PER_LOOP - 1))
+		for (LBA testLba = loopStartLBA; testLba + NUM_LBA_PER_LOOP <= ssdMaxLBA; testLba += (NUM_LBA_PER_LOOP - 1))
 		{
 			LBA startLba = testLba;
 			LBA endLba = testLba + NUM_LBA_PER_LOOP;
