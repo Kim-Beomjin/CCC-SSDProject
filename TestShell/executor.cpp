@@ -22,8 +22,20 @@ const unordered_map<string, CompositExecutorFactory::Creator> CompositExecutorFa
 };
 
 IExecutor* CompositExecutorFactory::createExecutor(const string& command) {
-	auto it = factoryMap.find(command);
-	return (it != factoryMap.end()) ? it->second() : nullptr;
+	auto it = executorCache.find(command);
+	if (it != executorCache.end()) {
+		return it->second.get();
+	}
+
+	auto factoryIt = factoryMap.find(command);
+	if (factoryIt != factoryMap.end()) {
+		std::unique_ptr<IExecutor> executor(factoryIt->second());
+		IExecutor* rawPtr = executor.get();
+		executorCache[command] = std::move(executor);
+		return rawPtr;
+	}
+
+	return nullptr;
 }
 
 const unordered_map<string, ExecutorFactory::Creator> ExecutorFactory::factoryMap = {
@@ -48,8 +60,20 @@ const unordered_map<string, ExecutorFactory::Creator> ExecutorFactory::factoryMa
 };
 
 IExecutor* ExecutorFactory::createExecutor(const string& command) {
-	auto it = factoryMap.find(command);
-	return (it != factoryMap.end()) ? it->second() : nullptr;
+	auto it = executorCache.find(command);
+	if (it != executorCache.end()) {
+		return it->second.get();
+	}
+
+	auto factoryIt = factoryMap.find(command);
+	if (factoryIt != factoryMap.end()) {
+		std::unique_ptr<IExecutor> executor(factoryIt->second());
+		IExecutor* rawPtr = executor.get();
+		executorCache[command] = std::move(executor);
+		return rawPtr;
+	}
+
+	return nullptr;
 }
 
 bool Writer::execute(ISsdApp* app, LBA lba, DATA data)

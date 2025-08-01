@@ -7,8 +7,6 @@
 
 using namespace std;
 
-#define _RUNNER
-
 int Shell::Runner(int argc, char* argv[])
 {
     if (argc != 2)

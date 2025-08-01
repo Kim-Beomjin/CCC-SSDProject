@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -34,6 +35,7 @@ public:
 	virtual IExecutor* createExecutor(const string& command) = 0;
 protected:
 	using Creator = std::function<IExecutor* ()>;
+	unordered_map<string, std::unique_ptr<IExecutor>> executorCache;
 };
 
 class CompositExecutorFactory : public IExecutorFactory {
@@ -49,4 +51,5 @@ public:
 private:
 	static const unordered_map<string, Creator> factoryMap;
 };
+
 
