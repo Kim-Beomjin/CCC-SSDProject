@@ -3,6 +3,7 @@
 #include "gmock/gmock.h"
 #include "global_config.h"
 #include "interface.h"
+#include "executorFactory.h"
 
 using namespace testing;
 
@@ -31,7 +32,7 @@ public:
 
 	IExecutorFactory* factory;
 	MockSsdApp mock_app;
-	IExecutor* executor;
+	shared_ptr<IExecutor> executor;
 };
 
 TEST_F(ExecutorTestFixture, exitCommandTest) {

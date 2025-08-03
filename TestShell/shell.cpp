@@ -2,6 +2,7 @@
 #include "shell.h"
 #include "ssdApp.h"
 #include "commandParser.h"
+#include "executorFactory.h"
 
 using namespace std;
 
