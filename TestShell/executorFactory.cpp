@@ -33,6 +33,23 @@ shared_ptr<IExecutor> CachedExecutorFactory::getExecutorFromMap(const string& co
 	return mapIterator->second();
 }
 
+shared_ptr<IExecutor> CompositeExecutorFactory::createExecutor(const string&)
+{
+	if (executorCache == nullptr) executorCache = std::make_shared<CompositeExecutor>();
+	return executorCache;
+}
+
+shared_ptr<IExecutor> StrategyCompositeExecutorFactory::createExecutor(const string& command)
+{
+	shared_ptr<ICompositeExecutorStrategy> strategy = strategyFactory.createStrategy(command);
+	if (strategy == nullptr) return nullptr;
+
+	shared_ptr<CompositeExecutor> compositeExecutor = static_pointer_cast<CompositeExecutor>(CompositeExecutorFactory::createExecutor(command));
+	compositeExecutor->setStrategy(strategy);
+
+	return static_pointer_cast<IExecutor>(compositeExecutor);
+}
+
 shared_ptr<IExecutor> DelegatedExecutorFactory::createExecutor(const string& command)
 {
 	for (const auto& factory : factories)
