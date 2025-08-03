@@ -13,7 +13,7 @@ BufferedSSD::BufferedSSD() {
 	if (_access(BUFFER_DIRECTORY.c_str(), 0) != 0)
 	{
 		int ret = _mkdir(BUFFER_DIRECTORY.c_str());
-		DEBUG_ASSERT(ret, "CANNOT MAKE BUFFER DIRECTORY");
+		DEBUG_ASSERT(ret != -1, "CANNOT MAKE BUFFER DIRECTORY");
 		_DumpCommand();
 	}
 }
