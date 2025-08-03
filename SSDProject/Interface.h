@@ -15,3 +15,11 @@ public:
 	virtual bool Erase(LBA lba, unsigned int size) = 0;
 	virtual void Flush(void) = 0;
 };
+
+class IBufferStrategy
+{
+public:
+	virtual void ConvertBufferToCmd(std::vector<std::string> &CmdList) = 0;
+	virtual void ConvertCmdToBuffer(const std::vector<std::string> CmdList) = 0;
+	virtual Buffer GetBuffer(LBA lba) = 0;
+};

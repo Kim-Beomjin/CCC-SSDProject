@@ -21,6 +21,19 @@ const char LARGE_EX = 'X';
 
 const std::string OUTPUT_FILE = "ssd_output.txt";
 
+enum BUF_TYPE
+{
+    NONE,
+    WRITE,
+    ERASE
+};
+struct Buffer
+{
+    BUF_TYPE type;
+    DATA data;
+};
+
+
 #ifdef _TEST_CONFIG
 #include <iostream>
 
