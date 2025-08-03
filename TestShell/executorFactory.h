@@ -29,8 +29,6 @@ private:
 class ExecutorFactory : public CachedExecutorFactory
 {
 protected:
-	using Creator = function<shared_ptr<IExecutor>()>;
-
     const unordered_map<string, CachedExecutorFactory::Creator>& getFactoryMap() override
 	{
 		static const unordered_map<string, CachedExecutorFactory::Creator> factoryMap =
@@ -50,25 +48,48 @@ protected:
     }
 };
 
-class CompositeExecutorFactory : public CachedExecutorFactory
+class CompositeExecutorFactory : public IExecutorFactory
 {
-protected:
-    const unordered_map<string, CachedExecutorFactory::Creator>& getFactoryMap() override
+public:
+	shared_ptr<IExecutor> createExecutor(const string& command) override;
+
+private:
+	shared_ptr<IExecutor> executorCache;
+};
+
+class CompositeExecutorStrategyFactory
+{
+public:
+    static shared_ptr<ICompositeExecutorStrategy> createStrategy(const string& name)
 	{
-		static const unordered_map<string, Creator> factoryMap =
-		{
-			{FIRST_SCRIPT_SHORT_NAME,	[]() { return std::make_shared<FullWriteAndReadCompare>(std::make_shared<Writer>(), std::make_shared<Comparer>()); }},
-			{FIRST_SCRIPT_FULL_NAME,	[]() { return std::make_shared<FullWriteAndReadCompare>(std::make_shared<Writer>(), std::make_shared<Comparer>()); }},
-			{SECOND_SCRIPT_SHORT_NAME,	[]() { return std::make_shared<PartialLBAWrite>(std::make_shared<Writer>(), std::make_shared<Comparer>()); }},
-			{SECOND_SCRIPT_FULL_NAME,	[]() { return std::make_shared<PartialLBAWrite>(std::make_shared<Writer>(), std::make_shared<Comparer>()); }},
-			{THIRD_SCRIPT_SHORT_NAME,	[]() { return std::make_shared<WriteReadAging>(std::make_shared<Writer>(), std::make_shared<Comparer>()); }},
-			{THIRD_SCRIPT_FULL_NAME,	[]() { return std::make_shared<WriteReadAging>(std::make_shared<Writer>(), std::make_shared<Comparer>()); }},
-			{FOURTH_SCRIPT_SHORT_NAME,	[]() { return std::make_shared<EraseAndWriteAging>(std::make_shared<Writer>(), std::make_shared<Comparer>(), std::make_shared<Eraser>()); }},
-			{FOURTH_SCRIPT_FULL_NAME,	[]() { return std::make_shared<EraseAndWriteAging>(std::make_shared<Writer>(), std::make_shared<Comparer>(), std::make_shared<Eraser>()); }},
+		static const unordered_map<string, Creator> strategyMap = {
+			{FIRST_SCRIPT_SHORT_NAME,	[]() { return std::make_shared<FullWriteReadCompareStrategy>(); }},
+			{FIRST_SCRIPT_FULL_NAME,	[]() { return std::make_shared<FullWriteReadCompareStrategy>(); }},
+			{SECOND_SCRIPT_SHORT_NAME,	[]() { return std::make_shared<PartialLBAWriteStrategy>(); }},
+			{SECOND_SCRIPT_FULL_NAME,	[]() { return std::make_shared<PartialLBAWriteStrategy>(); }},
+			{THIRD_SCRIPT_SHORT_NAME,	[]() { return std::make_shared<WriteReadAgingStrategy>(); }},
+			{THIRD_SCRIPT_FULL_NAME,	[]() { return std::make_shared<WriteReadAgingStrategy>(); }},
+			{FOURTH_SCRIPT_SHORT_NAME,	[]() { return std::make_shared<EraseWriteAgingStrategy>(); }},
+			{FOURTH_SCRIPT_FULL_NAME,	[]() { return std::make_shared<EraseWriteAgingStrategy>(); }},
 		};
-		
-		return factoryMap;
-    }
+
+		auto mapIterator = strategyMap.find(name);
+		if (mapIterator == strategyMap.end()) return nullptr;
+
+		return mapIterator->second();
+	}
+
+private:
+    using Creator = function<shared_ptr<ICompositeExecutorStrategy>()>;
+};
+
+class StrategyCompositeExecutorFactory : public CompositeExecutorFactory
+{
+public:
+	shared_ptr<IExecutor> createExecutor(const string& command) override;
+
+private:
+	CompositeExecutorStrategyFactory strategyFactory;
 };
 
 class DelegatedExecutorFactory : public IExecutorFactory
@@ -76,7 +97,7 @@ class DelegatedExecutorFactory : public IExecutorFactory
 public:
 	DelegatedExecutorFactory() {
 		factories.push_back(std::make_shared<ExecutorFactory>());
-		factories.push_back(std::make_shared<CompositeExecutorFactory>());
+		factories.push_back(std::make_shared<StrategyCompositeExecutorFactory>());
 	}
 
 	shared_ptr<IExecutor> createExecutor(const string& command) override;

@@ -24,32 +24,34 @@ public:
 	MOCK_METHOD(bool, execute, (ISsdApp*, LBA, DATA), (override));
 };
 
+class MockEraser : public Eraser {
+public:
+	MOCK_METHOD(bool, execute, (ISsdApp*, LBA, SIZE), (override));
+};
+
 class CompositeExecutorFixture : public Test {
 public:
 	void SetUp() override {
-		mockFirstApp = make_shared<FullWriteAndReadCompare>(mockWriter, mockComparer);
-		mockSecondApp = make_shared<PartialLBAWrite>(mockWriter, mockComparer);
-		mockThirdApp = make_shared<WriteReadAging>(mockWriter, mockComparer);
+		mockApp = make_shared<CompositeExecutor>(mockWriter, mockComparer, mockEraser);
 	}
 
 	const string BLANK_TEST_SCRIPT_NAME = "";
 	const string INVALID_TEST_SCRIPT_NAME = "123";
 
 	const int FIRST_TEST_SCRIPT_MAX_IO_TIMES =
-		FullWriteAndReadCompare::LOOP_COUNT * FullWriteAndReadCompare::NUM_LBA_PER_LOOP;
+		FullWriteReadCompareStrategy::LOOP_COUNT * FullWriteReadCompareStrategy::NUM_LBA_PER_LOOP;
 
 	const int SECOND_TEST_SCRIPT_MAX_IO_TIMES =
-		PartialLBAWrite::LOOP_COUNT * PartialLBAWrite::NUM_LBA_PER_LOOP;
+		PartialLBAWriteStrategy::LOOP_COUNT * PartialLBAWriteStrategy::NUM_LBA_PER_LOOP;
 
 	const int THIRD_TEST_SCRIPT_MAX_IO_TIMES =
-		WriteReadAging::LOOP_COUNT * WriteReadAging::NUM_LBA_PER_LOOP;
+		WriteReadAgingStrategy::LOOP_COUNT * WriteReadAgingStrategy::NUM_LBA_PER_LOOP;
 
-	shared_ptr<FullWriteAndReadCompare> mockFirstApp;
-	shared_ptr<PartialLBAWrite> mockSecondApp;
-	shared_ptr<WriteReadAging> mockThirdApp;
+	shared_ptr<CompositeExecutor> mockApp;
 
 	shared_ptr<MockWriter> mockWriter = make_shared<NiceMock<MockWriter>>();
 	shared_ptr<MockComparer> mockComparer = make_shared<NiceMock<MockComparer>>();
+	shared_ptr<MockEraser> mockEraser = make_shared<NiceMock<MockEraser>>();
 	NiceMock<MockSsdApp> mockSsdApp;
 };
 
@@ -74,7 +76,10 @@ TEST_F(CompositeExecutorFixture, CompositeExecutor1CheckMockReadWriteMaxTimes) {
 		.Times(FIRST_TEST_SCRIPT_MAX_IO_TIMES)
 		.WillRepeatedly(Return(true));
 
-	mockFirstApp->execute(&mockSsdApp, 0, 0);
+	shared_ptr<ICompositeExecutorStrategy> strategy = make_shared< FullWriteReadCompareStrategy>();
+	mockApp->setStrategy(strategy);
+
+	mockApp->execute(&mockSsdApp, 0, 0);
 }
 
 TEST_F(CompositeExecutorFixture, CompositeExecutor2CheckMockReadWriteMaxTimes) {
@@ -85,7 +90,10 @@ TEST_F(CompositeExecutorFixture, CompositeExecutor2CheckMockReadWriteMaxTimes) {
 		.Times(SECOND_TEST_SCRIPT_MAX_IO_TIMES)
 		.WillRepeatedly(Return(true));
 
-	mockSecondApp->execute(&mockSsdApp, 0, 0);
+	shared_ptr<ICompositeExecutorStrategy> strategy = make_shared< PartialLBAWriteStrategy>();
+	mockApp->setStrategy(strategy);
+
+	mockApp->execute(&mockSsdApp, 0, 0);
 }
 
 TEST_F(CompositeExecutorFixture, CompositeExecutor3CheckMockReadWriteMaxTimes) {
@@ -96,7 +104,10 @@ TEST_F(CompositeExecutorFixture, CompositeExecutor3CheckMockReadWriteMaxTimes) {
 		.Times(THIRD_TEST_SCRIPT_MAX_IO_TIMES)
 		.WillRepeatedly(Return(true));
 
-	mockThirdApp->execute(&mockSsdApp, 0, 0);
+	shared_ptr<ICompositeExecutorStrategy> strategy = make_shared< WriteReadAgingStrategy>();
+	mockApp->setStrategy(strategy);
+
+	mockApp->execute(&mockSsdApp, 0, 0);
 }
 
 #endif
