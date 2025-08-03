@@ -27,18 +27,9 @@ public:
 class CompositeExecutorFixture : public Test {
 public:
 	void SetUp() override {
-		mockFirstApp = make_shared<FullWriteAndReadCompare>(
-			shared_ptr<MockWriter>(&mockWriter),
-			shared_ptr<MockComparer>(&mockComparer)
-		);
-		mockSecondApp = make_shared<PartialLBAWrite>(
-			shared_ptr<MockWriter>(&mockWriter),
-			shared_ptr<MockComparer>(&mockComparer)
-		);
-		mockThirdApp = make_shared<WriteReadAging>(
-			shared_ptr<MockWriter>(&mockWriter),
-			shared_ptr<MockComparer>(&mockComparer)
-		);
+		mockFirstApp = make_shared<FullWriteAndReadCompare>(mockWriter, mockComparer);
+		mockSecondApp = make_shared<PartialLBAWrite>(mockWriter, mockComparer);
+		mockThirdApp = make_shared<WriteReadAging>(mockWriter, mockComparer);
 	}
 
 	const string BLANK_TEST_SCRIPT_NAME = "";
@@ -57,8 +48,8 @@ public:
 	shared_ptr<PartialLBAWrite> mockSecondApp;
 	shared_ptr<WriteReadAging> mockThirdApp;
 
-	NiceMock<MockWriter> mockWriter;
-	NiceMock<MockComparer> mockComparer;
+	shared_ptr<MockWriter> mockWriter = make_shared<NiceMock<MockWriter>>();
+	shared_ptr<MockComparer> mockComparer = make_shared<NiceMock<MockComparer>>();
 	NiceMock<MockSsdApp> mockSsdApp;
 };
 
@@ -74,12 +65,12 @@ TEST_F(CompositeExecutorFixture, ThrowInvalidCompositeExecutor) {
 }
 #endif
 
-/*
+
 TEST_F(CompositeExecutorFixture, CompositeExecutor1CheckMockReadWriteMaxTimes) {
-	EXPECT_CALL(mockWriter, execute)
+	EXPECT_CALL(*mockWriter, execute)
 		.Times(FIRST_TEST_SCRIPT_MAX_IO_TIMES);
 
-	EXPECT_CALL(mockComparer, execute)
+	EXPECT_CALL(*mockComparer, execute)
 		.Times(FIRST_TEST_SCRIPT_MAX_IO_TIMES)
 		.WillRepeatedly(Return(true));
 
@@ -87,10 +78,10 @@ TEST_F(CompositeExecutorFixture, CompositeExecutor1CheckMockReadWriteMaxTimes) {
 }
 
 TEST_F(CompositeExecutorFixture, CompositeExecutor2CheckMockReadWriteMaxTimes) {
-	EXPECT_CALL(mockWriter, execute)
+	EXPECT_CALL(*mockWriter, execute)
 		.Times(SECOND_TEST_SCRIPT_MAX_IO_TIMES);
 
-	EXPECT_CALL(mockComparer, execute)
+	EXPECT_CALL(*mockComparer, execute)
 		.Times(SECOND_TEST_SCRIPT_MAX_IO_TIMES)
 		.WillRepeatedly(Return(true));
 
@@ -98,15 +89,14 @@ TEST_F(CompositeExecutorFixture, CompositeExecutor2CheckMockReadWriteMaxTimes) {
 }
 
 TEST_F(CompositeExecutorFixture, CompositeExecutor3CheckMockReadWriteMaxTimes) {
-	EXPECT_CALL(mockWriter, execute)
+	EXPECT_CALL(*mockWriter, execute)
 		.Times(THIRD_TEST_SCRIPT_MAX_IO_TIMES);
 
-	EXPECT_CALL(mockComparer, execute)
+	EXPECT_CALL(*mockComparer, execute)
 		.Times(THIRD_TEST_SCRIPT_MAX_IO_TIMES)
 		.WillRepeatedly(Return(true));
 
 	mockThirdApp->execute(&mockSsdApp, 0, 0);
 }
-*/
 
 #endif
