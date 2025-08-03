@@ -9,20 +9,20 @@ class CompositeExecutor : public IExecutor
 {
 public:
 	CompositeExecutor() = default;
-	CompositeExecutor(Writer* writer, Comparer* comparer) : writer{ writer }, comparer { comparer } {}
+	CompositeExecutor(shared_ptr<Writer> writer, shared_ptr<Comparer> comparer) : writer{ writer }, comparer { comparer } {}
 
 protected:
 	static bool PrintPass(void);
 	static bool PrintFail(void);
 
-	Writer* writer;
-	Comparer* comparer;
+	shared_ptr<Writer> writer;
+	shared_ptr<Comparer> comparer;
 };
 
 class FullWriteAndReadCompare : public CompositeExecutor {
 public:
 	FullWriteAndReadCompare() = default;
-	FullWriteAndReadCompare(Writer* writer, Comparer* comparer) : CompositeExecutor{ writer, comparer } {}
+	FullWriteAndReadCompare(shared_ptr<Writer> writer, shared_ptr<Comparer> comparer) : CompositeExecutor{ writer, comparer } {}
 	bool IsValidCommand(const vector<string>& tokens) override;
 
 	static const int LOOP_COUNT = 20;
@@ -34,7 +34,7 @@ public:
 class PartialLBAWrite : public CompositeExecutor {
 public:
 	PartialLBAWrite() = default;
-	PartialLBAWrite(Writer* writer, Comparer* comparer) : CompositeExecutor{ writer, comparer } {}
+	PartialLBAWrite(shared_ptr<Writer> writer, shared_ptr<Comparer> comparer) : CompositeExecutor{ writer, comparer } {}
 	bool IsValidCommand(const vector<string>& tokens) override;
 
 	static const int LOOP_COUNT = 30;
@@ -46,7 +46,7 @@ public:
 class WriteReadAging : public CompositeExecutor {
 public:
 	WriteReadAging() = default;
-	WriteReadAging(Writer* writer, Comparer* comparer) : CompositeExecutor{ writer, comparer } {}
+	WriteReadAging(shared_ptr<Writer> writer, shared_ptr<Comparer> comparer) : CompositeExecutor{ writer, comparer } {}
 	bool IsValidCommand(const vector<string>& tokens) override;
 
 	static const int LOOP_COUNT = 200;
@@ -58,7 +58,7 @@ public:
 class EraseAndWriteAging : public CompositeExecutor {
 public:
 	EraseAndWriteAging() = default;
-	EraseAndWriteAging(Writer* writer, Comparer* comparer, Eraser* eraser) :
+	EraseAndWriteAging(shared_ptr<Writer> writer, shared_ptr<Comparer> comparer, shared_ptr<Eraser> eraser) :
 		CompositeExecutor{ writer, comparer }, eraser { eraser } {}
 	bool IsValidCommand(const vector<string>& tokens) override;
 
@@ -68,6 +68,6 @@ public:
 	bool execute(ISsdApp* app, LBA lba, DATA data) override;
 
 private:
-	Eraser* eraser;
+	shared_ptr<Eraser> eraser;
 };
 

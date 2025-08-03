@@ -2,12 +2,10 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <unordered_map>
-#include <functional>
 
 using std::string;
 using std::vector;
-using std::unordered_map;
+using std::shared_ptr;
 
 #define interface struct
 
@@ -32,28 +30,5 @@ interface ICommandParserBridge {
 
 class IExecutorFactory {
 public:
-	virtual IExecutor* createExecutor(const string& command) = 0;
-protected:
-	using Creator = std::function<IExecutor* ()>;
-	unordered_map<string, std::unique_ptr<IExecutor>> executorCache;
-
-	IExecutor* getExecutorFromCache(const string& command);
+	virtual shared_ptr<IExecutor> createExecutor(const string& command) = 0;
 };
-
-class CompositeExecutorFactory : public IExecutorFactory {
-public:
-	IExecutor* createExecutor(const string& command) override;
-private:
-	static const unordered_map<string, Creator> factoryMap;
-	IExecutor* getExecutorFromMap(const string& command);
-};
-
-class ExecutorFactory : public IExecutorFactory {
-public:
-	IExecutor* createExecutor(const string& command);
-private:
-	static const unordered_map<string, Creator> factoryMap;
-	IExecutor* getExecutorFromMap(const string& command);
-};
-
-

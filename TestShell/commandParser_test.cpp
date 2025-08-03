@@ -1,7 +1,8 @@
 #ifdef _DEBUG
 #include "gmock/gmock.h"
-#include "commandParser.h"
 #include "utils.h"
+#include "commandParser.h"
+#include "executorFactory.h"
 
 using namespace testing;
 
