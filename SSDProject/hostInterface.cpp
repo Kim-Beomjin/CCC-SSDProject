@@ -17,9 +17,7 @@ void HostInterface::Execute(int argc, char* argv[])
 	{
 		std::cout << "SSD Process Fail\n";
 	}
-#ifdef _DEBUG
-	delete(ssd);
-#endif
+	ssd->~ISSD();
 }
 
 //------------------------------ Processor Factory ----------------------------------//

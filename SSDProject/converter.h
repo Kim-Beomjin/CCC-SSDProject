@@ -1,7 +1,7 @@
 #pragma once
 #include "interface.h"
 #include <vector>
-
+// todo
 class CommandBuffer : public IBufferStrategy
 {
 public:

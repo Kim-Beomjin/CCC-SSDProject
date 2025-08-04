@@ -10,6 +10,7 @@ public:
 class ISSD
 {
 public:
+	virtual ~ISSD() {};
 	virtual bool Read(LBA lba) = 0;
 	virtual bool Write(LBA lba, DATA data) = 0;
 	virtual bool Erase(LBA lba, unsigned int size) = 0;

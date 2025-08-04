@@ -15,6 +15,7 @@ BufferedSSD::BufferedSSD() {
 		DEBUG_ASSERT(ret, "CANNOT MAKE BUFFER DIRECTORY");
 	}
 	_LoadCommand();
+
 }
 
 BufferedSSD::~BufferedSSD()
@@ -82,6 +83,9 @@ void BufferedSSD::Flush()
 		}
 	}
 	cmdList.clear();
+	for (int i = 0; i < 100; i++) {
+		dataBuffer[i] = { BUF_TYPE::NONE, 0 };
+	}
 }
 
 void BufferedSSD::_LoadCommand()
@@ -129,17 +133,6 @@ void BufferedSSD::_LoadParsedCommand(std::string filename)
 }
 
 
-
-bool BufferedSSD::_NeedFlush()
-{	
-	return (cmdList.size());
-}
-
-int BufferedSSD::_GetCmdCnt()
-{
-	return static_cast<int>(cmdList.size());
-}
-
 void BufferedSSD::_DumpCommand()
 {
 
@@ -147,15 +140,15 @@ void BufferedSSD::_DumpCommand()
 	for (idx = 0; idx < cmdList.size(); idx++)
 	{
 		if (cmdList[idx].first == "W") {
-			SSD::Write(cmdList[idx].second.dword1, cmdList[idx].second.dword2);
+			_DumpWriteCmd(idx, cmdList[idx].second.dword1, cmdList[idx].second.dword2);
 		}
 		else if (cmdList[idx].first == "E") {
-			_DumpEraseCmd(idx + 1, cmdList[idx].second.dword1, cmdList[idx].second.dword2);
+			_DumpEraseCmd(idx, cmdList[idx].second.dword1, cmdList[idx].second.dword2);
 		}
 	}
 	for (;idx < MAX_BUFFER_SIZE; idx++)
 	{
-		_DumpEmpty(idx + 1);
+		_DumpEmpty(idx);
 	}
 }
 
@@ -191,7 +184,23 @@ void BufferedSSD::_DumpEmpty(int cmdIdx)
 	}
 }
 
+bool BufferedSSD::_CheckFileValid(const std::string& filename)
+{
+	return (filename[0] >= '1' && filename[0] <= '5' && filename[1] == '_');
+}
 
+bool BufferedSSD::_NeedFlush()
+{
+	return (cmdList.size() == 5);
+}
+
+int BufferedSSD::_GetCmdCnt()
+{
+	return static_cast<int>(cmdList.size());
+}
+
+
+// TODO :: Convert cmd can be starategy pattern
 
 void BufferedSSD::_ConvertCmdToBuf()
 {
@@ -219,28 +228,22 @@ void BufferedSSD::_ConvertEraseCmdToBuf(LBA lba, unsigned int size)
 	}
 }
 
-
-bool BufferedSSD::_CheckFileValid(const std::string& filename)
-{
-	return (filename[0] >= '1' && filename[0] <= '5' && filename[1] == '_');
-}
-
-
 void BufferedSSD::_ConvertBufToCmd()
 {
 	//erase check
-	int erase_start_idx = -1;
+	cmdList.clear();
+	LBA erase_start_idx = INVALID_IDX;
 	int cmd_buf_idx = 0;
 	std::string filename;
-	int erase_size;
+	unsigned int erase_size;
 	for (int i = LBA_START_ADDR; i < LBA_END_ADDR; i++) {
 		if (dataBuffer[i].type == BUF_TYPE::NONE)
 		{
-			if (erase_start_idx != -1)
+			if (erase_start_idx != INVALID_IDX)
 			{
 				erase_size = i - erase_start_idx;
-				_DumpEraseCmd(cmd_buf_idx++, erase_start_idx, erase_size);
-				erase_start_idx = -1;
+				cmdList.push_back({ "E", { erase_start_idx, erase_size } });
+				erase_start_idx = INVALID_IDX;
 			}
 		}
 		else
@@ -248,25 +251,25 @@ void BufferedSSD::_ConvertBufToCmd()
 			if (dataBuffer[i].type == BUF_TYPE::ERASE && erase_start_idx == -1) {
 				erase_start_idx = i;
 			}
-			if (erase_start_idx != -1 && ((i - erase_start_idx + 1) % 10) == 0)
+			if (erase_start_idx != INVALID_IDX && ((i - erase_start_idx + 1) % 10) == 0)
 			{
 				erase_size = 10;
-				_DumpEraseCmd(cmd_buf_idx++, erase_start_idx, erase_size);
-				erase_start_idx = -1;
+				cmdList.push_back({ "E", { erase_start_idx, erase_size } });
+				erase_start_idx = INVALID_IDX;
 			}
 		}
 	}
-	if (erase_start_idx != -1)
+	if (erase_start_idx != INVALID_IDX)
 	{
 		erase_size = ((100 - erase_start_idx) > 10) ? 10 : 100 - erase_start_idx;
-		_DumpEraseCmd(cmd_buf_idx++, erase_start_idx, erase_size);
-		erase_start_idx += erase_size;
+		cmdList.push_back({ "E", { erase_start_idx, erase_size } });
+		erase_start_idx = INVALID_IDX;
 	}
 
-	for (int i = LBA_START_ADDR; i < LBA_END_ADDR; i++) {
+	for (LBA i = LBA_START_ADDR; i < LBA_END_ADDR; i++) {
 		if (dataBuffer[i].type == BUF_TYPE::WRITE)
 		{
-			_DumpWriteCmd(cmd_buf_idx++, i, dataBuffer[i].data);
+			cmdList.push_back({ "W", { i, dataBuffer[i].data } });
 		}
 	}
 	DEBUG_ASSERT(cmd_buf_idx <= 5, "ALGORITHM ERROR!!");

@@ -8,7 +8,7 @@ class BufferedSSD : public SSD
 {
 public:
 	BufferedSSD();
-	~BufferedSSD();
+	~BufferedSSD() override;
 	bool Read(LBA lba) override; //for read  
 	bool Write(LBA lba, DATA data) override;
 	bool Erase(LBA lba, unsigned int size) override;
@@ -44,5 +44,6 @@ private:
 	const int DWORD1 = 2;
 	const int DWORD2 = 3;
 	const int MAX_BUFFER_SIZE = 5;
+	const unsigned int INVALID_IDX = 0xFFFFFFFF;
 	std::vector<std::pair<std::string, Command>> cmdList;
 };
