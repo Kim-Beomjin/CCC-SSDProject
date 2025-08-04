@@ -30,9 +30,9 @@ public:
     return (std::string(lbaStr)[0] == '-');
   }
 
-  static bool IsInvalidLength(char* dataStr)
+  static bool IsInvalidDataString(char* dataStr)
   {
-    return (std::string(dataStr).size() != 10 || std::string(dataStr)[0] != ZERO || !(std::string(dataStr)[1] == LARGE_EX || std::string(dataStr)[1] == SMALL_EX));
+    return (std::string(dataStr).size() != DATA_STRING_LENGTH || std::string(dataStr)[0] != ZERO || !(std::string(dataStr)[1] == LARGE_EX || std::string(dataStr)[1] == SMALL_EX));
   }
 
   static unsigned int TryLoadHexaInput(char* str)
