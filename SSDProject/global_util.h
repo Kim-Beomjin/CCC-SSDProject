@@ -35,6 +35,16 @@ public:
     return (std::string(dataStr).size() != 10 || std::string(dataStr)[0] != ZERO || !(std::string(dataStr)[1] == LARGE_EX || std::string(dataStr)[1] == SMALL_EX));
   }
 
+  static unsigned int TryLoadHexaInput(char* str)
+  {
+    return SafeStoul(str, HEXA_BASE);
+  }
+
+  static unsigned int TryLoadDecimalInput(char* str)
+  {
+    return SafeStoul(str, DECIMAL_BASE);
+  }
+
   static unsigned int SafeStoul(char* str, int base)
   {
     size_t idx;
