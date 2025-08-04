@@ -44,14 +44,6 @@ protected:
 			{HELP_CMD,          []() { return std::make_shared<Helper>(); 				}},
 			{EXIT_CMD,          []() { return std::make_shared<Exiter>(); 				}},
 			{FLUSH_CMD,         []() { return std::make_shared<Flusher>(); 				}},
-			{FIRST_SCRIPT_SHORT_NAME,	[]() { return std::make_shared<FullWriteAndReadCompare>(std::make_shared<Writer>(), std::make_shared<Comparer>()); }},
-			{FIRST_SCRIPT_FULL_NAME,	[]() { return std::make_shared<FullWriteAndReadCompare>(std::make_shared<Writer>(), std::make_shared<Comparer>()); }},
-			{SECOND_SCRIPT_SHORT_NAME,	[]() { return std::make_shared<PartialLBAWrite>(std::make_shared<Writer>(), std::make_shared<Comparer>()); }},
-			{SECOND_SCRIPT_FULL_NAME,	[]() { return std::make_shared<PartialLBAWrite>(std::make_shared<Writer>(), std::make_shared<Comparer>()); }},
-			{THIRD_SCRIPT_SHORT_NAME,	[]() { return std::make_shared<WriteReadAging>(std::make_shared<Writer>(), std::make_shared<Comparer>()); }},
-			{THIRD_SCRIPT_FULL_NAME,	[]() { return std::make_shared<WriteReadAging>(std::make_shared<Writer>(), std::make_shared<Comparer>()); }},
-			{FOURTH_SCRIPT_SHORT_NAME,	[]() { return std::make_shared<EraseAndWriteAging>(std::make_shared<Writer>(), std::make_shared<Comparer>(), std::make_shared<Eraser>()); }},
-			{FOURTH_SCRIPT_FULL_NAME,	[]() { return std::make_shared<EraseAndWriteAging>(std::make_shared<Writer>(), std::make_shared<Comparer>(), std::make_shared<Eraser>()); }},
 		};
 
         return factoryMap;
@@ -63,7 +55,7 @@ class CompositeExecutorFactory : public CachedExecutorFactory
 protected:
     const unordered_map<string, CachedExecutorFactory::Creator>& getFactoryMap() override
 	{
-		static const std::unordered_map<std::string, Creator> factoryMap =
+		static const unordered_map<string, Creator> factoryMap =
 		{
 			{FIRST_SCRIPT_SHORT_NAME,	[]() { return std::make_shared<FullWriteAndReadCompare>(std::make_shared<Writer>(), std::make_shared<Comparer>()); }},
 			{FIRST_SCRIPT_FULL_NAME,	[]() { return std::make_shared<FullWriteAndReadCompare>(std::make_shared<Writer>(), std::make_shared<Comparer>()); }},
@@ -77,4 +69,18 @@ protected:
 		
 		return factoryMap;
     }
+};
+
+class DelegatedExecutorFactory : public IExecutorFactory
+{
+public:
+	DelegatedExecutorFactory() {
+		factories.push_back(std::make_shared<ExecutorFactory>());
+		factories.push_back(std::make_shared<CompositeExecutorFactory>());
+	}
+
+	shared_ptr<IExecutor> createExecutor(const string& command) override;
+
+private:
+	std::vector<shared_ptr<IExecutorFactory>> factories;
 };
