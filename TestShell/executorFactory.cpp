@@ -32,3 +32,14 @@ shared_ptr<IExecutor> CachedExecutorFactory::getExecutorFromMap(const string& co
 
 	return mapIterator->second();
 }
+
+shared_ptr<IExecutor> DelegatedExecutorFactory::createExecutor(const string& command)
+{
+	for (const auto& factory : factories)
+	{
+		shared_ptr<IExecutor> executor = factory->createExecutor(command);
+		if (executor != nullptr) return executor;
+	}
+	
+	return nullptr;
+}
