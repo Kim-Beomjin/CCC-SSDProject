@@ -154,6 +154,7 @@
   <ItemGroup>
     <ClCompile Include="BufferedSSD.cpp" />
     <ClCompile Include="converter.cpp" />
+    <ClCompile Include="buffer_test.cpp" />
     <ClCompile Include="hostInterface.cpp" />
     <ClCompile Include="hostInterface_test.cpp" />
     <ClCompile Include="main.cpp" />

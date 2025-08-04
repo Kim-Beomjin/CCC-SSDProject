@@ -19,7 +19,7 @@ private:
     bool IsLbaRangeValid();
 
     IExecutorFactory* _factory;
-    IExecutor* executor;
+    shared_ptr<IExecutor> executor;
     string command = "";
     LBA lba = 0;
     DATA data = -1;

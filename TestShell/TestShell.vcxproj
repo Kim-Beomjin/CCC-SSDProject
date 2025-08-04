@@ -169,6 +169,7 @@
   <ItemGroup>
     <ClInclude Include="commandParser.h" />
     <ClInclude Include="executor.h" />
+    <ClInclude Include="executorFactory.h" />
     <ClInclude Include="global_config.h" />
     <ClInclude Include="interface.h" />
     <ClInclude Include="logger.h" />

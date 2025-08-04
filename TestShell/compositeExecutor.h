@@ -4,70 +4,72 @@
 #include <string>
 
 using namespace std;
+using std::shared_ptr;
+
+struct ICompositeExecutorStrategy
+{
+    virtual bool run(ISsdApp* app, shared_ptr<Writer> writer, shared_ptr<Comparer> comparer, shared_ptr<Eraser> eraser) = 0;
+};
 
 class CompositeExecutor : public IExecutor
 {
 public:
-	CompositeExecutor() = default;
-	CompositeExecutor(Writer* writer, Comparer* comparer) : writer{ writer }, comparer { comparer } {}
+	CompositeExecutor()
+	{
+		writer = std::make_shared<Writer>();
+		comparer = std::make_shared<Comparer>();
+		eraser = std::make_shared<Eraser>();
+	}
+	CompositeExecutor(shared_ptr<Writer> writer, shared_ptr<Comparer> comparer, shared_ptr<Eraser> eraser) :
+		writer{ writer }, comparer{ comparer }, eraser{ eraser } {}
 
-protected:
-	static bool PrintPass(void);
-	static bool PrintFail(void);
-
-	Writer* writer;
-	Comparer* comparer;
-};
-
-class FullWriteAndReadCompare : public CompositeExecutor {
-public:
-	FullWriteAndReadCompare() = default;
-	FullWriteAndReadCompare(Writer* writer, Comparer* comparer) : CompositeExecutor{ writer, comparer } {}
 	bool IsValidCommand(const vector<string>& tokens) override;
 
+	bool execute(ISsdApp* app, LBA lba, DATA data) override;
+
+	void setStrategy(shared_ptr<ICompositeExecutorStrategy> newStrategy) {
+		strategy = newStrategy;
+	}
+
+private:
+	bool PrintPass(void);
+	bool PrintFail(void);
+
+	shared_ptr<ICompositeExecutorStrategy> strategy;
+	shared_ptr<Writer> writer;
+	shared_ptr<Comparer> comparer;
+	shared_ptr<Eraser> eraser;
+};
+
+class FullWriteReadCompareStrategy : public ICompositeExecutorStrategy {
+public:
 	static const int LOOP_COUNT = 20;
 	static const int NUM_LBA_PER_LOOP = 5;
 
-	bool execute(ISsdApp* app, LBA lba, DATA data) override;
+    bool run(ISsdApp* app, shared_ptr<Writer> writer, shared_ptr<Comparer> comparer, shared_ptr<Eraser> eraser) override;
 };
 
-class PartialLBAWrite : public CompositeExecutor {
+class PartialLBAWriteStrategy : public ICompositeExecutorStrategy {
 public:
-	PartialLBAWrite() = default;
-	PartialLBAWrite(Writer* writer, Comparer* comparer) : CompositeExecutor{ writer, comparer } {}
-	bool IsValidCommand(const vector<string>& tokens) override;
-
 	static const int LOOP_COUNT = 30;
 	static const int NUM_LBA_PER_LOOP = 5;
 
-	bool execute(ISsdApp* app, LBA lba, DATA data) override;
+    bool run(ISsdApp* app, shared_ptr<Writer> writer, shared_ptr<Comparer> comparer, shared_ptr<Eraser> eraser) override;
 };
 
-class WriteReadAging : public CompositeExecutor {
+class WriteReadAgingStrategy : public ICompositeExecutorStrategy {
 public:
-	WriteReadAging() = default;
-	WriteReadAging(Writer* writer, Comparer* comparer) : CompositeExecutor{ writer, comparer } {}
-	bool IsValidCommand(const vector<string>& tokens) override;
-
 	static const int LOOP_COUNT = 200;
 	static const int NUM_LBA_PER_LOOP = 2;
 
-	bool execute(ISsdApp* app, LBA lba, DATA data) override;
+    bool run(ISsdApp* app, shared_ptr<Writer> writer, shared_ptr<Comparer> comparer, shared_ptr<Eraser> eraser) override;
 };
 
-class EraseAndWriteAging : public CompositeExecutor {
+class EraseWriteAgingStrategy : public ICompositeExecutorStrategy {
 public:
-	EraseAndWriteAging() = default;
-	EraseAndWriteAging(Writer* writer, Comparer* comparer, Eraser* eraser) :
-		CompositeExecutor{ writer, comparer }, eraser { eraser } {}
-	bool IsValidCommand(const vector<string>& tokens) override;
-
 	static const int LOOP_COUNT = 30;
 	static const int NUM_LBA_PER_LOOP = 3;
 
-	bool execute(ISsdApp* app, LBA lba, DATA data) override;
-
-private:
-	Eraser* eraser;
+    bool run(ISsdApp* app, shared_ptr<Writer> writer, shared_ptr<Comparer> comparer, shared_ptr<Eraser> eraser) override;
 };
 

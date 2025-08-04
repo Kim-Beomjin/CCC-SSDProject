@@ -2,6 +2,7 @@
 #include "shell.h"
 #include "ssdApp.h"
 #include "commandParser.h"
+#include "executorFactory.h"
 
 using namespace std;
 
@@ -9,7 +10,7 @@ int Shell::RunShellLoop(void) {
     string cmd;
 
     if (commandParser == nullptr)
-        commandParser = new CommandParser(new ExecutorFactory());
+        commandParser = new CommandParser(new DelegatedExecutorFactory());
 
     do {
         cout << "Shell> ";

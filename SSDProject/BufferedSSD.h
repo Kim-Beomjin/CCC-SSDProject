@@ -13,6 +13,9 @@ public:
 	bool Write(LBA lba, DATA data) override;
 	bool Erase(LBA lba, unsigned int size) override;
 	void Flush() override;
+#ifdef _DEBUG
+	int GetCmdCnt() { return _GetCmdCnt(); }
+#endif
 
 private:
 	bool _NeedFlush();

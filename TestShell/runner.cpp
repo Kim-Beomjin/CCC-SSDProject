@@ -3,6 +3,7 @@
 #include "shell.h"
 #include "ssdApp.h"
 #include "commandParser.h"
+#include "executorFactory.h"
 #include "utils.h"
 
 using namespace std;
@@ -24,7 +25,7 @@ int Shell::Runner(int argc, char* argv[])
     }
 
     if (commandParser == nullptr)
-        commandParser = new CommandParser(new CompositeExecutorFactory());
+        commandParser = new CommandParser(new StrategyCompositeExecutorFactory());
 
     string cmd;
     while (std::getline(infile, cmd)) {

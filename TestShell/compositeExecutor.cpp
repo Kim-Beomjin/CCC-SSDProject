@@ -7,6 +7,22 @@
 #include <random>
 #endif
 
+bool CompositeExecutor::IsValidCommand(const vector<string>& tokens)
+{
+	if (tokens[CMD_IDX] == FIRST_SCRIPT_SHORT_NAME || tokens[CMD_IDX] == FIRST_SCRIPT_FULL_NAME) return true;
+	if (tokens[CMD_IDX] == SECOND_SCRIPT_SHORT_NAME || tokens[CMD_IDX] == SECOND_SCRIPT_FULL_NAME) return true;
+	if (tokens[CMD_IDX] == THIRD_SCRIPT_SHORT_NAME || tokens[CMD_IDX] == THIRD_SCRIPT_FULL_NAME) return true;
+	if (tokens[CMD_IDX] == FOURTH_SCRIPT_SHORT_NAME || tokens[CMD_IDX] == FOURTH_SCRIPT_FULL_NAME) return true;
+
+	return false;
+}
+
+bool CompositeExecutor::execute(ISsdApp* app, LBA, DATA)
+{
+	if (strategy->run(app, writer, comparer, eraser)) return PrintPass();
+	PrintFail();
+}
+
 bool CompositeExecutor::PrintPass(void)
 {
 	print("PASS");
@@ -19,13 +35,7 @@ bool CompositeExecutor::PrintFail(void)
 	return false;
 }
 
-bool FullWriteAndReadCompare::IsValidCommand(const vector<string>& tokens)
-{
-	if (tokens[CMD_IDX] == FIRST_SCRIPT_SHORT_NAME || tokens[CMD_IDX] == FIRST_SCRIPT_FULL_NAME) return true;
-	return false;
-}
-
-bool FullWriteAndReadCompare::execute(ISsdApp* app, LBA lba, DATA data)
+bool FullWriteReadCompareStrategy::run(ISsdApp* app, shared_ptr<Writer> writer, shared_ptr<Comparer> comparer, shared_ptr<Eraser>)
 {
 	for (int loop = 0; loop < LOOP_COUNT; loop++)
 	{
@@ -40,20 +50,14 @@ bool FullWriteAndReadCompare::execute(ISsdApp* app, LBA lba, DATA data)
 
 		for (LBA readLba = startLba; readLba < endLba; readLba++)
 		{
-			if (!comparer->execute(app, readLba, writeData)) return CompositeExecutor::PrintFail();
+			if (!comparer->execute(app, readLba, writeData)) return false;
 		}
 	}
 
-	return CompositeExecutor::PrintPass();
+	return true;
 }
 
-bool PartialLBAWrite::IsValidCommand(const vector<string>& tokens)
-{
-	if (tokens[CMD_IDX] == SECOND_SCRIPT_SHORT_NAME || tokens[CMD_IDX] == SECOND_SCRIPT_FULL_NAME) return true;
-	return false;
-}
-
-bool PartialLBAWrite::execute(ISsdApp* app, LBA lba, DATA data)
+bool PartialLBAWriteStrategy::run(ISsdApp* app, shared_ptr<Writer> writer, shared_ptr<Comparer> comparer, shared_ptr<Eraser>)
 {
 	LBA writeLbaRange[5] = { 4, 0, 3, 1, 2 };
 	LBA readStartLba = 0;
@@ -70,20 +74,14 @@ bool PartialLBAWrite::execute(ISsdApp* app, LBA lba, DATA data)
 
 		for (DATA readLba = readStartLba; readLba < readEndLba; readLba++)
 		{
-			if (!comparer->execute(app, readLba, writeData)) return CompositeExecutor::PrintFail();
+			if (!comparer->execute(app, readLba, writeData)) return false;
 		}
 	}
 
-	return CompositeExecutor::PrintPass();
+	return true;
 }
 
-bool WriteReadAging::IsValidCommand(const vector<string>& tokens)
-{
-	if (tokens[CMD_IDX] == THIRD_SCRIPT_SHORT_NAME || tokens[CMD_IDX] == THIRD_SCRIPT_FULL_NAME) return true;
-	return false;
-}
-
-bool WriteReadAging::execute(ISsdApp* app, LBA lba, DATA data)
+bool WriteReadAgingStrategy::run(ISsdApp* app, shared_ptr<Writer> writer, shared_ptr<Comparer> comparer, shared_ptr<Eraser>)
 {
 	LBA lbaRange[2] = { 0, 99 };
 
@@ -105,20 +103,14 @@ bool WriteReadAging::execute(ISsdApp* app, LBA lba, DATA data)
 
 		for (int index = 0; index < NUM_LBA_PER_LOOP; index++)
 		{
-			if (!comparer->execute(app, lbaRange[index], writeData[index])) return CompositeExecutor::PrintFail();
+			if (!comparer->execute(app, lbaRange[index], writeData[index])) return false;
 		}
 	}
 
-	return CompositeExecutor::PrintPass();
+	return true;
 }
 
-bool EraseAndWriteAging::IsValidCommand(const vector<string>& tokens)
-{
-	if (tokens[CMD_IDX] == FOURTH_SCRIPT_SHORT_NAME || tokens[CMD_IDX] == FOURTH_SCRIPT_FULL_NAME) return true;
-	return false;
-}
-
-bool EraseAndWriteAging::execute(ISsdApp* app, LBA lba, DATA data)
+bool EraseWriteAgingStrategy::run(ISsdApp* app, shared_ptr<Writer> writer, shared_ptr<Comparer> comparer, shared_ptr<Eraser> eraser)
 {
 	const DATA erasedData = 0;
 	const LBA loopStartLBA = 2;
@@ -141,11 +133,10 @@ bool EraseAndWriteAging::execute(ISsdApp* app, LBA lba, DATA data)
 
 			for (LBA readLba = startLba; readLba < endLba; readLba++)
 			{
-				if (!comparer->execute(app, readLba, erasedData)) return CompositeExecutor::PrintFail();
+				if (!comparer->execute(app, readLba, erasedData)) return false;
 			}
 		}
 	}
 
-	return CompositeExecutor::PrintPass();
+	return true;
 }
-
