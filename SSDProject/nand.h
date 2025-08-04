@@ -17,9 +17,9 @@ class Nand : public NandInterface
 {
 public:
   Nand() {}
-  bool Read(const LBA lba, DATA& readData);
-  bool Write(const LBA lba, const DATA writeData);
-  bool Erase(const LBA lba, const ERASE_SIZE erase_size);
+  bool Read(const LBA lba, DATA& readData) override;
+  bool Write(const LBA lba, const DATA writeData) override;
+  bool Erase(const LBA lba, const ERASE_SIZE erase_size) override;
 private:
 	bool IsInvalidParameter(const LBA lba, const ERASE_SIZE erase_size = 0);
 	
