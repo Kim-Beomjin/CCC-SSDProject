@@ -3,8 +3,8 @@
 
 class Shell {
 public:
-    Shell() : commandParser(nullptr) {}
-    Shell(ICommandParserBridge* broker) : commandParser(broker) {}
+    Shell() = default;
+    Shell(shared_ptr<ICommandParserBridge> parser) : commandParser{ parser } {}
 
     int RunShellLoop(void);
     int Runner(int argc, char* argv[]);
@@ -15,7 +15,7 @@ public:
 private:
     bool IsCmdExit(string cmd);
 protected:
-    ICommandParserBridge* commandParser = nullptr;
+    shared_ptr<ICommandParserBridge> commandParser;
 #ifdef _DEBUG
     ISsdApp* app = nullptr;
 #endif

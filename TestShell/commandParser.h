@@ -8,7 +8,7 @@ using namespace std;
 class CommandParser : public ICommandParserBridge {
 public:
     CommandParser() = default;
-    CommandParser(IExecutorFactory* factory) : _factory{ factory } {}
+    CommandParser(shared_ptr<IExecutorFactory> factory) : _factory{ factory } {}
     bool ParseCommand(const string& cmd) override;
     bool ExecuteSsdUsingParsedCommand(ISsdApp* app) override;
 private:
@@ -18,7 +18,7 @@ private:
     bool setDataFromToken(const string& strData);
     bool IsLbaRangeValid();
 
-    IExecutorFactory* _factory;
+    shared_ptr<IExecutorFactory> _factory;
     shared_ptr<IExecutor> executor;
     string command = "";
     LBA lba = 0;

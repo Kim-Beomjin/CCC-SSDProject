@@ -25,7 +25,7 @@ int Shell::Runner(int argc, char* argv[])
     }
 
     if (commandParser == nullptr)
-        commandParser = new CommandParser(new StrategyCompositeExecutorFactory());
+        commandParser = make_shared<CommandParser>(static_pointer_cast<IExecutorFactory>(make_shared<StrategyCompositeExecutorFactory>()));
 
     string cmd;
     while (std::getline(infile, cmd)) {

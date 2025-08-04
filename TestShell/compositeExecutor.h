@@ -4,7 +4,6 @@
 #include <string>
 
 using namespace std;
-using std::shared_ptr;
 
 struct ICompositeExecutorStrategy
 {

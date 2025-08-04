@@ -16,7 +16,7 @@ public:
 
 class CommandParserFixture : public Test {
 public:
-    class CommandParser *parser = new CommandParser(new ExecutorFactory());
+    shared_ptr<CommandParser> parser = make_shared<CommandParser>(make_shared<DelegatedExecutorFactory>());
     MockSsdApp mock_app;
     void CheckParseCommand(const string& cmd) {
         EXPECT_TRUE(parser->ParseCommand(cmd));
