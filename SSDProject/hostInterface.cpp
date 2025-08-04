@@ -53,7 +53,7 @@ bool ProcessorFactory::_FlushCondition(int argc, char* argv[])
 
 bool WriteProcessor::LoadParameterAndCheckInvalid(char* lbaStr, char* dataStr)
 {
-	if (GlobalUtil::IsNegative(lbaStr) || GlobalUtil::IsInvalidLength(dataStr))
+	if (GlobalUtil::IsNegative(lbaStr) || GlobalUtil::IsInvalidDataString(dataStr))
 	{
 		DEBUG_ASSERT(false, "INVALID INPUT PARAMETERS");
 		return false;
