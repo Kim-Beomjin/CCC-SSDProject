@@ -6,7 +6,7 @@
 void HostInterface::Execute(int argc, char* argv[])
 {
 	IProcessor* processor = ProcessorFactory::GetInstance()->CreateProcessor(argc, argv, ssd);
-	if (processor == nullptr || processor->LoadParameterAndCheckInvalid(argv[ARGV::LBA_IDX], argv[ARGV::DATA_IDX]))
+	if (processor == nullptr || (processor->LoadParameterAndCheckInvalid(argv[ARGV::LBA_IDX], argv[ARGV::DATA_IDX]) == false))
 	{
 		return;
 	}
@@ -56,19 +56,19 @@ bool WriteProcessor::LoadParameterAndCheckInvalid(char* lbaStr, char* dataStr)
 	if (GlobalUtil::IsNegative(lbaStr) || GlobalUtil::IsInvalidLength(dataStr))
 	{
 		DEBUG_ASSERT(false, "INVALID INPUT PARAMETERS");
-		return true;
+		return false;
 	}
 	try {
 		
-		lba = GlobalUtil::SafeStoul(lbaStr, DECIMAL_BASE);
-		data = GlobalUtil::SafeStoul(dataStr, HEXA_BASE);
+		lba = GlobalUtil::TryLoadDecimalInput(lbaStr);
+		data = GlobalUtil::TryLoadHexaInput(dataStr);
 	}
 	catch (std::exception)
 	{
 		DEBUG_ASSERT(false, "INVALID INPUT PARAMETERS");
-		return true;
+		return false;
 	}
-	return false;
+	return true;
 }
 bool WriteProcessor::Process()
 {
@@ -80,17 +80,17 @@ bool ReadProcessor::LoadParameterAndCheckInvalid(char* lbaStr, char* )
 	if (GlobalUtil::IsNegative(lbaStr))
 	{
 		DEBUG_ASSERT(false, "INVALID INPUT PARAMETERS");
-		return true;
+		return false;
 	}
 	try {
-		lba = GlobalUtil::SafeStoul(lbaStr, DECIMAL_BASE);
+		lba = GlobalUtil::TryLoadDecimalInput(lbaStr);
 	}
 	catch (std::exception)
 	{
 		DEBUG_ASSERT(false, "INVALID INPUT PARAMETERS");
-		return true;
+		return false;
 	}
-	return false;
+	return true;
 }
 bool ReadProcessor::Process()
 {
@@ -102,19 +102,19 @@ bool EraseProcessor::LoadParameterAndCheckInvalid(char* lbaStr, char* sizeStr)
 	if (GlobalUtil::IsNegative(lbaStr) || GlobalUtil::IsNegative(sizeStr))
 	{
 		DEBUG_ASSERT(false, "INVALID INPUT PARAMETERS");
-		return true;
+		return false;
 	}
 	try {
 
-		lba = GlobalUtil::SafeStoul(lbaStr, DECIMAL_BASE);
-		size = GlobalUtil::SafeStoul(sizeStr, DECIMAL_BASE);
+		lba = GlobalUtil::TryLoadDecimalInput(lbaStr);
+		size = GlobalUtil::TryLoadDecimalInput(sizeStr);
 	}
 	catch (std::exception)
 	{
 		DEBUG_ASSERT(false, "INVALID INPUT PARAMETERS");
-		return true;
+		return false;
 	}
-	return false;
+	return true;
 }
 bool EraseProcessor::Process()
 {
@@ -123,7 +123,7 @@ bool EraseProcessor::Process()
 
 bool FlushProcessor::LoadParameterAndCheckInvalid(char* , char* )
 {
-	return false;
+	return true;
 }
 bool FlushProcessor::Process()
 {
