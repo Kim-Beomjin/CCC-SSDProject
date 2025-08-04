@@ -153,6 +153,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BufferedSSD.cpp" />
+    <ClCompile Include="converter.cpp" />
     <ClCompile Include="buffer_test.cpp" />
     <ClCompile Include="hostInterface.cpp" />
     <ClCompile Include="hostInterface_test.cpp" />
@@ -166,6 +167,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BufferedSSD.h" />
+    <ClInclude Include="converter.h" />
     <ClInclude Include="global_config.h" />
     <ClInclude Include="hostInterface.h" />
     <ClInclude Include="Interface.h" />

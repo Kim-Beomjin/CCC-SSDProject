@@ -8,6 +8,7 @@ class SSD : public ISSD
 {
 public:
   SSD() : nand{ new Nand() } {};
+  ~SSD() override {};
   SSD(NandInterface* nand) : nand {nand}{};
   bool Read(LBA lba) override;
   bool Write(LBA lba, DATA writeData) override;

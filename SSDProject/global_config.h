@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-
+#include <vector>
 using LBA = unsigned int;
 using DATA = unsigned int;
 using ERASE_SIZE = unsigned int;
@@ -22,6 +22,25 @@ const char SMALL_EX = 'x';
 const char LARGE_EX = 'X';
 
 const std::string OUTPUT_FILE = "ssd_output.txt";
+
+enum BUF_TYPE
+{
+    NONE,
+    WRITE,
+    ERASE
+};
+struct Buffer
+{
+    BUF_TYPE type;
+    DATA data;
+};
+
+struct Command
+{
+    unsigned int dword1;
+    unsigned int dword2;
+};
+
 
 #ifdef _TEST_CONFIG
 #include <iostream>

@@ -54,6 +54,8 @@
     <ClCompile Include="ssd.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="converter.cpp">
+      <Filter>소스 파일</Filter>
     <ClCompile Include="buffer_test.cpp">
       <Filter>테스트 파일</Filter>
     </ClCompile>
@@ -75,6 +77,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Interface.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="converter.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

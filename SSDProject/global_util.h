@@ -45,7 +45,7 @@ public:
     return SafeStoul(str, DECIMAL_BASE);
   }
 
-  static unsigned int SafeStoul(char* str, int base)
+  static unsigned int SafeStoul(const char* str, int base)
   {
     size_t idx;
     unsigned int ret = std::stoul(std::string(str), &idx, base);
