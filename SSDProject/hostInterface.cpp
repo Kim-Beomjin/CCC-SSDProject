@@ -6,7 +6,7 @@
 void HostInterface::Execute(int argc, char* argv[])
 {
 	IProcessor* processor = ProcessorFactory::GetInstance()->CreateProcessor(argc, argv, ssd);
-	if (processor == nullptr || (processor->LoadParameterAndCheckInvalid(argv[ARGV::LBA_IDX], argv[ARGV::DATA_IDX]) == false))
+	if (processor == nullptr || (processor->LoadParameterAndCheckValid(argv[ARGV::LBA_IDX], argv[ARGV::DATA_IDX]) == false))
 	{
 		return;
 	}
@@ -51,7 +51,7 @@ bool ProcessorFactory::_FlushCondition(int argc, char* argv[])
 
 //----------------------------------- Processor -------------------------------------//
 
-bool WriteProcessor::LoadParameterAndCheckInvalid(char* lbaStr, char* dataStr)
+bool WriteProcessor::LoadParameterAndCheckValid(char* lbaStr, char* dataStr)
 {
 	if (GlobalUtil::IsNegative(lbaStr) || GlobalUtil::IsInvalidDataString(dataStr))
 	{
@@ -75,7 +75,7 @@ bool WriteProcessor::Process()
 	return ssd->Write(lba, data);
 }
 
-bool ReadProcessor::LoadParameterAndCheckInvalid(char* lbaStr, char* )
+bool ReadProcessor::LoadParameterAndCheckValid(char* lbaStr, char* )
 {
 	if (GlobalUtil::IsNegative(lbaStr))
 	{
@@ -97,7 +97,7 @@ bool ReadProcessor::Process()
 	return ssd->Read(lba);
 }
 
-bool EraseProcessor::LoadParameterAndCheckInvalid(char* lbaStr, char* sizeStr)
+bool EraseProcessor::LoadParameterAndCheckValid(char* lbaStr, char* sizeStr)
 {
 	if (GlobalUtil::IsNegative(lbaStr) || GlobalUtil::IsNegative(sizeStr))
 	{
@@ -121,7 +121,7 @@ bool EraseProcessor::Process()
 	return ssd->Erase(lba, size);
 }
 
-bool FlushProcessor::LoadParameterAndCheckInvalid(char* , char* )
+bool FlushProcessor::LoadParameterAndCheckValid(char* , char* )
 {
 	return true;
 }

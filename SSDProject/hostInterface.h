@@ -64,7 +64,7 @@ class WriteProcessor : public IProcessor
 public:
     WriteProcessor(ISSD* ssd) : 
         ssd{ ssd }, lba{ INVALID_LBA }, data{ EMPTY_DATA } {}
-    bool LoadParameterAndCheckInvalid(char* lbaStr, char* dataStr) override;
+    bool LoadParameterAndCheckValid(char* lbaStr, char* dataStr) override;
     bool Process() override;
 private:
     LBA lba;
@@ -77,7 +77,7 @@ class ReadProcessor : public IProcessor
 public:
     ReadProcessor(ISSD* ssd) : 
         ssd{ ssd }, lba{ INVALID_LBA } {}
-    bool LoadParameterAndCheckInvalid(char* lbaStr, char*) override;
+    bool LoadParameterAndCheckValid(char* lbaStr, char*) override;
     bool Process() override;
 private:
     LBA lba;
@@ -89,7 +89,7 @@ class EraseProcessor : public IProcessor
 public:
     EraseProcessor(ISSD* ssd) :
         ssd{ ssd }, lba{ INVALID_LBA }, size{ INVALID_ERASE_SIZE } {}
-    bool LoadParameterAndCheckInvalid(char* lbaStr, char* sizeStr) override;
+    bool LoadParameterAndCheckValid(char* lbaStr, char* sizeStr) override;
     bool Process() override;
 private:
     LBA lba;
@@ -102,7 +102,7 @@ class FlushProcessor : public IProcessor
 public:
     FlushProcessor(ISSD* ssd) :
         ssd{ ssd } {}
-    bool LoadParameterAndCheckInvalid(char*, char*) override;
+    bool LoadParameterAndCheckValid(char*, char*) override;
     bool Process() override;
 private:
     ISSD* ssd;

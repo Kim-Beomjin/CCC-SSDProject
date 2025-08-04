@@ -3,7 +3,7 @@
 class IProcessor
 {
 public:
-	virtual bool LoadParameterAndCheckInvalid(char*, char*) = 0;
+	virtual bool LoadParameterAndCheckValid(char*, char*) = 0;
 	virtual bool Process() = 0;
 };
 
