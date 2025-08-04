@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-
+#include <vector>
 using LBA = unsigned int;
 using DATA = unsigned int;
 using ERASE_SIZE = unsigned int;
@@ -31,6 +31,12 @@ struct Buffer
 {
     BUF_TYPE type;
     DATA data;
+};
+
+struct Command
+{
+    unsigned int dword1;
+    unsigned int dword2;
 };
 
 

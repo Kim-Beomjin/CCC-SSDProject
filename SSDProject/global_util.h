@@ -35,7 +35,7 @@ public:
     return (std::string(dataStr).size() != 10 || std::string(dataStr)[0] != ZERO || !(std::string(dataStr)[1] == LARGE_EX || std::string(dataStr)[1] == SMALL_EX));
   }
 
-  static unsigned int SafeStoul(char* str, int base)
+  static unsigned int SafeStoul(const char* str, int base)
   {
     size_t idx;
     unsigned int ret = std::stoul(std::string(str), &idx, base);

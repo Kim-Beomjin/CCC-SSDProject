@@ -5,6 +5,9 @@
 
 void HostInterface::Execute(int argc, char* argv[])
 {
+#ifdef _DEBUG
+	ssd = new BufferedSSD();
+#endif
 	IProcessor* processor = ProcessorFactory::GetInstance()->CreateProcessor(argc, argv, ssd);
 	if (processor == nullptr || processor->LoadParameterAndCheckInvalid(argv[ARGV::LBA_IDX], argv[ARGV::DATA_IDX]))
 	{
@@ -14,6 +17,9 @@ void HostInterface::Execute(int argc, char* argv[])
 	{
 		std::cout << "SSD Process Fail\n";
 	}
+#ifdef _DEBUG
+	delete(ssd);
+#endif
 }
 
 //------------------------------ Processor Factory ----------------------------------//
