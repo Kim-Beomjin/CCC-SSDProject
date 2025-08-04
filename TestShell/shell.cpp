@@ -10,7 +10,7 @@ int Shell::RunShellLoop(void) {
     string cmd;
 
     if (commandParser == nullptr)
-        commandParser = new CommandParser(new DelegatedExecutorFactory());
+        commandParser = make_shared<CommandParser>(static_pointer_cast<IExecutorFactory>(make_shared<DelegatedExecutorFactory>()));
 
     do {
         cout << "Shell> ";

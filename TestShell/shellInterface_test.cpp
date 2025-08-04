@@ -25,10 +25,10 @@ public:
 
 class ShellFixture : public Test {
 public:
-    NiceMock<MockCommandParser> mockCommandParser;
+    shared_ptr<MockCommandParser> mockCommandParser = make_shared<NiceMock<MockCommandParser>>();
     NiceMock<MockSsdApp> mock_app;
     class Shell shell;
-    class Shell mockshell {&mockCommandParser};
+    class Shell mockshell { mockCommandParser };
     string EXIT_CMD = "exit\n";
     string WRITE_CMD = "write 3 0x12345678\n";
     string READ_CMD = "read 3\n";
@@ -97,7 +97,7 @@ TEST_F(ShellFixture, ReadAndExit) {
 TEST_F(ShellFixture, MockExitCommand) {
     string fakeCmd = EXIT_CMD;
 
-    EXPECT_CALL(mockCommandParser, ParseCommand)
+    EXPECT_CALL(*mockCommandParser, ParseCommand)
         .Times(1)
         .WillOnce(Return(true));
 
@@ -109,7 +109,7 @@ TEST_F(ShellFixture, MockWriteAndExit) {
     string fakeCmd = WRITE_CMD + EXIT_CMD;
     string WRITEANDEXIT_RESULT = WRITE_RESULT + EXIT_RESULT;
 
-    EXPECT_CALL(mockCommandParser, ParseCommand)
+    EXPECT_CALL(*mockCommandParser, ParseCommand)
         .Times(2)
         .WillRepeatedly(Return(true));
 
@@ -122,7 +122,7 @@ TEST_F(ShellFixture, MockReadAndExit) {
     string fakeCmd = READ_CMD + EXIT_CMD;
     string READANDEXIT_RESULT = READ_RESULT + EXIT_RESULT;
 
-    EXPECT_CALL(mockCommandParser, ParseCommand)
+    EXPECT_CALL(*mockCommandParser, ParseCommand)
         .Times(2)
         .WillRepeatedly(Return(true));
 
