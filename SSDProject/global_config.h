@@ -5,14 +5,13 @@ using LBA = unsigned int;
 using DATA = unsigned int;
 using ERASE_SIZE = unsigned int;
 
-#define LBA_START_ADDR  (0)
-#define LBA_END_ADDR    (100)
-#define EMPTY_DATA      (0)
-#define DATA_NUM_DIGIT  (8)
-#define MAX_ERASE_SIZE  (10)
-#define DECIMAL_BASE    (10)
-#define HEXA_BASE       (16)
-
+const int LBA_START_ADDR = 0;
+const int LBA_END_ADDR = 100;
+const int EMPTY_DATA = 0;
+const int DATA_NUM_DIGIT = 8;
+const int MAX_ERASE_SIZE = 10;
+const int DECIMAL_BASE = 10;
+const int HEXA_BASE = 16;
 const std::string ERROR_MSG = "ERROR";
 const std::string HEXA_PREFIX = "0x";
 const char ZERO = '0';
